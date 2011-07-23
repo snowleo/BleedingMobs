@@ -158,11 +158,18 @@ public class Particle implements Runnable
 
 	private void restoreBlock(final boolean removeFromSet)
 	{
-		goreMod.removeUnbreakable(savedBlockLocation);
-		savedBlockLocation.getBlock().setTypeIdAndData(savedBlockMaterial.getId(), savedBlockData, true);
-		if (meltedSnow)
+		final boolean notExploded = goreMod.removeUnbreakable(savedBlockLocation);
+		if (notExploded)
 		{
-			savedBlockLocation.getBlock().getRelative(BlockFace.UP).setType(Material.SNOW);
+			savedBlockLocation.getBlock().setTypeIdAndData(savedBlockMaterial.getId(), savedBlockData, false);
+			if (meltedSnow)
+			{
+				savedBlockLocation.getBlock().getRelative(BlockFace.UP).setType(Material.SNOW);
+			}
+		}
+		else
+		{
+			savedBlockLocation.getBlock().setType(Material.AIR);
 		}
 		if (removeFromSet)
 		{

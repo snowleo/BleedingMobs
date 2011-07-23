@@ -40,6 +40,7 @@ public class GoreMod extends JavaPlugin
 		final EntityListener entityListener = new ParticleEntityListener(this);
 		pluginManager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Low, this);
 		pluginManager.registerEvent(Type.ENTITY_DEATH, entityListener, Priority.Low, this);
+		pluginManager.registerEvent(Type.ENTITY_EXPLODE, entityListener, Priority.Highest, this);
 		final PlayerListener playerListener = new ParticlePlayerListener(this);
 		pluginManager.registerEvent(Type.PLAYER_PICKUP_ITEM, playerListener, Priority.Low, this);
 		final BlockListener blockListener = new ParticleBlockListener(this);
@@ -88,9 +89,9 @@ public class GoreMod extends JavaPlugin
 		particleBlocks.add(blockLocation.toVector());
 	}
 
-	public void removeUnbreakable(final Location blockLocation)
+	public boolean removeUnbreakable(final Location blockLocation)
 	{
-		particleBlocks.remove(blockLocation.toVector());
+		return particleBlocks.remove(blockLocation.toVector());
 	}
 
 	public boolean isUnbreakable(final Location blockLocation)

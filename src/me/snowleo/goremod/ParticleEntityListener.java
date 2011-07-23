@@ -2,10 +2,12 @@ package me.snowleo.goremod;
 
 import java.util.Random;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByProjectileEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityListener;
 
 
@@ -51,6 +53,19 @@ class ParticleEntityListener extends EntityListener
 		for (int i = 0; i < amount; i++)
 		{
 			goreMod.createParticle(loc);
+		}
+	}
+
+	@Override
+	public void onEntityExplode(EntityExplodeEvent event)
+	{
+		if (event.isCancelled())
+		{
+			return;
+		}
+		for (Block block : event.blockList())
+		{
+			goreMod.removeUnbreakable(block.getLocation());
 		}
 	}
 }
