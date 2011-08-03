@@ -1,4 +1,4 @@
-GoreMod 1.0.2 for Bukkit
+GoreMod 1.1 for Bukkit
 ========================
 
 **Not recommended for minors ;)**
@@ -6,5 +6,7 @@ GoreMod 1.0.2 for Bukkit
 Inspired by Yogscasts: "Shadow of Israphel" Part 25 and 29
 
 Download: https://github.com/snowleo/GoreMod/downloads
+
+Changelog: https://github.com/snowleo/GoreMod/commits/master
 
 Example video: http://www.youtube.com/watch?v=-eoCG3SgE_A
