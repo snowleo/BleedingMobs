@@ -1,8 +1,7 @@
 package me.snowleo.goremod;
 
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Random;
-import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,25 +30,9 @@ public class Particle implements Runnable
 		FLOWING
 	}
 	private transient State state = State.UNKNOWN;
-	private final transient List<Material> saturatedMats = Arrays.asList(new Material[]
-			{
-				Material.GRASS,
-				Material.DIRT,
-				Material.STONE,
-				Material.COBBLESTONE,
-				Material.SAND,
-				Material.SANDSTONE,
-				Material.WOOD,
-				Material.GRAVEL,
-				Material.WOOL,
-				Material.DOUBLE_STEP,
-				Material.SOUL_SAND,
-				Material.NETHERRACK,
-				Material.CLAY,
-				Material.SNOW_BLOCK
-			});
-	private transient Material savedBlockMaterial;
-	private transient Location savedBlockLocation;
+	private transient Material savedBlockMat;
+	private transient Location savedBlockLoc;
+	private transient EnumSet<Material> saturatedMats = EnumSet.noneOf(Material.class);
 	private transient byte savedBlockData;
 
 	public Particle(final IGoreMod goreMod)
@@ -61,6 +44,7 @@ public class Particle implements Runnable
 	public void start(final Location loc, final ParticleType type)
 	{
 		this.type = type;
+		this.saturatedMats = type.getSaturatedMaterials();
 		final int rand = random.nextInt(100);
 		int lifetime = random.nextInt(type.getParticleLifeTo() - type.getParticleLifeFrom()) + type.getParticleLifeFrom();
 		ItemStack stack;
@@ -126,10 +110,10 @@ public class Particle implements Runnable
 
 	private void stainFloor(final Block block)
 	{
-		savedBlockMaterial = block.getType();
-		savedBlockLocation = block.getLocation();
+		savedBlockMat = block.getType();
+		savedBlockLoc = block.getLocation();
 		savedBlockData = block.getData();
-		goreMod.addUnbreakable(savedBlockLocation);
+		goreMod.addUnbreakable(savedBlockLoc);
 		block.setTypeIdAndData(Material.WOOL.getId(), (byte)type.getWoolColor(), true);
 		if (block.getRelative(BlockFace.UP).getType() == Material.SNOW)
 		{
@@ -160,18 +144,18 @@ public class Particle implements Runnable
 
 	private void restoreBlock(final boolean removeFromSet)
 	{
-		final boolean notExploded = goreMod.removeUnbreakable(savedBlockLocation);
+		final boolean notExploded = goreMod.removeUnbreakable(savedBlockLoc);
 		if (notExploded)
 		{
-			savedBlockLocation.getBlock().setTypeIdAndData(savedBlockMaterial.getId(), savedBlockData, false);
+			savedBlockLoc.getBlock().setTypeIdAndData(savedBlockMat.getId(), savedBlockData, false);
 			if (meltedSnow)
 			{
-				savedBlockLocation.getBlock().getRelative(BlockFace.UP).setType(Material.SNOW);
+				savedBlockLoc.getBlock().getRelative(BlockFace.UP).setType(Material.SNOW);
 			}
 		}
 		else
 		{
-			savedBlockLocation.getBlock().setType(Material.AIR);
+			savedBlockLoc.getBlock().setType(Material.AIR);
 		}
 		if (removeFromSet)
 		{

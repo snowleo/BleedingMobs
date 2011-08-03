@@ -1,13 +1,17 @@
 package me.snowleo.goremod;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.BlockListener;
@@ -71,6 +75,11 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 	{
 		final Configuration config = this.getConfiguration();
 		config.load();
+		config.setHeader("# Gore Mod config", 
+						 "# Don't use tabs in this file",
+						 "# Be careful, if you change anything, it can break your server.",
+				"# You have been warned!",
+				"# You can always reset this to the defaults by removing the file.");
 		final int maxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
 		particles = new HashSet<Particle>(maxParticles);
 		particleItems = new HashSet<Integer>(maxParticles);
@@ -89,6 +98,29 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 			particleType.setStainLifeTo(Math.max(particleType.getStainLifeFrom(), config.getInt(name + ".stain-life.to", particleType.getStainLifeTo())));
 			particleType.setAmountFrom(Math.max(0, config.getInt(name + ".amount.from", particleType.getAmountFrom())));
 			particleType.setAmountTo(Math.max(particleType.getAmountFrom(), config.getInt(name + ".amount.to", particleType.getAmountTo())));
+			final List<String> mats = config.getStringList(name + ".saturated-materials", null);
+			final EnumSet<Material> materials = EnumSet.noneOf(Material.class);
+			if (mats != null)
+			{
+				for (String matName : mats)
+				{
+					final Material material = Material.matchMaterial(matName.replaceAll("-", "_"));
+					if (material != null)
+					{
+						materials.add(material);
+					}
+				}
+			}
+			if (!materials.isEmpty())
+			{
+				particleType.setSaturatedMaterials(materials);
+			}
+			List<String> converted = new ArrayList<String>();
+			for (Material material : particleType.getSaturatedMaterials())
+			{
+				converted.add(material.toString().toLowerCase().replaceAll("_", "-"));
+			}
+			config.setProperty(name + ".saturated-materials", converted);
 		}
 		final Collection coll = config.getStringList("worlds", null);
 		worlds = new HashSet(coll == null ? Collections.emptyList() : coll);

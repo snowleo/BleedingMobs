@@ -1,27 +1,47 @@
 package me.snowleo.goremod;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+import org.bukkit.Material;
+
 
 public enum ParticleType
 {
-	DEATH(40, 12, 5, 15, 14, true, 100, 80, 120, 25, 35),
-	ATTACK(50, 6, 5, 15, 14, true, 100, 80, 120, 15, 25),
-	PROJECTILE(50, 6, 5, 15, 14, true, 100, 80, 120, 5, 15),
-	CREEPER(100, 0, 5, 15, 5, false, 100, 80, 120, 10, 20);
+	DEATH(40, 12, 5, 15, 14, true, 25, 35),
+	ATTACK(50, 6, 5, 15, 14, true, 15, 25),
+	PROJECTILE(50, 6, 5, 15, 14, true, 5, 15),
+	CREEPER(100, 0, 5, 15, 5, false, 5, 15);
 	private int woolChance;
 	private int boneChance;
 	private int particleLifeFrom;
 	private int particleLifeTo;
 	private int woolColor;
 	private boolean stainsFloor;
-	private int boneLife;
-	private int stainLifeFrom;
-	private int stainLifeTo;
+	private int boneLife = 100;
+	private int stainLifeFrom = 80;
+	private int stainLifeTo = 120;
 	private int amountFrom;
 	private int amountTo;
+	private transient EnumSet<Material> saturatedMats = EnumSet.copyOf(Arrays.asList(new Material[]
+			{
+				Material.GRASS,
+				Material.DIRT,
+				Material.STONE,
+				Material.COBBLESTONE,
+				Material.SAND,
+				Material.SANDSTONE,
+				Material.WOOD,
+				Material.GRAVEL,
+				Material.WOOL,
+				Material.DOUBLE_STEP,
+				Material.SOUL_SAND,
+				Material.NETHERRACK,
+				Material.CLAY,
+				Material.SNOW_BLOCK
+			}));
 
 	private ParticleType(final int woolChance, final int boneChance, final int particleLifeFrom,
 						 final int particleLifeTo, final int woolColor, final boolean stainsFloor,
-						 final int boneLife, final int stainLifeFrom, final int stainLifeTo,
 						 final int amountFrom, final int amountTo)
 	{
 		this.woolChance = woolChance;
@@ -30,9 +50,6 @@ public enum ParticleType
 		this.particleLifeTo = particleLifeTo;
 		this.woolColor = woolColor;
 		this.stainsFloor = stainsFloor;
-		this.boneLife = boneLife;
-		this.stainLifeFrom = stainLifeFrom;
-		this.stainLifeTo = stainLifeTo;
 		this.amountFrom = amountFrom;
 		this.amountTo = amountTo;
 	}
@@ -145,5 +162,15 @@ public enum ParticleType
 	public void setAmountTo(final int amountTo)
 	{
 		this.amountTo = amountTo;
+	}
+
+	public EnumSet<Material> getSaturatedMaterials()
+	{
+		return saturatedMats;
+	}
+
+	public void setSaturatedMaterials(EnumSet<Material> saturatedMats)
+	{
+		this.saturatedMats = saturatedMats;
 	}
 }
