@@ -6,9 +6,9 @@ import org.bukkit.event.block.BlockListener;
 
 class ParticleBlockListener extends BlockListener
 {
-	private final transient GoreMod goreMod;
+	private final transient IGoreMod goreMod;
 
-	public ParticleBlockListener(final GoreMod goreMod)
+	public ParticleBlockListener(final IGoreMod goreMod)
 	{
 		this.goreMod = goreMod;
 	}

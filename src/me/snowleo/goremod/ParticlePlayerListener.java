@@ -7,9 +7,9 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 
 class ParticlePlayerListener extends PlayerListener
 {
-	private final transient GoreMod goreMod;
+	private final transient IGoreMod goreMod;
 
-	public ParticlePlayerListener(final GoreMod goreMod)
+	public ParticlePlayerListener(final IGoreMod goreMod)
 	{
 		this.goreMod = goreMod;
 	}

@@ -18,8 +18,9 @@ public class Particle implements Runnable
 	private transient Material mat;
 	private transient Item item;
 	private final transient BukkitScheduler scheduler;
-	private final transient GoreMod goreMod;
+	private final transient IGoreMod goreMod;
 	private final transient Random random = new Random();
+	private transient ParticleType type = ParticleType.ATTACK;
 	private transient boolean meltedSnow;
 
 
@@ -51,24 +52,28 @@ public class Particle implements Runnable
 	private transient Location savedBlockLocation;
 	private transient byte savedBlockData;
 
-	public Particle(final GoreMod goreMod)
+	public Particle(final IGoreMod goreMod)
 	{
 		this.goreMod = goreMod;
 		this.scheduler = goreMod.getServer().getScheduler();
 	}
 
-	public void start(final Location loc)
+	public void start(final Location loc, final ParticleType type)
 	{
+		this.type = type;
+		final int rand = random.nextInt(100);
+		int lifetime = random.nextInt(type.getParticleLifeTo() - type.getParticleLifeFrom()) + type.getParticleLifeFrom();
 		ItemStack stack;
-		if (Math.abs(random.nextInt()) % 20 < 10)
+		if (rand < type.getWoolChance())
 		{
 			mat = Material.WOOL;
-			stack = new ItemStack(mat, 1, (short)14);
+			stack = new ItemStack(mat, 1, (short)type.getWoolColor());
 		}
-		else if (Math.abs(random.nextInt()) % 20 < 3)
+		else if (rand > (99 - type.getBoneChance()))
 		{
 			mat = Material.BONE;
 			stack = new ItemStack(mat, 1);
+			lifetime += type.getBoneLife();
 		}
 		else
 		{
@@ -78,7 +83,7 @@ public class Particle implements Runnable
 		item = loc.getWorld().dropItemNaturally(loc, stack);
 		goreMod.addParticleItem(((CraftItem)item).getEntityId());
 		state = State.SPAWNED;
-		scheduler.scheduleSyncDelayedTask(goreMod, this, Math.abs(random.nextInt()) % 10 + 5);
+		scheduler.scheduleSyncDelayedTask(goreMod, this, lifetime);
 	}
 
 	@Override
@@ -93,24 +98,9 @@ public class Particle implements Runnable
 				{
 					block = item.getLocation().getBlock().getRelative(BlockFace.DOWN);
 				}
-				if (block != null && saturatedMats.contains(block.getType()) && !(block.getType() == Material.WOOL && block.getData() == 14))
+				if (block != null && type.isStainingFloor() && saturatedMats.contains(block.getType()) && !(block.getType() == Material.WOOL && block.getData() == type.getWoolColor()))
 				{
-					savedBlockMaterial = block.getType();
-					savedBlockLocation = block.getLocation();
-					savedBlockData = block.getData();
-					goreMod.addUnbreakable(savedBlockLocation);
-					block.setTypeIdAndData(Material.WOOL.getId(), (byte)14, true);
-					if (block.getRelative(BlockFace.UP).getType() == Material.SNOW)
-					{
-						meltedSnow = true;
-						block.getRelative(BlockFace.UP).setType(Material.AIR);
-					}
-					else
-					{
-						meltedSnow = false;
-					}
-					state = State.FLOWING;
-					scheduler.scheduleSyncDelayedTask(goreMod, this, Math.abs(random.nextInt()) % 40 + 80);
+					stainFloor(block);
 				}
 				else
 				{
@@ -122,17 +112,9 @@ public class Particle implements Runnable
 			}
 			if (mat == Material.BONE)
 			{
-				((CraftItem)item).getHandle().damageEntity(null, 1);
-				if (item.isDead())
-				{
-					item.remove();
-					goreMod.removeParticleItem(((CraftItem)item).getEntityId());
-					goreMod.freeParticle(this);
-				}
-				else
-				{
-					scheduler.scheduleSyncDelayedTask(goreMod, this, 20);
-				}
+				item.remove();
+				goreMod.removeParticleItem(((CraftItem)item).getEntityId());
+				goreMod.freeParticle(this);
 				return;
 			}
 		}
@@ -142,7 +124,27 @@ public class Particle implements Runnable
 		}
 	}
 
-	void restore()
+	private void stainFloor(final Block block)
+	{
+		savedBlockMaterial = block.getType();
+		savedBlockLocation = block.getLocation();
+		savedBlockData = block.getData();
+		goreMod.addUnbreakable(savedBlockLocation);
+		block.setTypeIdAndData(Material.WOOL.getId(), (byte)type.getWoolColor(), true);
+		if (block.getRelative(BlockFace.UP).getType() == Material.SNOW)
+		{
+			meltedSnow = true;
+			block.getRelative(BlockFace.UP).setType(Material.AIR);
+		}
+		else
+		{
+			meltedSnow = false;
+		}
+		state = State.FLOWING;
+		scheduler.scheduleSyncDelayedTask(goreMod, this, random.nextInt(type.getStainLifeTo() - type.getStainLifeFrom()) + type.getStainLifeFrom());
+	}
+
+	public void restore()
 	{
 		if (state == State.SPAWNED)
 		{
