@@ -75,11 +75,11 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 	{
 		final Configuration config = this.getConfiguration();
 		config.load();
-		config.setHeader("# Gore Mod config", 
+		config.setHeader("# Gore Mod config",
 						 "# Don't use tabs in this file",
 						 "# Be careful, if you change anything, it can break your server.",
-				"# You have been warned!",
-				"# You can always reset this to the defaults by removing the file.");
+						 "# You have been warned!",
+						 "# You can always reset this to the defaults by removing the file.");
 		final int maxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
 		particles = new HashSet<Particle>(maxParticles);
 		particleItems = new HashSet<Integer>(maxParticles);
