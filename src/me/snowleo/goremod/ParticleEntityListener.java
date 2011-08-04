@@ -27,6 +27,10 @@ class ParticleEntityListener extends EntityListener
 		{
 			final EntityDamageByEntityEvent entityEvent = (EntityDamageByEntityEvent)event;
 			final Location loc = entityEvent.getEntity().getLocation();
+			if (!goreMod.isWorldEnabled(loc.getWorld()))
+			{
+				return;
+			}
 			if (event.getEntity() instanceof Creeper)
 			{
 				goreMod.createParticle(loc, ParticleType.CREEPER);
@@ -39,6 +43,10 @@ class ParticleEntityListener extends EntityListener
 		if (event instanceof EntityDamageByProjectileEvent)
 		{
 			final Location loc = event.getEntity().getLocation();
+			if (!goreMod.isWorldEnabled(loc.getWorld()))
+			{
+				return;
+			}
 			if (event.getEntity() instanceof Creeper)
 			{
 				goreMod.createParticle(loc, ParticleType.CREEPER);
@@ -54,6 +62,10 @@ class ParticleEntityListener extends EntityListener
 	public void onEntityDeath(final EntityDeathEvent event)
 	{
 		final Location loc = event.getEntity().getLocation();
+		if (!goreMod.isWorldEnabled(loc.getWorld()))
+		{
+			return;
+		}
 		if (event.getEntity() instanceof Creeper)
 		{
 			goreMod.createParticle(loc, ParticleType.CREEPER);
@@ -67,7 +79,7 @@ class ParticleEntityListener extends EntityListener
 	@Override
 	public void onEntityExplode(final EntityExplodeEvent event)
 	{
-		if (event.isCancelled())
+		if (event.isCancelled() || !goreMod.isWorldEnabled(event.getLocation().getWorld()))
 		{
 			return;
 		}

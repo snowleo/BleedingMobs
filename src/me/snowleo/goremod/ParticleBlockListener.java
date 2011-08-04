@@ -1,5 +1,6 @@
 package me.snowleo.goremod;
 
+import org.bukkit.Location;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 
@@ -16,7 +17,8 @@ class ParticleBlockListener extends BlockListener
 	@Override
 	public void onBlockBreak(final BlockBreakEvent event)
 	{
-		if (goreMod.isUnbreakable(event.getBlock().getLocation()))
+		final Location loc = event.getBlock().getLocation();
+		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.isUnbreakable(loc))
 		{
 			event.setCancelled(true);
 		}

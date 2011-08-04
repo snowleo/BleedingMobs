@@ -1,6 +1,7 @@
 package me.snowleo.goremod;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
 
@@ -21,4 +22,6 @@ public interface IGoreMod extends Plugin
 	void removeParticleItem(final int entityId);
 
 	boolean removeUnbreakable(final Location blockLocation);
+
+	boolean isWorldEnabled(World world);
 }

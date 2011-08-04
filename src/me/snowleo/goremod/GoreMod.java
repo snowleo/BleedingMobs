@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.BlockListener;
@@ -19,7 +20,6 @@ import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
 
@@ -29,7 +29,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 	private final transient Queue<Particle> freeParticles = new LinkedList<Particle>();
 	private transient Set<Particle> particles;
 	private transient Set<Integer> particleItems;
-	private transient Set<Vector> particleBlocks;
+	private transient Set<Location> particleBlocks;
 	private transient Set<String> worlds = Collections.emptySet();
 	private final transient Random random = new Random();
 
@@ -83,7 +83,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 		final int maxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
 		particles = new HashSet<Particle>(maxParticles);
 		particleItems = new HashSet<Integer>(maxParticles);
-		particleBlocks = new HashSet<Vector>(maxParticles);
+		particleBlocks = new HashSet<Location>(maxParticles);
 		for (ParticleType particleType : ParticleType.values())
 		{
 			final String name = particleType.toString().toLowerCase();
@@ -115,7 +115,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 			{
 				particleType.setSaturatedMaterials(materials);
 			}
-			List<String> converted = new ArrayList<String>();
+			final List<String> converted = new ArrayList<String>();
 			for (Material material : particleType.getSaturatedMaterials())
 			{
 				converted.add(material.toString().toLowerCase().replaceAll("_", "-"));
@@ -132,10 +132,6 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 	@Override
 	public void createParticle(final Location loc, final ParticleType type)
 	{
-		if (!worlds.isEmpty() && !worlds.contains(loc.getWorld().getName()))
-		{
-			return;
-		}
 		final int amount = random.nextInt(type.getAmountTo() - type.getAmountFrom()) + type.getAmountFrom();
 		for (int i = 0; i < amount; i++)
 		{
@@ -177,18 +173,24 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 	@Override
 	public void addUnbreakable(final Location blockLocation)
 	{
-		particleBlocks.add(blockLocation.toVector());
+		particleBlocks.add(blockLocation);
 	}
 
 	@Override
 	public boolean removeUnbreakable(final Location blockLocation)
 	{
-		return particleBlocks.remove(blockLocation.toVector());
+		return particleBlocks.remove(blockLocation);
 	}
 
 	@Override
 	public boolean isUnbreakable(final Location blockLocation)
 	{
-		return particleBlocks.contains(blockLocation.toVector());
+		return particleBlocks.contains(blockLocation);
+	}
+
+	@Override
+	public boolean isWorldEnabled(final World world)
+	{
+		return worlds.isEmpty() || worlds.contains(world.getName());
 	}
 }
