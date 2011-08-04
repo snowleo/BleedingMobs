@@ -61,7 +61,14 @@ public class Particle implements Runnable
 		}
 		else
 		{
-			mat = Material.REDSTONE;
+			if (type == ParticleType.CREEPER)
+			{
+				mat = Material.SULPHUR;
+			}
+			else
+			{
+				mat = Material.REDSTONE;
+			}
 			stack = new ItemStack(mat, 1);
 		}
 		item = loc.getWorld().dropItemNaturally(loc, stack);
@@ -75,7 +82,7 @@ public class Particle implements Runnable
 	{
 		if (state == State.SPAWNED)
 		{
-			if (mat == Material.REDSTONE || mat == Material.WOOL)
+			if (mat == Material.REDSTONE || mat == Material.SULPHUR || mat == Material.WOOL)
 			{
 				Block block = item.getLocation().getBlock();
 				if (block == null || block.getType() == Material.AIR || block.getType() == Material.SNOW)
