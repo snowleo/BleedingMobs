@@ -5,6 +5,8 @@ GoreMod 1.1.3 for Bukkit
 
 Inspired by Yogscasts: "Shadow of Israphel" Part 25 and 29
 
+This is licensed under GPLv3. See LICENSE file in repository.
+
 Download: https://github.com/snowleo/GoreMod/downloads
 
 Changelog: https://github.com/snowleo/GoreMod/commits/master
