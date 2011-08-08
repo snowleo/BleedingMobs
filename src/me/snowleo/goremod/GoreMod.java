@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -86,6 +88,17 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 		pluginManager.registerEvent(Type.PLAYER_PICKUP_ITEM, playerListener, Priority.Low, this);
 		final BlockListener blockListener = new ParticleBlockListener(this);
 		pluginManager.registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Low, this);
+		pluginManager.registerEvent(Type.BLOCK_BURN, blockListener, Priority.Low, this);
+		pluginManager.registerEvent(Type.BLOCK_IGNITE, blockListener, Priority.Low, this);
+		final Matcher versionMatch = Pattern.compile("git-Bukkit-([0-9]+).([0-9]+).([0-9]+)-[0-9]+-[0-9a-z]+-b([0-9]+)jnks.*").matcher(getServer().getVersion());
+		if (versionMatch.matches())
+		{
+			final int versionNumber = Integer.parseInt(versionMatch.group(4));
+			if (versionNumber >= 1000) {
+				pluginManager.registerEvent(Type.BLOCK_PISTON_EXTEND, blockListener, Priority.Low, this);
+				pluginManager.registerEvent(Type.BLOCK_PISTON_RETRACT, blockListener, Priority.Low, this);
+			}
+		}
 	}
 
 	private int loadConfig()
@@ -95,6 +108,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 		config.setHeader("# Gore Mod config",
 						 "# Don't use tabs in this file",
 						 "# Be careful, if you change anything, it can break your server.",
+						 "# For example creating thousands of particles on hit is not a good idea.",
 						 "# You have been warned!",
 						 "# You can always reset this to the defaults by removing the file.");
 		final int maxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));

@@ -18,8 +18,13 @@
 package me.snowleo.goremod;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 
 
 class ParticleBlockListener extends BlockListener
@@ -36,6 +41,54 @@ class ParticleBlockListener extends BlockListener
 	{
 		final Location loc = event.getBlock().getLocation();
 		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.isUnbreakable(loc))
+		{
+			event.setCancelled(true);
+		}
+	}
+
+	@Override
+	public void onBlockBurn(final BlockBurnEvent event)
+	{
+		final Location loc = event.getBlock().getLocation();
+		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.isUnbreakable(loc))
+		{
+			event.setCancelled(true);
+		}
+	}
+
+	@Override
+	public void onBlockIgnite(final BlockIgniteEvent event)
+	{
+		final Location loc = event.getBlock().getLocation();
+		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.isUnbreakable(loc))
+		{
+			event.setCancelled(true);
+		}
+	}
+
+	@Override
+	public void onBlockPistonExtend(final BlockPistonExtendEvent event)
+	{
+		final Location loc = event.getBlock().getLocation();
+		if (!goreMod.isWorldEnabled(loc.getWorld()))
+		{
+			return;
+		}
+		for (Block block : event.getBlocks())
+		{
+			if (goreMod.isUnbreakable(loc))
+			{
+				event.setCancelled(true);
+				break;
+			}
+		}
+	}
+
+	@Override
+	public void onBlockPistonRetract(final BlockPistonRetractEvent event)
+	{
+		final Location loc = event.getBlock().getLocation();
+		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.isUnbreakable(event.getRetractLocation()))
 		{
 			event.setCancelled(true);
 		}
