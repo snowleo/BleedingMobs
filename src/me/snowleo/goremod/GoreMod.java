@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.Location;
@@ -47,7 +48,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 	private final static int MAX_PARTICLES = 200;
 	private final transient Queue<Particle> freeParticles = new LinkedList<Particle>();
 	private transient Set<Particle> particles;
-	private transient Set<Integer> particleItems;
+	private transient Set<UUID> particleItems;
 	private transient Set<Location> particleBlocks;
 	private transient Set<String> worlds = Collections.emptySet();
 	private final transient Random random = new Random();
@@ -116,7 +117,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 		}
 		final int maxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
 		particles = new HashSet<Particle>(maxParticles);
-		particleItems = new HashSet<Integer>(maxParticles);
+		particleItems = new HashSet<UUID>(maxParticles);
 		particleBlocks = new HashSet<Location>(maxParticles);
 		for (ParticleType particleType : ParticleType.values())
 		{
@@ -187,19 +188,19 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 	}
 
 	@Override
-	public void addParticleItem(final int entityId)
+	public void addParticleItem(final UUID entityId)
 	{
 		particleItems.add(entityId);
 	}
 
 	@Override
-	public void removeParticleItem(final int entityId)
+	public void removeParticleItem(final UUID entityId)
 	{
 		particleItems.remove(entityId);
 	}
 
 	@Override
-	public boolean isParticleItem(final int entityId)
+	public boolean isParticleItem(final UUID entityId)
 	{
 		return particleItems.contains(entityId);
 	}

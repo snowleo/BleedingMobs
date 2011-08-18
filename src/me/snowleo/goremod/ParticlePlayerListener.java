@@ -35,7 +35,7 @@ class ParticlePlayerListener extends PlayerListener
 	public void onPlayerPickupItem(final PlayerPickupItemEvent event)
 	{
 		if (goreMod.isWorldEnabled(event.getPlayer().getWorld())
-			&& goreMod.isParticleItem(((CraftItem)event.getItem()).getEntityId()))
+			&& goreMod.isParticleItem(((CraftItem)event.getItem()).getUniqueId()))
 		{
 			event.setCancelled(true);
 		}

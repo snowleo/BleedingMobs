@@ -17,6 +17,7 @@
  */
 package me.snowleo.goremod;
 
+import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
@@ -24,7 +25,7 @@ import org.bukkit.plugin.Plugin;
 
 public interface IGoreMod extends Plugin
 {
-	void addParticleItem(final int entityId);
+	void addParticleItem(final UUID entityId);
 
 	void addUnbreakable(final Location blockLocation);
 
@@ -32,11 +33,11 @@ public interface IGoreMod extends Plugin
 
 	void freeParticle(final Particle particle);
 
-	boolean isParticleItem(final int entityId);
+	boolean isParticleItem(final UUID entityId);
 
 	boolean isUnbreakable(final Location blockLocation);
 
-	void removeParticleItem(final int entityId);
+	void removeParticleItem(final UUID entityId);
 
 	boolean removeUnbreakable(final Location blockLocation);
 

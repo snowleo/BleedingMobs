@@ -89,7 +89,7 @@ public class Particle implements Runnable
 			stack = new ItemStack(mat, 1);
 		}
 		item = loc.getWorld().dropItemNaturally(loc, stack);
-		goreMod.addParticleItem(((CraftItem)item).getEntityId());
+		goreMod.addParticleItem(((CraftItem)item).getUniqueId());
 		state = State.SPAWNED;
 		scheduler.scheduleSyncDelayedTask(goreMod, this, lifetime);
 	}
@@ -115,13 +115,13 @@ public class Particle implements Runnable
 					goreMod.freeParticle(this);
 				}
 				item.remove();
-				goreMod.removeParticleItem(((CraftItem)item).getEntityId());
+				goreMod.removeParticleItem(((CraftItem)item).getUniqueId());
 				return;
 			}
 			if (mat == Material.BONE)
 			{
 				item.remove();
-				goreMod.removeParticleItem(((CraftItem)item).getEntityId());
+				goreMod.removeParticleItem(((CraftItem)item).getUniqueId());
 				goreMod.freeParticle(this);
 				return;
 			}
