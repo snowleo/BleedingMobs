@@ -17,29 +17,13 @@
  */
 package me.snowleo.goremod;
 
-import java.util.UUID;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
 
 public interface IGoreMod extends Plugin
 {
-	void addParticleItem(final UUID entityId);
-
-	void addUnbreakable(final Location blockLocation);
-
-	void createParticle(final Location loc, final ParticleType type);
-
-	void freeParticle(final Particle particle);
-
-	boolean isParticleItem(final UUID entityId);
-
-	boolean isUnbreakable(final Location blockLocation);
-
-	void removeParticleItem(final UUID entityId);
-
-	boolean removeUnbreakable(final Location blockLocation);
+	ParticleStorage getStorage();
 
 	boolean isWorldEnabled(World world);
 }

@@ -20,8 +20,10 @@ package me.snowleo.goremod;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Skeleton;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageByProjectileEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -34,6 +36,7 @@ class ParticleEntityListener extends EntityListener
 
 	public ParticleEntityListener(final IGoreMod goreMod)
 	{
+		super();
 		this.goreMod = goreMod;
 	}
 
@@ -50,27 +53,19 @@ class ParticleEntityListener extends EntityListener
 			}
 			if (event.getEntity() instanceof Creeper)
 			{
-				goreMod.createParticle(loc, ParticleType.CREEPER);
+				goreMod.getStorage().createParticle(loc, ParticleType.CREEPER);
 			}
-			else
+			else if (event.getEntity() instanceof Skeleton)
 			{
-				goreMod.createParticle(loc, ParticleType.ATTACK);
+				goreMod.getStorage().createParticle(loc, ParticleType.SKELETON);
 			}
-		}
-		if (event instanceof EntityDamageByProjectileEvent)
-		{
-			final Location loc = event.getEntity().getLocation();
-			if (!goreMod.isWorldEnabled(loc.getWorld()))
+			else if (entityEvent.getDamager() instanceof Projectile && event.getEntity() instanceof LivingEntity)
 			{
-				return;
+				goreMod.getStorage().createParticle(loc, ParticleType.PROJECTILE);
 			}
-			if (event.getEntity() instanceof Creeper)
+			else if (event.getEntity() instanceof LivingEntity)
 			{
-				goreMod.createParticle(loc, ParticleType.CREEPER);
-			}
-			else
-			{
-				goreMod.createParticle(loc, ParticleType.PROJECTILE);
+				goreMod.getStorage().createParticle(loc, ParticleType.ATTACK);
 			}
 		}
 	}
@@ -85,11 +80,15 @@ class ParticleEntityListener extends EntityListener
 		}
 		if (event.getEntity() instanceof Creeper)
 		{
-			goreMod.createParticle(loc, ParticleType.CREEPER);
+			goreMod.getStorage().createParticle(loc, ParticleType.CREEPER);
 		}
-		else
+		else if (event.getEntity() instanceof Skeleton)
 		{
-			goreMod.createParticle(loc, ParticleType.DEATH);
+			goreMod.getStorage().createParticle(loc, ParticleType.SKELETON);
+		}
+		else if (event.getEntity() instanceof LivingEntity)
+		{
+			goreMod.getStorage().createParticle(loc, ParticleType.DEATH);
 		}
 	}
 
@@ -102,10 +101,7 @@ class ParticleEntityListener extends EntityListener
 		}
 		for (Block block : event.blockList())
 		{
-			if (goreMod.removeUnbreakable(block.getLocation()))
-			{
-				event.setYield(0.0f);
-			}
+			goreMod.getStorage().removeUnbreakableBeforeExplosion(block.getLocation());
 		}
 	}
 }

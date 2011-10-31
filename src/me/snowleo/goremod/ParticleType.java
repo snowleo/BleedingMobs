@@ -27,7 +27,8 @@ public enum ParticleType
 	DEATH(40, 12, 5, 15, 14, true, 25, 35),
 	ATTACK(50, 6, 5, 15, 14, true, 15, 25),
 	PROJECTILE(50, 6, 5, 15, 14, true, 5, 15),
-	CREEPER(50, 0, 5, 15, 5, false, 5, 15);
+	CREEPER(50, 0, 5, 15, 5, false, 5, 15),
+	SKELETON(0, 100, 5, 15, 0, false, 5, 15);
 	private int woolChance;
 	private int boneChance;
 	private int particleLifeFrom;

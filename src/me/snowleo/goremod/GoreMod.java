@@ -22,56 +22,41 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.world.WorldListener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
 
 
 public class GoreMod extends JavaPlugin implements IGoreMod
 {
 	private final static int MAX_PARTICLES = 200;
-	private final transient Queue<Particle> freeParticles = new LinkedList<Particle>();
-	private transient Set<Particle> particles;
-	private transient Set<UUID> particleItems;
-	private transient Set<Location> particleBlocks;
+	private transient ParticleStorage storage;
 	private transient Set<String> worlds = Collections.emptySet();
-	private final transient Random random = new Random();
-	private transient int bukkitVersion = 0;
 
 	@Override
 	public void onDisable()
 	{
-		for (Particle particle : particles)
+		if (storage != null)
 		{
-			particle.restore();
+			storage.clearAllParticles();
 		}
-		particles.clear();
 	}
 
 	@Override
 	public void onEnable()
 	{
 		final int maxParticles = loadConfig();
-		for (int i = 0; i < maxParticles; i++)
-		{
-			freeParticles.add(new Particle(this));
-		}
+		storage = new ParticleStorage(this, maxParticles);
 
 		registerListeners();
 
@@ -92,48 +77,52 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 		pluginManager.registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Low, this);
 		pluginManager.registerEvent(Type.BLOCK_BURN, blockListener, Priority.Low, this);
 		pluginManager.registerEvent(Type.BLOCK_IGNITE, blockListener, Priority.Low, this);
-		final Matcher versionMatch = Pattern.compile("git-Bukkit-([0-9]+).([0-9]+).([0-9]+)-[0-9]+-[0-9a-z]+-b([0-9]+)jnks.*").matcher(getServer().getVersion());
-		if (versionMatch.matches())
-		{
-			bukkitVersion = Integer.parseInt(versionMatch.group(4));
-			if (bukkitVersion >= 1000) {
-				pluginManager.registerEvent(Type.BLOCK_PISTON_EXTEND, blockListener, Priority.Low, this);
-				pluginManager.registerEvent(Type.BLOCK_PISTON_RETRACT, blockListener, Priority.Low, this);
-			}
-		}
+		final WorldListener worldListener = new ParticleWorldListener(this);
+		pluginManager.registerEvent(Type.CHUNK_UNLOAD, worldListener, Priority.Low, this);
+
+		pluginManager.registerEvent(Type.BLOCK_PISTON_EXTEND, blockListener, Priority.Low, this);
+		pluginManager.registerEvent(Type.BLOCK_PISTON_RETRACT, blockListener, Priority.Low, this);
+
 	}
 
 	private int loadConfig()
 	{
-		final Configuration config = this.getConfiguration();
-		config.load();
-		if (bukkitVersion >= 1000) {
-			config.setHeader("# Gore Mod config",
-							 "# Don't use tabs in this file",
-							 "# Be careful, if you change anything, it can break your server.",
-							 "# For example creating thousands of particles on hit is not a good idea.",
-							 "# You have been warned!",
-							 "# You can always reset this to the defaults by removing the file.");
-		}
+		final FileConfiguration config = this.getConfig();
+		config.options().header("Gore Mod config\n"
+								+ "Don't use tabs in this file\n"
+								+ "Be careful, if you change anything, it can break your server.\n"
+								+ "For example creating thousands of particles on hit is not a good idea.\n"
+								+ "You have been warned!\n"
+								+ "You can always reset this to the defaults by removing the file.\n");
+		
 		final int maxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
-		particles = new HashSet<Particle>(maxParticles);
-		particleItems = new HashSet<UUID>(maxParticles);
-		particleBlocks = new HashSet<Location>(maxParticles);
+		config.set("max-particles", maxParticles);
 		for (ParticleType particleType : ParticleType.values())
 		{
 			final String name = particleType.toString().toLowerCase();
 			particleType.setWoolChance(Math.min(100, Math.max(0, config.getInt(name + ".wool-chance", particleType.getWoolChance()))));
+			config.set(name + ".wool-chance", particleType.getWoolChance());
 			particleType.setBoneChance(Math.min(100, Math.max(0, config.getInt(name + ".bone-chance", particleType.getBoneChance()))));
+			config.set(name + ".bone-chance", particleType.getBoneChance());
 			particleType.setParticleLifeFrom(Math.max(0, config.getInt(name + ".particle-life.from", particleType.getParticleLifeFrom())));
+			config.set(name + ".particle-life.from", particleType.getParticleLifeFrom());
 			particleType.setParticleLifeTo(Math.max(particleType.getParticleLifeFrom(), config.getInt(name + ".particle-life.to", particleType.getParticleLifeTo())));
+			config.set(name + ".particle-life.to", particleType.getParticleLifeTo());
 			particleType.setWoolColor(Math.min(15, Math.max(0, config.getInt(name + ".wool-color", particleType.getWoolColor()))));
+			config.set(name + ".wool-color", particleType.getWoolColor());
 			particleType.setStainsFloor(config.getBoolean(name + ".stains-floor", particleType.isStainingFloor()));
+			config.set(name + ".stains-floor", particleType.isStainingFloor());
 			particleType.setBoneLife(Math.max(0, config.getInt(name + ".bone-life", particleType.getBoneLife())));
+			config.set(name + ".bone-life", particleType.getBoneLife());
 			particleType.setStainLifeFrom(Math.max(0, config.getInt(name + ".stain-life.from", particleType.getStainLifeFrom())));
+			config.set(name + ".stain-life.from", particleType.getStainLifeFrom());
 			particleType.setStainLifeTo(Math.max(particleType.getStainLifeFrom(), config.getInt(name + ".stain-life.to", particleType.getStainLifeTo())));
+			config.set(name + ".stain-life.to", particleType.getStainLifeTo());
 			particleType.setAmountFrom(Math.max(0, config.getInt(name + ".amount.from", particleType.getAmountFrom())));
+			config.set(name + ".amount.from", particleType.getAmountFrom());
 			particleType.setAmountTo(Math.max(particleType.getAmountFrom(), config.getInt(name + ".amount.to", particleType.getAmountTo())));
-			final List<String> mats = config.getStringList(name + ".saturated-materials", null);
+			config.set(name + ".amount.to", particleType.getAmountTo());
+			final List<String> mats = config.getList(name + ".saturated-materials", null);
 			final EnumSet<Material> materials = EnumSet.noneOf(Material.class);
 			if (mats != null)
 			{
@@ -155,72 +144,19 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 			{
 				converted.add(material.toString().toLowerCase().replaceAll("_", "-"));
 			}
-			config.setProperty(name + ".saturated-materials", converted);
+			config.set(name + ".saturated-materials", converted);
 		}
-		final Collection coll = config.getStringList("worlds", null);
+		final Collection coll = config.getList("worlds", null);
 		worlds = new HashSet(coll == null ? Collections.emptyList() : coll);
-		config.setProperty("worlds", worlds.toArray(new String[0]));
-		config.save();
+		config.set("worlds", new ArrayList(worlds));
+		this.saveConfig();
 		return maxParticles;
 	}
 
 	@Override
-	public void createParticle(final Location loc, final ParticleType type)
+	public ParticleStorage getStorage()
 	{
-		final int amount = random.nextInt(type.getAmountTo() - type.getAmountFrom()) + type.getAmountFrom();
-		for (int i = 0; i < amount; i++)
-		{
-			final Particle particle = freeParticles.poll();
-			if (particle == null)
-			{
-				return;
-			}
-			particles.add(particle);
-			particle.start(loc, type);
-		}
-	}
-
-	@Override
-	public void freeParticle(final Particle particle)
-	{
-		freeParticles.add(particle);
-		particles.remove(particle);
-	}
-
-	@Override
-	public void addParticleItem(final UUID entityId)
-	{
-		particleItems.add(entityId);
-	}
-
-	@Override
-	public void removeParticleItem(final UUID entityId)
-	{
-		particleItems.remove(entityId);
-	}
-
-	@Override
-	public boolean isParticleItem(final UUID entityId)
-	{
-		return particleItems.contains(entityId);
-	}
-
-	@Override
-	public void addUnbreakable(final Location blockLocation)
-	{
-		particleBlocks.add(blockLocation);
-	}
-
-	@Override
-	public boolean removeUnbreakable(final Location blockLocation)
-	{
-		return particleBlocks.remove(blockLocation);
-	}
-
-	@Override
-	public boolean isUnbreakable(final Location blockLocation)
-	{
-		return particleBlocks.contains(blockLocation);
+		return storage;
 	}
 
 	@Override

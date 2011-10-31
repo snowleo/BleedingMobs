@@ -89,7 +89,7 @@ public class Particle implements Runnable
 			stack = new ItemStack(mat, 1);
 		}
 		item = loc.getWorld().dropItemNaturally(loc, stack);
-		goreMod.addParticleItem(((CraftItem)item).getUniqueId());
+		goreMod.getStorage().addParticleItem(((CraftItem)item).getUniqueId(), this);
 		state = State.SPAWNED;
 		scheduler.scheduleSyncDelayedTask(goreMod, this, lifetime);
 	}
@@ -112,17 +112,17 @@ public class Particle implements Runnable
 				}
 				else
 				{
-					goreMod.freeParticle(this);
+					goreMod.getStorage().freeParticle(this);
 				}
 				item.remove();
-				goreMod.removeParticleItem(((CraftItem)item).getUniqueId());
+				goreMod.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
 				return;
 			}
 			if (mat == Material.BONE)
 			{
 				item.remove();
-				goreMod.removeParticleItem(((CraftItem)item).getUniqueId());
-				goreMod.freeParticle(this);
+				goreMod.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
+				goreMod.getStorage().freeParticle(this);
 				return;
 			}
 		}
@@ -137,7 +137,7 @@ public class Particle implements Runnable
 		savedBlockMat = block.getType();
 		savedBlockLoc = block.getLocation();
 		savedBlockData = block.getData();
-		goreMod.addUnbreakable(savedBlockLoc);
+		goreMod.getStorage().addUnbreakable(savedBlockLoc, this);
 		block.setTypeIdAndData(Material.WOOL.getId(), (byte)type.getWoolColor(), true);
 		if (block.getRelative(BlockFace.UP).getType() == Material.SNOW)
 		{
@@ -152,38 +152,36 @@ public class Particle implements Runnable
 		scheduler.scheduleSyncDelayedTask(goreMod, this, random.nextInt(type.getStainLifeTo() - type.getStainLifeFrom()) + type.getStainLifeFrom());
 	}
 
-	public void restore()
+	public void restore(final boolean removeFromSet)
 	{
 		if (state == State.SPAWNED)
 		{
 			state = State.UNKNOWN;
 			item.remove();
+			goreMod.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
+			if (removeFromSet)
+			{
+				goreMod.getStorage().freeParticle(this);
+			}
 		}
 		if (state == State.FLOWING)
 		{
 			state = State.UNKNOWN;
-			restoreBlock(false);
+			restoreBlock(removeFromSet);
 		}
 	}
 
 	private void restoreBlock(final boolean removeFromSet)
 	{
-		final boolean notExploded = goreMod.removeUnbreakable(savedBlockLoc);
-		if (notExploded)
+		goreMod.getStorage().removeUnbreakable(savedBlockLoc);
+		savedBlockLoc.getBlock().setTypeIdAndData(savedBlockMat.getId(), savedBlockData, false);
+		if (meltedSnow)
 		{
-			savedBlockLoc.getBlock().setTypeIdAndData(savedBlockMat.getId(), savedBlockData, false);
-			if (meltedSnow)
-			{
-				savedBlockLoc.getBlock().getRelative(BlockFace.UP).setType(Material.SNOW);
-			}
-		}
-		else
-		{
-			savedBlockLoc.getBlock().setType(Material.AIR);
+			savedBlockLoc.getBlock().getRelative(BlockFace.UP).setType(Material.SNOW);
 		}
 		if (removeFromSet)
 		{
-			goreMod.freeParticle(this);
+			goreMod.getStorage().freeParticle(this);
 		}
 	}
 }

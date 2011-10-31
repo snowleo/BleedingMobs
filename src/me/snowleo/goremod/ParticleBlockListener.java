@@ -33,6 +33,7 @@ class ParticleBlockListener extends BlockListener
 
 	public ParticleBlockListener(final IGoreMod goreMod)
 	{
+		super();
 		this.goreMod = goreMod;
 	}
 
@@ -40,7 +41,7 @@ class ParticleBlockListener extends BlockListener
 	public void onBlockBreak(final BlockBreakEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.isUnbreakable(loc))
+		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.getStorage().isUnbreakable(loc))
 		{
 			event.setCancelled(true);
 		}
@@ -50,7 +51,7 @@ class ParticleBlockListener extends BlockListener
 	public void onBlockBurn(final BlockBurnEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.isUnbreakable(loc))
+		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.getStorage().isUnbreakable(loc))
 		{
 			event.setCancelled(true);
 		}
@@ -60,7 +61,7 @@ class ParticleBlockListener extends BlockListener
 	public void onBlockIgnite(final BlockIgniteEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.isUnbreakable(loc))
+		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.getStorage().isUnbreakable(loc))
 		{
 			event.setCancelled(true);
 		}
@@ -76,7 +77,7 @@ class ParticleBlockListener extends BlockListener
 		}
 		for (Block block : event.getBlocks())
 		{
-			if (goreMod.isUnbreakable(loc))
+			if (goreMod.getStorage().isUnbreakable(loc))
 			{
 				event.setCancelled(true);
 				break;
@@ -88,7 +89,7 @@ class ParticleBlockListener extends BlockListener
 	public void onBlockPistonRetract(final BlockPistonRetractEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.isUnbreakable(event.getRetractLocation()))
+		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.getStorage().isUnbreakable(event.getRetractLocation()))
 		{
 			event.setCancelled(true);
 		}
