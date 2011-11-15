@@ -77,7 +77,7 @@ class ParticleBlockListener extends BlockListener
 		}
 		for (Block block : event.getBlocks())
 		{
-			if (goreMod.getStorage().isUnbreakable(loc))
+			if (goreMod.getStorage().isUnbreakable(block.getLocation()))
 			{
 				event.setCancelled(true);
 				break;
