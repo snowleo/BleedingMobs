@@ -20,9 +20,11 @@ package me.snowleo.goremod;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Enderman;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Skeleton;
+import org.bukkit.event.entity.EndermanPickupEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -59,6 +61,10 @@ class ParticleEntityListener extends EntityListener
 			{
 				goreMod.getStorage().createParticle(loc, ParticleType.SKELETON);
 			}
+			else if (event.getEntity() instanceof Enderman)
+			{
+				goreMod.getStorage().createParticle(loc, ParticleType.ENDERMAN);
+			}
 			else if (entityEvent.getDamager() instanceof Projectile && event.getEntity() instanceof LivingEntity)
 			{
 				goreMod.getStorage().createParticle(loc, ParticleType.PROJECTILE);
@@ -86,6 +92,10 @@ class ParticleEntityListener extends EntityListener
 		{
 			goreMod.getStorage().createParticle(loc, ParticleType.SKELETON);
 		}
+		else if (event.getEntity() instanceof Enderman)
+		{
+			goreMod.getStorage().createParticle(loc, ParticleType.ENDERMAN);
+		}
 		else if (event.getEntity() instanceof LivingEntity)
 		{
 			goreMod.getStorage().createParticle(loc, ParticleType.DEATH);
@@ -103,5 +113,15 @@ class ParticleEntityListener extends EntityListener
 		{
 			goreMod.getStorage().removeUnbreakableBeforeExplosion(block.getLocation());
 		}
+	}
+
+	@Override
+	public void onEndermanPickup(final EndermanPickupEvent event)
+	{
+		if (event.isCancelled() || !goreMod.isWorldEnabled(event.getBlock().getWorld()))
+		{
+			return;
+		}
+		goreMod.getStorage().removeUnbreakableBeforeExplosion(event.getBlock().getLocation());
 	}
 }

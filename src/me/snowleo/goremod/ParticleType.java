@@ -24,11 +24,12 @@ import org.bukkit.Material;
 
 public enum ParticleType
 {
-	DEATH(40, 12, 5, 15, 14, true, 25, 35),
-	ATTACK(50, 6, 5, 15, 14, true, 15, 25),
-	PROJECTILE(50, 6, 5, 15, 14, true, 5, 15),
-	CREEPER(50, 0, 5, 15, 5, false, 5, 15),
-	SKELETON(0, 100, 5, 15, 0, false, 5, 15);
+	DEATH(40, 12, 5, 15, 14, true, 25, 35, Material.REDSTONE),
+	ATTACK(50, 6, 5, 15, 14, true, 15, 25, Material.REDSTONE),
+	PROJECTILE(50, 6, 5, 15, 14, true, 5, 15, Material.REDSTONE),
+	CREEPER(50, 0, 5, 15, 5, false, 5, 15, Material.SULPHUR),
+	SKELETON(0, 100, 5, 15, 0, false, 5, 15, Material.REDSTONE),
+	ENDERMAN(50, 6, 5, 15, 15, true, 15, 25, Material.COAL);
 	private int woolChance;
 	private int boneChance;
 	private int particleLifeFrom;
@@ -40,6 +41,7 @@ public enum ParticleType
 	private int stainLifeTo = 120;
 	private int amountFrom;
 	private int amountTo;
+	private Material particleMaterial;
 	private transient EnumSet<Material> saturatedMats = EnumSet.copyOf(Arrays.asList(new Material[]
 			{
 				Material.GRASS,
@@ -60,7 +62,7 @@ public enum ParticleType
 
 	private ParticleType(final int woolChance, final int boneChance, final int particleLifeFrom,
 						 final int particleLifeTo, final int woolColor, final boolean stainsFloor,
-						 final int amountFrom, final int amountTo)
+						 final int amountFrom, final int amountTo, final Material particleMaterial)
 	{
 		this.woolChance = woolChance;
 		this.boneChance = boneChance;
@@ -70,6 +72,7 @@ public enum ParticleType
 		this.stainsFloor = stainsFloor;
 		this.amountFrom = amountFrom;
 		this.amountTo = amountTo;
+		this.particleMaterial = particleMaterial;
 	}
 
 	public int getWoolChance()
@@ -187,8 +190,18 @@ public enum ParticleType
 		return saturatedMats;
 	}
 
-	public void setSaturatedMaterials(EnumSet<Material> saturatedMats)
+	public void setSaturatedMaterials(final EnumSet<Material> saturatedMats)
 	{
 		this.saturatedMats = saturatedMats;
+	}
+
+	public Material getParticleMaterial()
+	{
+		return particleMaterial;
+	}
+
+	public void setParticleMaterial(final Material particleMaterial)
+	{
+		this.particleMaterial = particleMaterial;
 	}
 }

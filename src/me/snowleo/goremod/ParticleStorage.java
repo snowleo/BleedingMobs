@@ -38,7 +38,7 @@ public class ParticleStorage
 	{
 		for (Particle particle : particles)
 		{
-			particle.restore(false);
+			particle.restore();
 		}
 		particles.clear();
 	}
@@ -85,7 +85,7 @@ public class ParticleStorage
 				final Particle particle = particleItems.get(item.getUniqueId());
 				if (particle != null)
 				{
-					particle.restore(true);
+					particle.restore();
 				}
 			}
 		}
@@ -111,7 +111,7 @@ public class ParticleStorage
 		final Particle particle = particleBlocks.get(blockLocation);
 		if (particle != null)
 		{
-			particle.restore(true);
+			particle.restore();
 		}
 	}
 
@@ -122,15 +122,15 @@ public class ParticleStorage
 
 	public void removeUnbreakableFromChunk(final Chunk chunk)
 	{
-		Iterator<Map.Entry<Location, Particle>> it = particleBlocks.entrySet().iterator();
-		while (it.hasNext())
+		final Iterator<Map.Entry<Location, Particle>> iterator = particleBlocks.entrySet().iterator();
+		while (iterator.hasNext())
 		{
-			Map.Entry<Location, Particle> entry = it.next();
+			final Map.Entry<Location, Particle> entry = iterator.next();
 			if (entry.getKey().getBlock().getChunk().equals(chunk))
 			{
-				Particle particle = entry.getValue();
-				particle.restore(false);
-				it.remove();
+				final Particle particle = entry.getValue();
+				particle.restore();
+				iterator.remove();
 			}
 		}
 	}

@@ -71,6 +71,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 		pluginManager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Low, this);
 		pluginManager.registerEvent(Type.ENTITY_DEATH, entityListener, Priority.Low, this);
 		pluginManager.registerEvent(Type.ENTITY_EXPLODE, entityListener, Priority.Highest, this);
+		pluginManager.registerEvent(Type.ENDERMAN_PICKUP, entityListener, Priority.Low, this);
 		final PlayerListener playerListener = new ParticlePlayerListener(this);
 		pluginManager.registerEvent(Type.PLAYER_PICKUP_ITEM, playerListener, Priority.Low, this);
 		final BlockListener blockListener = new ParticleBlockListener(this);
@@ -94,7 +95,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 								+ "For example creating thousands of particles on hit is not a good idea.\n"
 								+ "You have been warned!\n"
 								+ "You can always reset this to the defaults by removing the file.\n");
-		
+
 		final int maxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
 		config.set("max-particles", maxParticles);
 		for (ParticleType particleType : ParticleType.values())
@@ -145,6 +146,16 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 				converted.add(material.toString().toLowerCase().replaceAll("_", "-"));
 			}
 			config.set(name + ".saturated-materials", converted);
+			final String particleMatName = config.getString(name + ".particle-material");
+			if (particleMatName != null)
+			{
+				final Material material = Material.matchMaterial(particleMatName.replaceAll("-", "_"));
+				if (material != null)
+				{
+					particleType.setParticleMaterial(material);
+				}
+			}
+			config.set(name + ".particle-material", particleType.getParticleMaterial().toString().toLowerCase().replaceAll("_", "-"));
 		}
 		final Collection coll = config.getList("worlds", null);
 		worlds = new HashSet(coll == null ? Collections.emptyList() : coll);
