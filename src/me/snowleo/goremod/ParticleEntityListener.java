@@ -20,6 +20,7 @@ package me.snowleo.goremod;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
@@ -65,6 +66,10 @@ class ParticleEntityListener extends EntityListener
 			{
 				goreMod.getStorage().createParticle(loc, ParticleType.ENDERMAN);
 			}
+			else if (event.getEntity() instanceof EnderDragon)
+			{
+				goreMod.getStorage().createParticle(loc, ParticleType.ENDERDRAGON);
+			}
 			else if (entityEvent.getDamager() instanceof Projectile && event.getEntity() instanceof LivingEntity)
 			{
 				goreMod.getStorage().createParticle(loc, ParticleType.PROJECTILE);
@@ -73,6 +78,16 @@ class ParticleEntityListener extends EntityListener
 			{
 				goreMod.getStorage().createParticle(loc, ParticleType.ATTACK);
 			}
+		}
+		if (event.getCause() == EntityDamageEvent.DamageCause.FALL
+			&& event.getEntity() instanceof LivingEntity
+			&& !(event.getEntity() instanceof Creeper
+				 || event.getEntity() instanceof Skeleton
+				 || event.getEntity() instanceof Enderman
+			|| event.getEntity() instanceof EnderDragon))
+		{
+			final Location loc = event.getEntity().getLocation();
+			goreMod.getStorage().createParticle(loc, ParticleType.FALL);
 		}
 	}
 

@@ -26,10 +26,12 @@ public enum ParticleType
 {
 	DEATH(40, 12, 5, 15, 14, true, 25, 35, Material.REDSTONE),
 	ATTACK(50, 6, 5, 15, 14, true, 15, 25, Material.REDSTONE),
+	FALL(50, 6, 5, 15, 14, true, 5, 15, Material.REDSTONE),
 	PROJECTILE(50, 6, 5, 15, 14, true, 5, 15, Material.REDSTONE),
 	CREEPER(50, 0, 5, 15, 5, false, 5, 15, Material.SULPHUR),
 	SKELETON(0, 100, 5, 15, 0, false, 5, 15, Material.REDSTONE),
-	ENDERMAN(50, 6, 5, 15, 15, true, 15, 25, Material.COAL);
+	ENDERMAN(50, 6, 5, 15, 15, true, 15, 25, Material.COAL),
+	ENDERDRAGON(50, 6, 5, 15, 15, true, 25, 35, Material.COAL);
 	private int woolChance;
 	private int boneChance;
 	private int particleLifeFrom;

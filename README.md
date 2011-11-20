@@ -1,4 +1,4 @@
-GoreMod 1.3 for Bukkit
+GoreMod 1.4 for Bukkit
 ========================
 
 **Not recommended for minors ;)**
