@@ -17,13 +17,7 @@
  */
 package me.snowleo.goremod;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -100,7 +94,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 		config.set("max-particles", maxParticles);
 		for (ParticleType particleType : ParticleType.values())
 		{
-			final String name = particleType.toString().toLowerCase();
+			final String name = particleType.toString().toLowerCase(Locale.ENGLISH);
 			particleType.setWoolChance(Math.min(100, Math.max(0, config.getInt(name + ".wool-chance", particleType.getWoolChance()))));
 			config.set(name + ".wool-chance", particleType.getWoolChance());
 			particleType.setBoneChance(Math.min(100, Math.max(0, config.getInt(name + ".bone-chance", particleType.getBoneChance()))));
@@ -143,7 +137,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 			final List<String> converted = new ArrayList<String>();
 			for (Material material : particleType.getSaturatedMaterials())
 			{
-				converted.add(material.toString().toLowerCase().replaceAll("_", "-"));
+				converted.add(material.toString().toLowerCase(Locale.ENGLISH).replaceAll("_", "-"));
 			}
 			config.set(name + ".saturated-materials", converted);
 			final String particleMatName = config.getString(name + ".particle-material");
@@ -155,7 +149,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 					particleType.setParticleMaterial(material);
 				}
 			}
-			config.set(name + ".particle-material", particleType.getParticleMaterial().toString().toLowerCase().replaceAll("_", "-"));
+			config.set(name + ".particle-material", particleType.getParticleMaterial().toString().toLowerCase(Locale.ENGLISH).replaceAll("_", "-"));
 		}
 		final Collection coll = config.getList("worlds", null);
 		worlds = new HashSet(coll == null ? Collections.emptyList() : coll);

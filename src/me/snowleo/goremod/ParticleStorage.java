@@ -1,14 +1,6 @@
 package me.snowleo.goremod;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftItem;

@@ -19,18 +19,8 @@ package me.snowleo.goremod;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Enderman;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.event.entity.EndermanPickupEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityListener;
+import org.bukkit.entity.*;
+import org.bukkit.event.entity.*;
 
 
 class ParticleEntityListener extends EntityListener
