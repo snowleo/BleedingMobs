@@ -1,5 +1,5 @@
 /*
- * GoreMod - a blood plugin for Bukkit
+ * BleedingMobs - make your monsters and players bleed
  * Copyright (C) 2011  snowleo
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.goremod;
+package my.bukkit.plugins.bleedingmobs;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -24,19 +24,19 @@ import org.bukkit.event.block.*;
 
 class ParticleBlockListener extends BlockListener
 {
-	private final transient IGoreMod goreMod;
+	private final transient IBleedingMobs plugin;
 
-	public ParticleBlockListener(final IGoreMod goreMod)
+	public ParticleBlockListener(final IBleedingMobs plugin)
 	{
 		super();
-		this.goreMod = goreMod;
+		this.plugin = plugin;
 	}
 
 	@Override
 	public void onBlockBreak(final BlockBreakEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.getStorage().isUnbreakable(loc))
+		if (plugin.isWorldEnabled(loc.getWorld()) && plugin.getStorage().isUnbreakable(loc))
 		{
 			event.setCancelled(true);
 		}
@@ -46,7 +46,7 @@ class ParticleBlockListener extends BlockListener
 	public void onBlockBurn(final BlockBurnEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.getStorage().isUnbreakable(loc))
+		if (plugin.isWorldEnabled(loc.getWorld()) && plugin.getStorage().isUnbreakable(loc))
 		{
 			event.setCancelled(true);
 		}
@@ -56,7 +56,7 @@ class ParticleBlockListener extends BlockListener
 	public void onBlockIgnite(final BlockIgniteEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.getStorage().isUnbreakable(loc))
+		if (plugin.isWorldEnabled(loc.getWorld()) && plugin.getStorage().isUnbreakable(loc))
 		{
 			event.setCancelled(true);
 		}
@@ -66,13 +66,13 @@ class ParticleBlockListener extends BlockListener
 	public void onBlockPistonExtend(final BlockPistonExtendEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (!goreMod.isWorldEnabled(loc.getWorld()))
+		if (!plugin.isWorldEnabled(loc.getWorld()))
 		{
 			return;
 		}
 		for (Block block : event.getBlocks())
 		{
-			if (goreMod.getStorage().isUnbreakable(block.getLocation()))
+			if (plugin.getStorage().isUnbreakable(block.getLocation()))
 			{
 				event.setCancelled(true);
 				break;
@@ -84,7 +84,7 @@ class ParticleBlockListener extends BlockListener
 	public void onBlockPistonRetract(final BlockPistonRetractEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (goreMod.isWorldEnabled(loc.getWorld()) && goreMod.getStorage().isUnbreakable(event.getRetractLocation()))
+		if (plugin.isWorldEnabled(loc.getWorld()) && plugin.getStorage().isUnbreakable(event.getRetractLocation()))
 		{
 			event.setCancelled(true);
 		}

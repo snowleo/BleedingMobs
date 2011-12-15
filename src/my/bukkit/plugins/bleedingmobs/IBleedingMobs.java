@@ -1,5 +1,5 @@
 /*
- * GoreMod - a blood plugin for Bukkit
+ * BleedingMobs - make your monsters and players bleed
  * Copyright (C) 2011  snowleo
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15,30 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.goremod;
+package my.bukkit.plugins.bleedingmobs;
 
-import org.bukkit.craftbukkit.entity.CraftItem;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 
 
-class ParticlePlayerListener extends PlayerListener
+public interface IBleedingMobs extends Plugin
 {
-	private final transient IGoreMod goreMod;
+	ParticleStorage getStorage();
 
-	public ParticlePlayerListener(final IGoreMod goreMod)
-	{
-		super();
-		this.goreMod = goreMod;
-	}
-
-	@Override
-	public void onPlayerPickupItem(final PlayerPickupItemEvent event)
-	{
-		if (goreMod.isWorldEnabled(event.getPlayer().getWorld())
-			&& goreMod.getStorage().isParticleItem(((CraftItem)event.getItem()).getUniqueId()))
-		{
-			event.setCancelled(true);
-		}
-	}
+	boolean isWorldEnabled(World world);
 }

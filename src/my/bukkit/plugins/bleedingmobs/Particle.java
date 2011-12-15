@@ -1,5 +1,5 @@
 /*
- * GoreMod - a blood plugin for Bukkit
+ * BleedingMobs - make your monsters and players bleed
  * Copyright (C) 2011  snowleo
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.goremod;
+package my.bukkit.plugins.bleedingmobs;
 
 import java.util.EnumSet;
 import java.util.Random;
@@ -35,7 +35,7 @@ public class Particle implements Runnable
 	private transient Material mat;
 	private transient Item item;
 	private final transient BukkitScheduler scheduler;
-	private final transient IGoreMod goreMod;
+	private final transient IBleedingMobs plugin;
 	private final transient Random random = new Random();
 	private transient ParticleType type = ParticleType.ATTACK;
 	private transient boolean meltedSnow;
@@ -53,10 +53,10 @@ public class Particle implements Runnable
 	private transient EnumSet<Material> saturatedMats = EnumSet.noneOf(Material.class);
 	private transient byte savedBlockData;
 
-	public Particle(final IGoreMod goreMod)
+	public Particle(final IBleedingMobs plugin)
 	{
-		this.goreMod = goreMod;
-		this.scheduler = goreMod.getServer().getScheduler();
+		this.plugin = plugin;
+		this.scheduler = plugin.getServer().getScheduler();
 	}
 
 	public void start(final Location loc, final ParticleType type)
@@ -83,9 +83,9 @@ public class Particle implements Runnable
 			stack = new ItemStack(mat, 1);
 		}
 		item = loc.getWorld().dropItemNaturally(loc, stack);
-		goreMod.getStorage().addParticleItem(((CraftItem)item).getUniqueId(), this);
+		plugin.getStorage().addParticleItem(((CraftItem)item).getUniqueId(), this);
 		state = State.SPAWNED;
-		scheduler.scheduleSyncDelayedTask(goreMod, this, lifetime);
+		scheduler.scheduleSyncDelayedTask(plugin, this, lifetime);
 	}
 
 	@Override
@@ -96,8 +96,8 @@ public class Particle implements Runnable
 			if (mat == Material.BONE)
 			{
 				item.remove();
-				goreMod.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
-				goreMod.getStorage().freeParticle(this);
+				plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
+				plugin.getStorage().freeParticle(this);
 				return;
 			}
 			if (mat == type.getParticleMaterial() || mat == Material.WOOL)
@@ -107,16 +107,16 @@ public class Particle implements Runnable
 				{
 					block = item.getLocation().getBlock().getRelative(BlockFace.DOWN);
 				}
-				if (block != null && type.isStainingFloor() && saturatedMats.contains(block.getType()) && !goreMod.getStorage().isUnbreakable(block.getLocation()))
+				if (block != null && type.isStainingFloor() && saturatedMats.contains(block.getType()) && !plugin.getStorage().isUnbreakable(block.getLocation()))
 				{
 					stainFloor(block);
 				}
 				else
 				{
-					goreMod.getStorage().freeParticle(this);
+					plugin.getStorage().freeParticle(this);
 				}
 				item.remove();
-				goreMod.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
+				plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
 				return;
 			}
 			Bukkit.getLogger().severe("Invalid particle state! Material: " + mat.toString());
@@ -127,7 +127,7 @@ public class Particle implements Runnable
 		}
 		else
 		{
-			goreMod.getStorage().freeParticle(this);
+			plugin.getStorage().freeParticle(this);
 		}
 	}
 
@@ -136,7 +136,7 @@ public class Particle implements Runnable
 		savedBlockMat = block.getType();
 		savedBlockLoc = block.getLocation();
 		savedBlockData = block.getData();
-		goreMod.getStorage().addUnbreakable(savedBlockLoc, this);
+		plugin.getStorage().addUnbreakable(savedBlockLoc, this);
 		block.setTypeIdAndData(Material.WOOL.getId(), (byte)type.getWoolColor(), true);
 		if (block.getRelative(BlockFace.UP).getType() == Material.SNOW)
 		{
@@ -148,7 +148,7 @@ public class Particle implements Runnable
 			meltedSnow = false;
 		}
 		state = State.FLOWING;
-		scheduler.scheduleSyncDelayedTask(goreMod, this, random.nextInt(type.getStainLifeTo() - type.getStainLifeFrom()) + type.getStainLifeFrom());
+		scheduler.scheduleSyncDelayedTask(plugin, this, random.nextInt(type.getStainLifeTo() - type.getStainLifeFrom()) + type.getStainLifeFrom());
 	}
 
 	public void restore()
@@ -157,7 +157,7 @@ public class Particle implements Runnable
 		{
 			state = State.UNKNOWN;
 			item.remove();
-			goreMod.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
+			plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
 		}
 		if (state == State.FLOWING)
 		{
@@ -168,7 +168,7 @@ public class Particle implements Runnable
 
 	private void restoreBlock(final boolean removeFromSet)
 	{
-		goreMod.getStorage().removeUnbreakable(savedBlockLoc);
+		plugin.getStorage().removeUnbreakable(savedBlockLoc);
 		savedBlockLoc.getBlock().setTypeIdAndData(savedBlockMat.getId(), savedBlockData, false);
 		if (meltedSnow)
 		{
@@ -176,7 +176,7 @@ public class Particle implements Runnable
 		}
 		if (removeFromSet)
 		{
-			goreMod.getStorage().freeParticle(this);
+			plugin.getStorage().freeParticle(this);
 		}
 	}
 }

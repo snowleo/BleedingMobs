@@ -1,4 +1,4 @@
-name: GoreMod
-main: me.snowleo.goremod.GoreMod
-version: 1.4
+name: BleedingMobs
+main: my.bukkit.plugins.bleedingmobs.BleedingMobs
+version: 3.0
 authors: [snowleo]

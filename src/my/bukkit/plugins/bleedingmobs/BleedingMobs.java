@@ -1,5 +1,5 @@
 /*
- * GoreMod - a blood plugin for Bukkit
+ * BleedingMobs - make your monsters and players bleed
  * Copyright (C) 2011  snowleo
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.goremod;
+package my.bukkit.plugins.bleedingmobs;
 
 import java.util.*;
 import org.bukkit.Material;
@@ -31,7 +31,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
-public class GoreMod extends JavaPlugin implements IGoreMod
+public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 {
 	private final static int MAX_PARTICLES = 200;
 	private transient ParticleStorage storage;
@@ -83,7 +83,7 @@ public class GoreMod extends JavaPlugin implements IGoreMod
 	private int loadConfig()
 	{
 		final FileConfiguration config = this.getConfig();
-		config.options().header("Gore Mod config\n"
+		config.options().header("Bleeding Mobs config\n"
 								+ "Don't use tabs in this file\n"
 								+ "Be careful, if you change anything, it can break your server.\n"
 								+ "For example creating thousands of particles on hit is not a good idea.\n"

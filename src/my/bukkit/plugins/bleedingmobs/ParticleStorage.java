@@ -1,4 +1,21 @@
-package me.snowleo.goremod;
+/*
+ * BleedingMobs - make your monsters and players bleed
+ * Copyright (C) 2011  snowleo
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package my.bukkit.plugins.bleedingmobs;
 
 import java.util.*;
 import org.bukkit.Chunk;
@@ -15,14 +32,14 @@ public class ParticleStorage
 	private final transient Map<Location, Particle> particleBlocks;
 	private final transient Random random = new Random();
 
-	public ParticleStorage(final IGoreMod goreMod, final int maxParticles)
+	public ParticleStorage(final IBleedingMobs plugin, final int maxParticles)
 	{
 		particles = new HashSet<Particle>(maxParticles);
 		particleItems = new HashMap<UUID, Particle>(maxParticles);
 		particleBlocks = new HashMap<Location, Particle>(maxParticles);
 		for (int i = 0; i < maxParticles; i++)
 		{
-			freeParticles.add(new Particle(goreMod));
+			freeParticles.add(new Particle(plugin));
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * GoreMod - a blood plugin for Bukkit
+ * BleedingMobs - make your monsters and players bleed
  * Copyright (C) 2011  snowleo
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.goremod;
+package my.bukkit.plugins.bleedingmobs;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -25,12 +25,12 @@ import org.bukkit.event.entity.*;
 
 class ParticleEntityListener extends EntityListener
 {
-	private final transient IGoreMod goreMod;
+	private final transient IBleedingMobs plugin;
 
-	public ParticleEntityListener(final IGoreMod goreMod)
+	public ParticleEntityListener(final IBleedingMobs plugin)
 	{
 		super();
-		this.goreMod = goreMod;
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -40,33 +40,33 @@ class ParticleEntityListener extends EntityListener
 		{
 			final EntityDamageByEntityEvent entityEvent = (EntityDamageByEntityEvent)event;
 			final Location loc = entityEvent.getEntity().getLocation();
-			if (!goreMod.isWorldEnabled(loc.getWorld()))
+			if (!plugin.isWorldEnabled(loc.getWorld()))
 			{
 				return;
 			}
 			if (event.getEntity() instanceof Creeper)
 			{
-				goreMod.getStorage().createParticle(loc, ParticleType.CREEPER);
+				plugin.getStorage().createParticle(loc, ParticleType.CREEPER);
 			}
 			else if (event.getEntity() instanceof Skeleton)
 			{
-				goreMod.getStorage().createParticle(loc, ParticleType.SKELETON);
+				plugin.getStorage().createParticle(loc, ParticleType.SKELETON);
 			}
 			else if (event.getEntity() instanceof Enderman)
 			{
-				goreMod.getStorage().createParticle(loc, ParticleType.ENDERMAN);
+				plugin.getStorage().createParticle(loc, ParticleType.ENDERMAN);
 			}
 			else if (event.getEntity() instanceof EnderDragon)
 			{
-				goreMod.getStorage().createParticle(loc, ParticleType.ENDERDRAGON);
+				plugin.getStorage().createParticle(loc, ParticleType.ENDERDRAGON);
 			}
 			else if (entityEvent.getDamager() instanceof Projectile && event.getEntity() instanceof LivingEntity)
 			{
-				goreMod.getStorage().createParticle(loc, ParticleType.PROJECTILE);
+				plugin.getStorage().createParticle(loc, ParticleType.PROJECTILE);
 			}
 			else if (event.getEntity() instanceof LivingEntity)
 			{
-				goreMod.getStorage().createParticle(loc, ParticleType.ATTACK);
+				plugin.getStorage().createParticle(loc, ParticleType.ATTACK);
 			}
 		}
 		if (event.getCause() == EntityDamageEvent.DamageCause.FALL
@@ -74,10 +74,10 @@ class ParticleEntityListener extends EntityListener
 			&& !(event.getEntity() instanceof Creeper
 				 || event.getEntity() instanceof Skeleton
 				 || event.getEntity() instanceof Enderman
-			|| event.getEntity() instanceof EnderDragon))
+				 || event.getEntity() instanceof EnderDragon))
 		{
 			final Location loc = event.getEntity().getLocation();
-			goreMod.getStorage().createParticle(loc, ParticleType.FALL);
+			plugin.getStorage().createParticle(loc, ParticleType.FALL);
 		}
 	}
 
@@ -85,48 +85,48 @@ class ParticleEntityListener extends EntityListener
 	public void onEntityDeath(final EntityDeathEvent event)
 	{
 		final Location loc = event.getEntity().getLocation();
-		if (!goreMod.isWorldEnabled(loc.getWorld()))
+		if (!plugin.isWorldEnabled(loc.getWorld()))
 		{
 			return;
 		}
 		if (event.getEntity() instanceof Creeper)
 		{
-			goreMod.getStorage().createParticle(loc, ParticleType.CREEPER);
+			plugin.getStorage().createParticle(loc, ParticleType.CREEPER);
 		}
 		else if (event.getEntity() instanceof Skeleton)
 		{
-			goreMod.getStorage().createParticle(loc, ParticleType.SKELETON);
+			plugin.getStorage().createParticle(loc, ParticleType.SKELETON);
 		}
 		else if (event.getEntity() instanceof Enderman)
 		{
-			goreMod.getStorage().createParticle(loc, ParticleType.ENDERMAN);
+			plugin.getStorage().createParticle(loc, ParticleType.ENDERMAN);
 		}
 		else if (event.getEntity() instanceof LivingEntity)
 		{
-			goreMod.getStorage().createParticle(loc, ParticleType.DEATH);
+			plugin.getStorage().createParticle(loc, ParticleType.DEATH);
 		}
 	}
 
 	@Override
 	public void onEntityExplode(final EntityExplodeEvent event)
 	{
-		if (event.isCancelled() || !goreMod.isWorldEnabled(event.getLocation().getWorld()))
+		if (event.isCancelled() || !plugin.isWorldEnabled(event.getLocation().getWorld()))
 		{
 			return;
 		}
 		for (Block block : event.blockList())
 		{
-			goreMod.getStorage().removeUnbreakableBeforeExplosion(block.getLocation());
+			plugin.getStorage().removeUnbreakableBeforeExplosion(block.getLocation());
 		}
 	}
 
 	@Override
 	public void onEndermanPickup(final EndermanPickupEvent event)
 	{
-		if (event.isCancelled() || !goreMod.isWorldEnabled(event.getBlock().getWorld()))
+		if (event.isCancelled() || !plugin.isWorldEnabled(event.getBlock().getWorld()))
 		{
 			return;
 		}
-		goreMod.getStorage().removeUnbreakableBeforeExplosion(event.getBlock().getLocation());
+		plugin.getStorage().removeUnbreakableBeforeExplosion(event.getBlock().getLocation());
 	}
 }
