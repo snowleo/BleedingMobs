@@ -1,19 +1,15 @@
 /*
- * BleedingMobs - make your monsters and players bleed
- * Copyright (C) 2011  snowleo
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * BleedingMobs - make your monsters and players bleed Copyright (C) 2011 snowleo
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package my.bukkit.plugins.bleedingmobs;
 
@@ -100,6 +96,10 @@ class ParticleEntityListener extends EntityListener
 		else if (event.getEntity() instanceof Enderman)
 		{
 			plugin.getStorage().createParticle(loc, ParticleType.ENDERMAN);
+		}
+		else if (event.getEntity() instanceof EnderDragon)
+		{
+			plugin.getStorage().createParticle(loc, ParticleType.ENDERDRAGON);
 		}
 		else if (event.getEntity() instanceof LivingEntity)
 		{
