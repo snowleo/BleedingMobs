@@ -32,7 +32,7 @@ class ParticleEntityListener extends EntityListener
 	@Override
 	public void onEntityDamage(final EntityDamageEvent event)
 	{
-		if (event.isCancelled()) {
+		if (event.isCancelled() && !plugin.isBleedingWhenCanceled()) {
 			return;
 		}
 		if (event instanceof EntityDamageByEntityEvent)

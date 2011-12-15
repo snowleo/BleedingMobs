@@ -37,6 +37,7 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	private transient ParticleStorage storage;
 	private transient Set<String> worlds = Collections.emptySet();
 	private transient boolean spawning = false;
+	private transient boolean bleedWhenCanceled = false;
 
 	@Override
 	public void onDisable()
@@ -93,6 +94,8 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 
 		final int maxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
 		config.set("max-particles", maxParticles);
+		bleedWhenCanceled = config.getBoolean("bleed-when-canceled", false);
+		config.set("bleed-when-canceled", bleedWhenCanceled);
 		for (ParticleType particleType : ParticleType.values())
 		{
 			final String name = particleType.toString().toLowerCase(Locale.ENGLISH);
@@ -181,5 +184,11 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	public void setSpawning(boolean spawning)
 	{
 		this.spawning = spawning;
+	}
+
+	@Override
+	public boolean isBleedingWhenCanceled()
+	{
+		return bleedWhenCanceled;
 	}
 }
