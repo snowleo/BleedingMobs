@@ -32,6 +32,9 @@ class ParticleEntityListener extends EntityListener
 	@Override
 	public void onEntityDamage(final EntityDamageEvent event)
 	{
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event instanceof EntityDamageByEntityEvent)
 		{
 			final EntityDamageByEntityEvent entityEvent = (EntityDamageByEntityEvent)event;

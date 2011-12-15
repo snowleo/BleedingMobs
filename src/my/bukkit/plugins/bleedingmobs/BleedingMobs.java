@@ -63,7 +63,7 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	{
 		final PluginManager pluginManager = getServer().getPluginManager();
 		final EntityListener entityListener = new ParticleEntityListener(this);
-		pluginManager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Low, this);
+		pluginManager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Monitor, this);
 		pluginManager.registerEvent(Type.ENTITY_DEATH, entityListener, Priority.Low, this);
 		pluginManager.registerEvent(Type.ENTITY_EXPLODE, entityListener, Priority.Highest, this);
 		pluginManager.registerEvent(Type.ENDERMAN_PICKUP, entityListener, Priority.Low, this);
