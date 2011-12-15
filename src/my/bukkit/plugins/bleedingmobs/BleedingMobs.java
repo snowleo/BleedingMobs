@@ -36,6 +36,7 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	private final static int MAX_PARTICLES = 200;
 	private transient ParticleStorage storage;
 	private transient Set<String> worlds = Collections.emptySet();
+	private transient boolean spawning = false;
 
 	@Override
 	public void onDisable()
@@ -168,5 +169,17 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	public boolean isWorldEnabled(final World world)
 	{
 		return worlds.isEmpty() || worlds.contains(world.getName());
+	}
+
+	@Override
+	public boolean isSpawning()
+	{
+		return spawning;
+	}
+
+	@Override
+	public void setSpawning(boolean spawning)
+	{
+		this.spawning = spawning;
 	}
 }

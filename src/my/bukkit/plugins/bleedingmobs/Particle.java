@@ -82,7 +82,9 @@ public class Particle implements Runnable
 			mat = type.getParticleMaterial();
 			stack = new ItemStack(mat, 1);
 		}
+		plugin.setSpawning(true);
 		item = loc.getWorld().dropItemNaturally(loc, stack);
+		plugin.setSpawning(false);
 		plugin.getStorage().addParticleItem(((CraftItem)item).getUniqueId(), this);
 		state = State.SPAWNED;
 		scheduler.scheduleSyncDelayedTask(plugin, this, lifetime);

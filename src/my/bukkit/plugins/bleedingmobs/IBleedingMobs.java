@@ -26,4 +26,8 @@ public interface IBleedingMobs extends Plugin
 	ParticleStorage getStorage();
 
 	boolean isWorldEnabled(World world);
+	
+	boolean isSpawning();
+	
+	void setSpawning(boolean set);
 }
