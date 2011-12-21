@@ -70,7 +70,14 @@ public class Particle implements Runnable
 		if (rand < type.getWoolChance())
 		{
 			mat = Material.WOOL;
-			stack = new ItemStack(mat, 1, (short)type.getWoolColor());
+			if (type.getParticleMaterial() == Material.CAKE)
+			{
+				stack = new ItemStack(mat, 1, (short)getRandomColor());
+			}
+			else
+			{
+				stack = new ItemStack(mat, 1, (short)type.getWoolColor());
+			}
 		}
 		else if (rand > (99 - type.getBoneChance()))
 		{
@@ -112,7 +119,14 @@ public class Particle implements Runnable
 				}
 				if (block != null && type.isStainingFloor() && saturatedMats.contains(block.getType()) && !plugin.getStorage().isUnbreakable(block.getLocation()))
 				{
-					stainFloor(block);
+					if (type.getParticleMaterial() == Material.CAKE)
+					{
+						stainFloor(block, getRandomColor());
+					}
+					else
+					{
+						stainFloor(block, type.getWoolColor());
+					}
 				}
 				else
 				{
@@ -134,13 +148,22 @@ public class Particle implements Runnable
 		}
 	}
 
-	private void stainFloor(final Block block)
+	private int getRandomColor()
+	{
+		// 1 2 3 4 5 6 9 10 11 13 14
+		int color = 1 + random.nextInt(11);
+		color = color > 6 ? color + 2 : color;
+		color = color > 11 ? color + 1 : color;
+		return color;
+	}
+
+	private void stainFloor(final Block block, final int color)
 	{
 		savedBlockMat = block.getType();
 		savedBlockLoc = block.getLocation();
 		savedBlockData = block.getData();
 		plugin.getStorage().addUnbreakable(savedBlockLoc, this);
-		block.setTypeIdAndData(Material.WOOL.getId(), (byte)type.getWoolColor(), true);
+		block.setTypeIdAndData(Material.WOOL.getId(), (byte)color, true);
 		if (block.getRelative(BlockFace.UP).getType() == Material.SNOW)
 		{
 			meltedSnow = true;
