@@ -19,6 +19,7 @@ package me.snowleo.bleedingmobs;
 
 import java.util.EnumSet;
 import java.util.Random;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -121,7 +122,7 @@ public class Particle implements Runnable
 				plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
 				return;
 			}
-			Bukkit.getLogger().severe("Invalid particle state! Material: " + mat.toString());
+			Bukkit.getLogger().log(Level.SEVERE, "Invalid particle state! Material: {0}", mat.toString());
 		}
 		if (state == State.FLOWING)
 		{

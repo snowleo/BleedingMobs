@@ -186,7 +186,7 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 	}
 
 	@Override
-	public void setSpawning(boolean spawning)
+	public void setSpawning(final boolean spawning)
 	{
 		this.spawning = spawning;
 	}
@@ -202,8 +202,8 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 	 */
 	@Override
 	@Deprecated
-	public boolean isParticleItem(final UUID id)
+	public boolean isParticleItem(final UUID uuid)
 	{
-		return getStorage().isParticleItem(id);
+		return getStorage().isParticleItem(uuid);
 	}
 }
