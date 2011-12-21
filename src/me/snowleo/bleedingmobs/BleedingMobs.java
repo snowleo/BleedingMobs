@@ -1,21 +1,21 @@
 /*
  * BleedingMobs - make your monsters and players bleed
- * Copyright (C) 2011  snowleo
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright (C) 2011 snowleo
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package my.bukkit.plugins.bleedingmobs;
+package me.snowleo.bleedingmobs;
 
 import java.util.*;
 import org.bukkit.Material;
@@ -28,10 +28,9 @@ import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 
-public class BleedingMobs extends JavaPlugin implements IBleedingMobs
+public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements IBleedingMobs
 {
 	private final static int MAX_PARTICLES = 200;
 	private transient ParticleStorage storage;
@@ -87,10 +86,16 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 		final FileConfiguration config = this.getConfig();
 		config.options().header("Bleeding Mobs config\n"
 								+ "Don't use tabs in this file\n"
-								+ "Be careful, if you change anything, it can break your server.\n"
+								+ "Be careful, if you change the amounts of particles, it can break your server.\n"
 								+ "For example creating thousands of particles on hit is not a good idea.\n"
-								+ "You have been warned!\n"
-								+ "You can always reset this to the defaults by removing the file.\n");
+								+ "You can always reset this to the defaults by removing the file.\n"
+								+ "Chances are from 0 to 100, no fractions allowed. 100 means 100% chance of drop.\n"
+								+ "There is no chance value for the particle material (e.g. redstone), \n"
+								+ "because it's calculated from the wool and bone chances (so if you set them both to 0, it's 100%).\n"
+								+ "All time values are in ticks = 1/20th of a second.\n"
+								+ "If there are from and to values, then the value is randomly selected between from and to.\n"
+								+ "Wool colors: 0 white; 1 orange; 2 magenta; 3 light blue; 4 yellow; 5 lime; 6 pink;\n"
+								+ "7 gray; 8 light gray; 9 cyan; 10 purple; 11 blue; 12 brown; 13 green; 14 red; 15 black\n");
 
 		final int maxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
 		config.set("max-particles", maxParticles);
@@ -190,5 +195,15 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	public boolean isBleedingWhenCanceled()
 	{
 		return bleedWhenCanceled;
+	}
+
+	/**
+	 * @deprecated Use getStorage().isParticleItem(id) instead.
+	 */
+	@Override
+	@Deprecated
+	public boolean isParticleItem(final UUID id)
+	{
+		return getStorage().isParticleItem(id);
 	}
 }

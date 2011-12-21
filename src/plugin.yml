@@ -1,4 +1,4 @@
 name: BleedingMobs
-main: my.bukkit.plugins.bleedingmobs.BleedingMobs
+main: me.snowleo.bleedingmobs.BleedingMobs
 version: 3.0
 authors: [snowleo]
