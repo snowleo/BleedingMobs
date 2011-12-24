@@ -54,7 +54,8 @@ public class ParticleStorage
 
 	public void createParticle(final Location loc, final ParticleType type)
 	{
-		final int amount = random.nextInt(type.getAmountTo() - type.getAmountFrom()) + type.getAmountFrom();
+		final int span = type.getAmountTo() - type.getAmountFrom();
+		final int amount = (span > 0 ? random.nextInt(span) : 0) + type.getAmountFrom();
 		for (int i = 0; i < amount; i++)
 		{
 			final Particle particle = freeParticles.poll();

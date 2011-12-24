@@ -65,7 +65,8 @@ public class Particle implements Runnable
 		this.type = type;
 		this.saturatedMats = type.getSaturatedMaterials();
 		final int rand = random.nextInt(100);
-		int lifetime = random.nextInt(type.getParticleLifeTo() - type.getParticleLifeFrom()) + type.getParticleLifeFrom();
+		final int span = type.getParticleLifeTo() - type.getParticleLifeFrom();
+		int lifetime = (span > 0 ? random.nextInt(span) : 0) + type.getParticleLifeFrom();
 		ItemStack stack;
 		if (rand < type.getWoolChance())
 		{
@@ -174,7 +175,8 @@ public class Particle implements Runnable
 			meltedSnow = false;
 		}
 		state = State.FLOWING;
-		scheduler.scheduleSyncDelayedTask(plugin, this, random.nextInt(type.getStainLifeTo() - type.getStainLifeFrom()) + type.getStainLifeFrom());
+		final int span = type.getStainLifeTo() - type.getStainLifeFrom();
+		scheduler.scheduleSyncDelayedTask(plugin, this, (span > 0 ? random.nextInt(span) : 0) + type.getStainLifeFrom());
 	}
 
 	public void restore()

@@ -81,6 +81,10 @@ class ParticleEntityListener extends EntityListener
 				 || event.getEntity() instanceof EnderDragon))
 		{
 			final Location loc = event.getEntity().getLocation();
+			if (!plugin.isWorldEnabled(loc.getWorld()))
+			{
+				return;
+			}
 			plugin.getStorage().createParticle(loc, ParticleType.FALL);
 		}
 	}
