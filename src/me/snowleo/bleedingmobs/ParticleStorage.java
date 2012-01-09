@@ -31,15 +31,21 @@ public class ParticleStorage
 	private final transient Map<UUID, Particle> particleItems;
 	private final transient Map<Location, Particle> particleBlocks;
 	private final transient Random random = new Random();
+	private final transient IBleedingMobs plugin;
+	private transient int remove = 0;
 
 	public ParticleStorage(final IBleedingMobs plugin, final int maxParticles)
 	{
+		this.plugin = plugin;
 		particles = new HashSet<Particle>(maxParticles);
 		particleItems = new HashMap<UUID, Particle>(maxParticles);
 		particleBlocks = new HashMap<Location, Particle>(maxParticles);
-		for (int i = 0; i < maxParticles; i++)
+		synchronized (freeParticles)
 		{
-			freeParticles.add(new Particle(plugin));
+			for (int i = 0; i < maxParticles; i++)
+			{
+				freeParticles.add(new Particle(plugin));
+			}
 		}
 	}
 
@@ -54,23 +60,40 @@ public class ParticleStorage
 
 	public void createParticle(final Location loc, final ParticleType type)
 	{
-		final int span = type.getAmountTo() - type.getAmountFrom();
-		final int amount = (span > 0 ? random.nextInt(span) : 0) + type.getAmountFrom();
-		for (int i = 0; i < amount; i++)
+		if (plugin.getSettings().isBleedingEnabled())
 		{
-			final Particle particle = freeParticles.poll();
-			if (particle == null)
+			final int span = type.getAmountTo() - type.getAmountFrom();
+			final int amount = (span > 0 ? random.nextInt(span) : 0) + type.getAmountFrom();
+			for (int i = 0; i < amount; i++)
 			{
-				return;
+				Particle particle;
+				synchronized (freeParticles)
+				{
+					particle = freeParticles.poll();
+				}
+				if (particle == null)
+				{
+					return;
+				}
+				particles.add(particle);
+				particle.start(loc, type);
 			}
-			particles.add(particle);
-			particle.start(loc, type);
 		}
 	}
 
 	public void freeParticle(final Particle particle)
 	{
-		freeParticles.add(particle);
+		synchronized (freeParticles)
+		{
+			if (remove >= 0)
+			{
+				freeParticles.add(particle);
+			}
+			else
+			{
+				remove++;
+			}
+		}
 		particles.remove(particle);
 	}
 
@@ -142,6 +165,32 @@ public class ParticleStorage
 				particle.restore();
 				iterator.remove();
 			}
+		}
+	}
+
+	public void changeMaxParticles(final int delta)
+	{
+		synchronized (freeParticles)
+		{
+			if (delta <= 0)
+			{
+				remove += delta;
+			}
+			else
+			{
+				for (int i = 0; i < delta; i++)
+				{
+					freeParticles.add(new Particle(plugin));
+				}
+			}
+		}
+	}
+	
+	public int getCacheSize()
+	{
+		synchronized(freeParticles)
+		{
+			return freeParticles.size();
 		}
 	}
 }

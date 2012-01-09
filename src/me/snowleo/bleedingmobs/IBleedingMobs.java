@@ -31,5 +31,5 @@ public interface IBleedingMobs extends Plugin
 
 	void setSpawning(boolean set);
 
-	boolean isBleedingWhenCanceled();
+	Settings getSettings();
 }

@@ -19,8 +19,6 @@ package me.snowleo.bleedingmobs;
 
 import java.util.EnumSet;
 import java.util.Random;
-import java.util.logging.Level;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -73,11 +71,11 @@ public class Particle implements Runnable
 			mat = Material.WOOL;
 			if (type.getParticleMaterial() == Material.CAKE)
 			{
-				stack = new ItemStack(mat, 1, (short)getRandomColor());
+				stack = new ItemStack(mat, 1, getRandomColor());
 			}
 			else
 			{
-				stack = new ItemStack(mat, 1, (short)type.getWoolColor());
+				stack = new ItemStack(mat, 1, type.getWoolColor().getData());
 			}
 		}
 		else if (rand > (99 - type.getBoneChance()))
@@ -104,13 +102,6 @@ public class Particle implements Runnable
 	{
 		if (state == State.SPAWNED)
 		{
-			if (mat == Material.BONE)
-			{
-				item.remove();
-				plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
-				plugin.getStorage().freeParticle(this);
-				return;
-			}
 			if (mat == type.getParticleMaterial() || mat == Material.WOOL)
 			{
 				Block block = item.getLocation().getBlock();
@@ -126,7 +117,7 @@ public class Particle implements Runnable
 					}
 					else
 					{
-						stainFloor(block, type.getWoolColor());
+						stainFloor(block, type.getWoolColor().getData());
 					}
 				}
 				else
@@ -137,7 +128,10 @@ public class Particle implements Runnable
 				plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
 				return;
 			}
-			Bukkit.getLogger().log(Level.SEVERE, "Invalid particle state! Material: {0}", mat.toString());
+			item.remove();
+			plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
+			plugin.getStorage().freeParticle(this);
+			return;
 		}
 		if (state == State.FLOWING)
 		{
@@ -149,22 +143,22 @@ public class Particle implements Runnable
 		}
 	}
 
-	private int getRandomColor()
+	private byte getRandomColor()
 	{
 		// 1 2 3 4 5 6 9 10 11 13 14
 		int color = 1 + random.nextInt(11);
 		color = color > 6 ? color + 2 : color;
 		color = color > 11 ? color + 1 : color;
-		return color;
+		return (byte)color;
 	}
 
-	private void stainFloor(final Block block, final int color)
+	private void stainFloor(final Block block, final byte color)
 	{
 		savedBlockMat = block.getType();
 		savedBlockLoc = block.getLocation();
 		savedBlockData = block.getData();
 		plugin.getStorage().addUnbreakable(savedBlockLoc, this);
-		block.setTypeIdAndData(Material.WOOL.getId(), (byte)color, true);
+		block.setTypeIdAndData(Material.WOOL.getId(), color, true);
 		if (block.getRelative(BlockFace.UP).getType() == Material.SNOW)
 		{
 			meltedSnow = true;

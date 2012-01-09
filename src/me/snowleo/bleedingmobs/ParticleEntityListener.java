@@ -36,7 +36,7 @@ class ParticleEntityListener extends EntityListener
 	@Override
 	public void onEntityDamage(final EntityDamageEvent event)
 	{
-		if (event.isCancelled() && !plugin.isBleedingWhenCanceled())
+		if (event.isCancelled() && !plugin.getSettings().isBleedingWhenCanceled())
 		{
 			return;
 		}
@@ -63,6 +63,10 @@ class ParticleEntityListener extends EntityListener
 			else if (event.getEntity() instanceof EnderDragon)
 			{
 				plugin.getStorage().createParticle(loc, ParticleType.ENDERDRAGON);
+			}
+			else if (event.getEntity() instanceof Chicken)
+			{
+				plugin.getStorage().createParticle(loc, ParticleType.CHICKEN);
 			}
 			else if (entityEvent.getDamager() instanceof Projectile && event.getEntity() instanceof LivingEntity)
 			{
@@ -112,6 +116,10 @@ class ParticleEntityListener extends EntityListener
 		else if (event.getEntity() instanceof EnderDragon)
 		{
 			plugin.getStorage().createParticle(loc, ParticleType.ENDERDRAGON);
+		}
+		else if (event.getEntity() instanceof Chicken)
+		{
+			plugin.getStorage().createParticle(loc, ParticleType.CHICKEN);
 		}
 		else if (event.getEntity() instanceof LivingEntity)
 		{

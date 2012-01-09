@@ -19,24 +19,26 @@ package me.snowleo.bleedingmobs;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 
 
 public enum ParticleType
 {
-	DEATH(40, 12, 5, 15, 14, true, 25, 35, Material.REDSTONE),
-	ATTACK(50, 6, 5, 15, 14, true, 15, 25, Material.REDSTONE),
-	FALL(50, 6, 5, 15, 14, true, 5, 15, Material.REDSTONE),
-	PROJECTILE(50, 6, 5, 15, 14, true, 5, 15, Material.REDSTONE),
-	CREEPER(50, 0, 5, 15, 5, false, 5, 15, Material.SULPHUR),
-	SKELETON(0, 100, 5, 15, 0, false, 5, 15, Material.REDSTONE),
-	ENDERMAN(50, 6, 5, 15, 15, true, 15, 25, Material.COAL),
-	ENDERDRAGON(50, 6, 5, 15, 15, true, 25, 35, Material.COAL);
+	DEATH(40, 12, 5, 15, DyeColor.RED, true, 25, 35, Material.REDSTONE),
+	ATTACK(50, 6, 5, 15, DyeColor.RED, true, 15, 25, Material.REDSTONE),
+	FALL(50, 6, 5, 15, DyeColor.RED, true, 5, 15, Material.REDSTONE),
+	PROJECTILE(50, 6, 5, 15, DyeColor.RED, true, 5, 15, Material.REDSTONE),
+	CREEPER(50, 0, 5, 15, DyeColor.LIME, false, 5, 15, Material.SULPHUR),
+	SKELETON(0, 100, 5, 15, DyeColor.WHITE, false, 5, 15, Material.REDSTONE),
+	ENDERMAN(50, 6, 5, 15, DyeColor.BLACK, true, 15, 25, Material.COAL),
+	ENDERDRAGON(50, 6, 5, 15, DyeColor.BLACK, true, 25, 35, Material.COAL),
+	CHICKEN(20, 0, 5, 15, DyeColor.RED, true, 5, 15, Material.FEATHER);
 	private int woolChance;
 	private int boneChance;
 	private int particleLifeFrom;
 	private int particleLifeTo;
-	private int woolColor;
+	private DyeColor woolColor;
 	private boolean stainsFloor;
 	private int boneLife = 100;
 	private int stainLifeFrom = 80;
@@ -63,7 +65,7 @@ public enum ParticleType
 			}));
 
 	private ParticleType(final int woolChance, final int boneChance, final int particleLifeFrom,
-						 final int particleLifeTo, final int woolColor, final boolean stainsFloor,
+						 final int particleLifeTo, final DyeColor woolColor, final boolean stainsFloor,
 						 final int amountFrom, final int amountTo, final Material particleMaterial)
 	{
 		this.woolChance = woolChance;
@@ -117,12 +119,12 @@ public enum ParticleType
 		this.particleLifeTo = particleLifeTo;
 	}
 
-	public int getWoolColor()
+	public DyeColor getWoolColor()
 	{
 		return woolColor;
 	}
 
-	public void setWoolColor(final int woolColor)
+	public void setWoolColor(final DyeColor woolColor)
 	{
 		this.woolColor = woolColor;
 	}

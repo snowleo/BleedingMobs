@@ -1,4 +1,15 @@
 name: BleedingMobs
 main: me.snowleo.bleedingmobs.BleedingMobs
-version: 3.2
+version: 3.3
 authors: [snowleo]
+commands:
+  bleedingmobs:
+    description: Change bleedingmobs settings
+    usage: /<command> (toggle|reload|toggle-world [worldname]|info|set ...)
+    aliases: [bm]
+    permission: bleedingmobs.admin
+    
+permission:
+  bleedingmobs.admin:
+    description: Allow access to admin command
+    default: op
