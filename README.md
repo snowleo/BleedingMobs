@@ -1,4 +1,4 @@
-BleedingMobs 3.2 for Bukkit 1597
+BleedingMobs 3.3 for Bukkit 1597
 ================================
 
 **Not recommended for minors ;)**
