@@ -38,6 +38,7 @@ public class Particle implements Runnable
 	private final transient Random random = new Random();
 	private transient ParticleType type = ParticleType.ATTACK;
 	private transient boolean meltedSnow;
+	private transient byte snowData;
 
 
 	enum State
@@ -158,11 +159,13 @@ public class Particle implements Runnable
 		savedBlockLoc = block.getLocation();
 		savedBlockData = block.getData();
 		plugin.getStorage().addUnbreakable(savedBlockLoc, this);
-		block.setTypeIdAndData(Material.WOOL.getId(), color, true);
-		if (block.getRelative(BlockFace.UP).getType() == Material.SNOW)
+		block.setTypeIdAndData(Material.WOOL.getId(), color, false);
+		final Block snowBlock = block.getRelative(BlockFace.UP);
+		if (snowBlock.getType() == Material.SNOW)
 		{
 			meltedSnow = true;
-			block.getRelative(BlockFace.UP).setType(Material.AIR);
+			snowData = snowBlock.getData();
+			snowBlock.setTypeIdAndData(0, (byte)0, false);
 		}
 		else
 		{
@@ -194,7 +197,7 @@ public class Particle implements Runnable
 		savedBlockLoc.getBlock().setTypeIdAndData(savedBlockMat.getId(), savedBlockData, false);
 		if (meltedSnow)
 		{
-			savedBlockLoc.getBlock().getRelative(BlockFace.UP).setType(Material.SNOW);
+			savedBlockLoc.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(Material.SNOW.getId(), snowData, false);
 		}
 		if (removeFromSet)
 		{
