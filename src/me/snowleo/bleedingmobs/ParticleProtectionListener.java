@@ -19,20 +19,28 @@ package me.snowleo.bleedingmobs;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.entity.CraftItem;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EndermanPickupEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 
-class ParticleBlockListener extends BlockListener
+class ParticleProtectionListener implements Listener
 {
 	private final transient IBleedingMobs plugin;
 
-	public ParticleBlockListener(final IBleedingMobs plugin)
+	public ParticleProtectionListener(final IBleedingMobs plugin)
 	{
 		super();
 		this.plugin = plugin;
 	}
 
-	@Override
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(final BlockBreakEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
@@ -42,7 +50,7 @@ class ParticleBlockListener extends BlockListener
 		}
 	}
 
-	@Override
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBurn(final BlockBurnEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
@@ -52,7 +60,7 @@ class ParticleBlockListener extends BlockListener
 		}
 	}
 
-	@Override
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockIgnite(final BlockIgniteEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
@@ -62,7 +70,7 @@ class ParticleBlockListener extends BlockListener
 		}
 	}
 
-	@Override
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPistonExtend(final BlockPistonExtendEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
@@ -80,11 +88,51 @@ class ParticleBlockListener extends BlockListener
 		}
 	}
 
-	@Override
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPistonRetract(final BlockPistonRetractEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
 		if (plugin.isWorldEnabled(loc.getWorld()) && plugin.getStorage().isUnbreakable(event.getRetractLocation()))
+		{
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onChunkUnload(final ChunkUnloadEvent event)
+	{
+		plugin.getStorage().removeParticleItemFromChunk(event.getChunk());
+		plugin.getStorage().removeUnbreakableFromChunk(event.getChunk());
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onEntityExplode(final EntityExplodeEvent event)
+	{
+		if (event.isCancelled() || !plugin.isWorldEnabled(event.getLocation().getWorld()))
+		{
+			return;
+		}
+		for (Block block : event.blockList())
+		{
+			plugin.getStorage().removeUnbreakableBeforeExplosion(block.getLocation());
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onEndermanPickup(final EndermanPickupEvent event)
+	{
+		if (event.isCancelled() || !plugin.isWorldEnabled(event.getBlock().getWorld()))
+		{
+			return;
+		}
+		plugin.getStorage().removeUnbreakableBeforeExplosion(event.getBlock().getLocation());
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerPickupItem(final PlayerPickupItemEvent event)
+	{
+		if (plugin.isWorldEnabled(event.getPlayer().getWorld())
+			&& plugin.getStorage().isParticleItem(((CraftItem)event.getItem()).getUniqueId()))
 		{
 			event.setCancelled(true);
 		}

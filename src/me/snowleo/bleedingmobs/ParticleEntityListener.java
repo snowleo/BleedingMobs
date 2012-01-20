@@ -18,12 +18,16 @@
 package me.snowleo.bleedingmobs;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 
 
-class ParticleEntityListener extends EntityListener
+class ParticleEntityListener implements Listener
 {
 	private final transient IBleedingMobs plugin;
 
@@ -33,7 +37,7 @@ class ParticleEntityListener extends EntityListener
 		this.plugin = plugin;
 	}
 
-	@Override
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDamage(final EntityDamageEvent event)
 	{
 		if (event.isCancelled() && !plugin.getSettings().isBleedingWhenCanceled())
@@ -93,7 +97,7 @@ class ParticleEntityListener extends EntityListener
 		}
 	}
 
-	@Override
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDeath(final EntityDeathEvent event)
 	{
 		final Location loc = event.getEntity().getLocation();
@@ -125,28 +129,5 @@ class ParticleEntityListener extends EntityListener
 		{
 			plugin.getStorage().createParticle(loc, ParticleType.DEATH);
 		}
-	}
-
-	@Override
-	public void onEntityExplode(final EntityExplodeEvent event)
-	{
-		if (event.isCancelled() || !plugin.isWorldEnabled(event.getLocation().getWorld()))
-		{
-			return;
-		}
-		for (Block block : event.blockList())
-		{
-			plugin.getStorage().removeUnbreakableBeforeExplosion(block.getLocation());
-		}
-	}
-
-	@Override
-	public void onEndermanPickup(final EndermanPickupEvent event)
-	{
-		if (event.isCancelled() || !plugin.isWorldEnabled(event.getBlock().getWorld()))
-		{
-			return;
-		}
-		plugin.getStorage().removeUnbreakableBeforeExplosion(event.getBlock().getLocation());
 	}
 }

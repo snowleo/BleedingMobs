@@ -21,12 +21,6 @@ import java.util.UUID;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
-import org.bukkit.event.block.BlockListener;
-import org.bukkit.event.entity.EntityListener;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.world.WorldListener;
 import org.bukkit.plugin.PluginManager;
 
 
@@ -54,30 +48,13 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 		commands = new Commands(this);
 
 		registerListeners();
-
-		final String loadMessage = getDescription().getFullName() + " loaded. Have fun!";
-		getServer().getLogger().info(loadMessage);
 	}
 
 	private void registerListeners()
 	{
 		final PluginManager pluginManager = getServer().getPluginManager();
-		final EntityListener entityListener = new ParticleEntityListener(this);
-		pluginManager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Monitor, this);
-		pluginManager.registerEvent(Type.ENTITY_DEATH, entityListener, Priority.Low, this);
-		pluginManager.registerEvent(Type.ENTITY_EXPLODE, entityListener, Priority.Highest, this);
-		pluginManager.registerEvent(Type.ENDERMAN_PICKUP, entityListener, Priority.Low, this);
-		final PlayerListener playerListener = new ParticlePlayerListener(this);
-		pluginManager.registerEvent(Type.PLAYER_PICKUP_ITEM, playerListener, Priority.Low, this);
-		final BlockListener blockListener = new ParticleBlockListener(this);
-		pluginManager.registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Low, this);
-		pluginManager.registerEvent(Type.BLOCK_BURN, blockListener, Priority.Low, this);
-		pluginManager.registerEvent(Type.BLOCK_IGNITE, blockListener, Priority.Low, this);
-		final WorldListener worldListener = new ParticleWorldListener(this);
-		pluginManager.registerEvent(Type.CHUNK_UNLOAD, worldListener, Priority.Low, this);
-
-		pluginManager.registerEvent(Type.BLOCK_PISTON_EXTEND, blockListener, Priority.Low, this);
-		pluginManager.registerEvent(Type.BLOCK_PISTON_RETRACT, blockListener, Priority.Low, this);
+		pluginManager.registerEvents(new ParticleEntityListener(this), this);
+		pluginManager.registerEvents(new ParticleProtectionListener(this), this);
 	}
 
 	@Override
