@@ -17,7 +17,9 @@
  */
 package me.snowleo.bleedingmobs;
 
+import java.io.IOException;
 import java.util.UUID;
+import java.util.logging.Level;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -47,14 +49,24 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 		storage = new ParticleStorage(this, settings.getMaxParticles());
 		commands = new Commands(this);
 
-		registerListeners();
-	}
-
-	private void registerListeners()
-	{
 		final PluginManager pluginManager = getServer().getPluginManager();
 		pluginManager.registerEvents(new ParticleEntityListener(this), this);
 		pluginManager.registerEvents(new ParticleProtectionListener(this), this);
+
+		try
+		{
+			final Metrics metrics = new Metrics();
+			if (!metrics.isOptOut())
+			{
+				getLogger().info("This plugin sends version information to the server http://metrics.griefcraft.com for statistic purposes.");
+				getLogger().info("You can opt out by changing plugins/PluginMetrics/config.yml, set opt-out to true.");
+			}
+			metrics.beginMeasuringPlugin(this);
+		}
+		catch (IOException e)
+		{
+			getLogger().log(Level.WARNING, "[Metrics] " + e.getMessage(), e);
+		}
 	}
 
 	@Override
