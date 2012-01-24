@@ -59,8 +59,11 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 			metrics = new Metrics();
 			if (!metrics.isOptOut())
 			{
-				getLogger().info("This plugin sends version information to the server http://metrics.griefcraft.com for statistic purposes.");
-				getLogger().info("You can opt out by using the command /bleedingmobs disable-metrics or changing plugins/PluginMetrics/config.yml, set opt-out to true.");
+				if (settings.isShowMetricsInfo())
+				{
+					getLogger().info("This plugin collects minimal statistic data and sends it to the server http://metrics.griefcraft.com.");
+					getLogger().info("You can opt out by using the command /bleedingmobs disable-metrics or changing plugins/PluginMetrics/config.yml, set opt-out to true.");
+				}
 				metrics.addCustomData(this, new Metrics.Plotter()
 				{
 					@Override

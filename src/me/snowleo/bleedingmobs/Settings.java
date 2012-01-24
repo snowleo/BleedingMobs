@@ -32,6 +32,7 @@ public class Settings
 	private transient boolean bleedingEnabled = true;
 	private transient int maxParticles = 200;
 	private transient final IBleedingMobs plugin;
+	private transient boolean showMetricsInfo = true;
 	
 	public Settings(final IBleedingMobs plugin)
 	{
@@ -51,6 +52,7 @@ public class Settings
 		}
 		maxParticles = newMaxParticles;
 		bleedWhenCanceled = config.getBoolean("bleed-when-canceled", false);
+		showMetricsInfo = config.getBoolean("show-metrics-info", true);
 		for (ParticleType particleType : ParticleType.values())
 		{
 			final String name = particleType.toString().toLowerCase(Locale.ENGLISH);
@@ -128,6 +130,7 @@ public class Settings
 		config.set("enabled", bleedingEnabled);
 		config.set("max-particles", maxParticles);
 		config.set("bleed-when-canceled", bleedWhenCanceled);
+		config.set("show-metrics-info", false);
 		for (ParticleType particleType : ParticleType.values())
 		{
 			final String name = particleType.toString().toLowerCase(Locale.ENGLISH);
@@ -192,5 +195,10 @@ public class Settings
 	public void setBleedWhenCanceled(final boolean set)
 	{
 		this.bleedWhenCanceled = set;
+	}
+
+	public boolean isShowMetricsInfo()
+	{
+		return this.showMetricsInfo;
 	}
 }
