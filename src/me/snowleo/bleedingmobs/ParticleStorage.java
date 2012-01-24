@@ -34,8 +34,8 @@ public class ParticleStorage
 	private final transient Random random = new Random();
 	private final transient IBleedingMobs plugin;
 	private transient int remove = 0;
-	private final transient AtomicInteger particlesCreated = new AtomicInteger(0);
-	private final transient AtomicInteger particlesCreatedCache = new AtomicInteger(0);
+	private final transient int[] partStats = new int[6];
+	private transient int partStatsPos = 0;
 
 	public ParticleStorage(final IBleedingMobs plugin, final int maxParticles)
 	{
@@ -78,7 +78,7 @@ public class ParticleStorage
 				{
 					return;
 				}
-				particlesCreated.incrementAndGet();
+				partStats[partStatsPos]++;
 				particles.add(particle);
 				particle.start(loc, type);
 			}
@@ -189,10 +189,10 @@ public class ParticleStorage
 			}
 		}
 	}
-	
+
 	public int getCacheSize()
 	{
-		synchronized(freeParticles)
+		synchronized (freeParticles)
 		{
 			return freeParticles.size();
 		}
@@ -200,11 +200,21 @@ public class ParticleStorage
 
 	public void resetParticleStats()
 	{
-		particlesCreatedCache.set(particlesCreated.getAndSet(0));
+		partStatsPos++;
+		if (partStatsPos >= partStats.length)
+		{
+			partStatsPos = 0;
+		}
+		partStats[partStatsPos] = 0;
 	}
-	
+
 	public int getParticleStats()
 	{
-		return particlesCreatedCache.get();
+		int amount = 0;
+		for (int i = 0; i < partStats.length; i++)
+		{
+			amount += partStats[i];
+		}
+		return amount;
 	}
 }

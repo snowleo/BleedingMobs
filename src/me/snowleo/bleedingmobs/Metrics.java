@@ -115,13 +115,9 @@ public class Metrics
 	 * Unique server id
 	 */
 	private final transient String guid;
-	
 	private static final String GUID = "guid";
-	
 	private static final String OPTOUT = "opt-out";
-	
 	private final transient boolean optOut;
-	
 	private transient int taskId = -1;
 
 	public Metrics() throws IOException
@@ -264,11 +260,11 @@ public class Metrics
 		}
 		//if (response.startsWith("OK")) - We should get "OK" followed by an optional description if everything goes right
 	}
-	
-	
+
 	public void disable(final Plugin plugin) throws IOException
 	{
-		if (isOptOut() || taskId < 0) {
+		if (isOptOut() || taskId < 0)
+		{
 			return;
 		}
 		plugin.getServer().getScheduler().cancelTask(taskId);

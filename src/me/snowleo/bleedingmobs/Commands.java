@@ -114,7 +114,7 @@ public class Commands
 			final Settings settings = plugin.getSettings();
 			sender.sendMessage("BleedingMobs " + plugin.getDescription().getVersion() + " is " + (settings.isBleedingEnabled() ? "enabled." : "disabled."));
 			sender.sendMessage("Max Particles (cache): " + settings.getMaxParticles() + " (" + plugin.getStorage().getCacheSize() + ")");
-			sender.sendMessage("Particles created / 10 Minutes: " + plugin.getStorage().getParticleStats());
+			sender.sendMessage("Particles created / hour: " + plugin.getStorage().getParticleStats());
 			sender.sendMessage("Active worlds: " + (settings.getWorlds().isEmpty() ? "all" : ""));
 			final StringBuilder builder = new StringBuilder();
 			for (String world : settings.getWorlds())
@@ -140,7 +140,10 @@ public class Commands
 		{
 			try
 			{
-				plugin.getMetrics().disable(plugin);
+				if (plugin.getMetrics() != null) {
+					plugin.getMetrics().disable(plugin);
+					sender.sendMessage("Metrics disabled.");
+				}
 			}
 			catch (IOException ex)
 			{

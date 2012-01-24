@@ -17,9 +17,7 @@
  */
 package me.snowleo.bleedingmobs;
 
-import java.io.IOException;
 import java.util.UUID;
-import java.util.logging.Level;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -31,7 +29,7 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 	private transient ParticleStorage storage;
 	private transient Settings settings;
 	private transient Commands commands;
-	private transient Metrics metrics;
+	private transient Metrics metrics = null;
 	private transient boolean spawning = false;
 
 	@Override
@@ -54,37 +52,10 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 		pluginManager.registerEvents(new ParticleEntityListener(this), this);
 		pluginManager.registerEvents(new ParticleProtectionListener(this), this);
 
-		try
+		final MetricsStarter metricsStarter = new MetricsStarter(this);
+		if (metricsStarter.getDelay() > 0)
 		{
-			metrics = new Metrics();
-			if (!metrics.isOptOut())
-			{
-				if (settings.isShowMetricsInfo())
-				{
-					getLogger().info("This plugin collects minimal statistic data and sends it to the server http://metrics.griefcraft.com.");
-					getLogger().info("You can opt out by using the command /bleedingmobs disable-metrics or changing plugins/PluginMetrics/config.yml, set opt-out to true.");
-				}
-				metrics.addCustomData(this, new Metrics.Plotter()
-				{
-					@Override
-					public String getColumnName()
-					{
-						return "Particles created";
-					}
-
-					@Override
-					public int getValue()
-					{
-						storage.resetParticleStats();
-						return storage.getParticleStats();
-					}
-				});
-				metrics.beginMeasuringPlugin(this);
-			}
-		}
-		catch (IOException e)
-		{
-			getLogger().log(Level.WARNING, "[Metrics] " + e.getMessage(), e);
+			getServer().getScheduler().scheduleAsyncDelayedTask(this, metricsStarter, metricsStarter.getDelay());
 		}
 	}
 
@@ -152,5 +123,11 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 	public Metrics getMetrics()
 	{
 		return metrics;
+	}
+
+	@Override
+	public void setMetrics(final Metrics metrics)
+	{
+		this.metrics = metrics;
 	}
 }
