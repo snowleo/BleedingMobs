@@ -17,7 +17,9 @@
  */
 package me.snowleo.bleedingmobs;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -36,6 +38,7 @@ public class Commands
 		allcommands.put("toggle", new Toggle());
 		allcommands.put("reload", new Reload());
 		allcommands.put("info", new Info());
+		allcommands.put("disable-metrics", new DisableMetrics());
 		allcommands.put("toggle-world", new ToggleWorld());
 		allcommands.put("set", new SetCommand());
 		allcommands.put("set-maxparticles", new MaxParticles());
@@ -111,6 +114,7 @@ public class Commands
 			final Settings settings = plugin.getSettings();
 			sender.sendMessage("BleedingMobs " + plugin.getDescription().getVersion() + " is " + (settings.isBleedingEnabled() ? "enabled." : "disabled."));
 			sender.sendMessage("Max Particles (cache): " + settings.getMaxParticles() + " (" + plugin.getStorage().getCacheSize() + ")");
+			sender.sendMessage("Particles created / 10 Minutes:" + plugin.getStorage().getParticleStats());
 			sender.sendMessage("Active worlds: " + (settings.getWorlds().isEmpty() ? "all" : ""));
 			final StringBuilder builder = new StringBuilder();
 			for (String world : settings.getWorlds())
@@ -124,6 +128,24 @@ public class Commands
 			if (builder.length() != 0)
 			{
 				sender.sendMessage(builder.toString());
+			}
+		}
+	}
+
+
+	private class DisableMetrics implements Command
+	{
+		@Override
+		public void run(final CommandSender sender, final String[] args)
+		{
+			try
+			{
+				plugin.getMetrics().disable(plugin);
+			}
+			catch (IOException ex)
+			{
+				sender.sendMessage(ex.getMessage());
+				plugin.getLogger().log(Level.SEVERE, ex.getMessage(), ex);
 			}
 		}
 	}
@@ -246,7 +268,8 @@ public class Commands
 			settings.setMaxParticles(newMaxParticles);
 		}
 	}
-	
+
+
 	private class BleedWhenCanceled extends AbstractConfigCommand
 	{
 		@Override

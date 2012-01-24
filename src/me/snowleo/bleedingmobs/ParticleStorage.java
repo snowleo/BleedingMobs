@@ -18,6 +18,7 @@
 package me.snowleo.bleedingmobs;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftItem;
@@ -33,6 +34,8 @@ public class ParticleStorage
 	private final transient Random random = new Random();
 	private final transient IBleedingMobs plugin;
 	private transient int remove = 0;
+	private final transient AtomicInteger particlesCreated = new AtomicInteger(0);
+	private final transient AtomicInteger particlesCreatedCache = new AtomicInteger(0);
 
 	public ParticleStorage(final IBleedingMobs plugin, final int maxParticles)
 	{
@@ -75,6 +78,7 @@ public class ParticleStorage
 				{
 					return;
 				}
+				particlesCreated.incrementAndGet();
 				particles.add(particle);
 				particle.start(loc, type);
 			}
@@ -192,5 +196,15 @@ public class ParticleStorage
 		{
 			return freeParticles.size();
 		}
+	}
+
+	public void resetParticleStats()
+	{
+		particlesCreatedCache.set(particlesCreated.getAndSet(0));
+	}
+	
+	public int getParticleStats()
+	{
+		return particlesCreatedCache.get();
 	}
 }

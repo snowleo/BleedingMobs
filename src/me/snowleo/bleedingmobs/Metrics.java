@@ -32,7 +32,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -45,9 +45,48 @@ import org.bukkit.plugin.Plugin;
 public class Metrics
 {
 	/**
+	 * Interface used to collect custom data for a plugin
+	 */
+	public static abstract class Plotter
+	{
+		/**
+		 * Get the column name for the plotted point
+		 *
+		 * @return the plotted point's column name
+		 */
+		public abstract String getColumnName();
+
+		/**
+		 * Get the current value for the plotted point
+		 *
+		 * @return
+		 */
+		public abstract int getValue();
+
+		@Override
+		public int hashCode()
+		{
+			return getColumnName().hashCode() + getValue();
+		}
+
+		@Override
+		public boolean equals(final Object object)
+		{
+			if (object instanceof Plotter)
+			{
+				final Plotter plotter = (Plotter)object;
+				return plotter.getColumnName().equals(getColumnName()) && plotter.getValue() == getValue();
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	/**
 	 * The metrics revision number
 	 */
-	private final static int REVISION = 2;
+	private static final int REVISION = 3;
 	/**
 	 * The base url of the metrics domain
 	 */
@@ -63,7 +102,11 @@ public class Metrics
 	/**
 	 * Interval of time to ping in minutes
 	 */
-	private final static int PING_INTERVAL = 15;
+	private static final int PING_INTERVAL = 10;
+	/**
+	 * A map of the custom data plotters for plugins
+	 */
+	private final transient Map<Plugin, Set<Plotter>> customData = Collections.synchronizedMap(new HashMap<Plugin, Set<Plotter>>());
 	/**
 	 * The plugin configuration file
 	 */
@@ -72,6 +115,14 @@ public class Metrics
 	 * Unique server id
 	 */
 	private final transient String guid;
+	
+	private static final String GUID = "guid";
+	
+	private static final String OPTOUT = "opt-out";
+	
+	private final transient boolean optOut;
+	
+	private transient int taskId = -1;
 
 	public Metrics() throws IOException
 	{
@@ -80,22 +131,43 @@ public class Metrics
 		configuration = YamlConfiguration.loadConfiguration(file);
 
 		// add some defaults
-		configuration.addDefault("opt-out", false);
-		configuration.addDefault("guid", UUID.randomUUID().toString());
+		configuration.addDefault(OPTOUT, false);
+		configuration.addDefault(GUID, UUID.randomUUID().toString());
 
 		// Do we need to create the file?
-		if (configuration.get("guid", null) == null)
+		if (configuration.get(GUID, null) == null)
 		{
 			configuration.options().header("http://metrics.griefcraft.com").copyDefaults(true);
 			configuration.save(file);
 		}
 
 		// Load the guid then
-		guid = configuration.getString("guid");
+		guid = configuration.getString(GUID);
+		optOut = configuration.getBoolean(OPTOUT, false);
 	}
-	
-	public boolean isOptOut() {
-		return configuration.getBoolean("opt-out", false);
+
+	public boolean isOptOut()
+	{
+		return optOut;
+	}
+
+	/**
+	 * Adds a custom data plotter for a given plugin
+	 *
+	 * @param plugin
+	 * @param plotter
+	 */
+	public void addCustomData(final Plugin plugin, final Plotter plotter)
+	{
+		Set<Plotter> plotters = customData.get(plugin);
+
+		if (plotters == null)
+		{
+			plotters = Collections.synchronizedSet(new LinkedHashSet<Plotter>());
+			customData.put(plugin, plotters);
+		}
+
+		plotters.add(plotter);
 	}
 
 	/**
@@ -115,7 +187,7 @@ public class Metrics
 		postPlugin(plugin, false);
 
 		// Ping the server in intervals
-		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable()
+		taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable()
 		{
 			@Override
 			public void run()
@@ -142,7 +214,7 @@ public class Metrics
 		// Construct the post data
 		String response;
 		final StringBuilder data = new StringBuilder();
-		data.append(encode("guid")).append('=').append(encode(guid));
+		data.append(encode(GUID)).append('=').append(encode(guid));
 		data.append('&').append(encode("version")).append('=').append(encode(plugin.getDescription().getVersion()));
 		data.append('&').append(encode("server")).append('=').append(encode(Bukkit.getVersion()));
 		data.append('&').append(encode("players")).append('=').append(encode(Integer.toString(Bukkit.getServer().getOnlinePlayers().length)));
@@ -152,6 +224,18 @@ public class Metrics
 		if (isPing)
 		{
 			data.append('&').append(encode("ping")).append('=').append(encode("true"));
+		}
+
+		// Add any custom data (if applicable)
+		final Set<Plotter> plotters = customData.get(plugin);
+
+		if (plotters != null)
+		{
+			for (Plotter plotter : plotters)
+			{
+				data.append('&').append(encode("Custom" + plotter.getColumnName()));
+				data.append('=').append(encode(Integer.toString(plotter.getValue())));
+			}
 		}
 
 		// Create the url
@@ -176,14 +260,22 @@ public class Metrics
 
 		if (response == null || response.startsWith("ERR"))
 		{
-			// Throw it to whoever is catching us
-			throw new IOException(response);
+			throw new IOException(response); //Throw the exception
 		}
-		if (response.startsWith("OK"))
-		{
-			// Useless return, but it documents that we should be receiving OK followed by an optional description
+		//if (response.startsWith("OK")) - We should get "OK" followed by an optional description if everything goes right
+	}
+	
+	
+	public void disable(final Plugin plugin) throws IOException
+	{
+		if (isOptOut() || taskId < 0) {
 			return;
 		}
+		plugin.getServer().getScheduler().cancelTask(taskId);
+		taskId = -1;
+		configuration.set(OPTOUT, true);
+		final File file = new File(CONFIG_FILE);
+		configuration.save(file);
 	}
 
 	/**
@@ -192,7 +284,7 @@ public class Metrics
 	 * @param text
 	 * @return
 	 */
-	private String encode(final String text) throws UnsupportedEncodingException
+	private static String encode(final String text) throws UnsupportedEncodingException
 	{
 		return URLEncoder.encode(text, "UTF-8");
 	}

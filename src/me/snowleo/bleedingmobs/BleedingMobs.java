@@ -31,6 +31,7 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 	private transient ParticleStorage storage;
 	private transient Settings settings;
 	private transient Commands commands;
+	private transient Metrics metrics;
 	private transient boolean spawning = false;
 
 	@Override
@@ -55,13 +56,28 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 
 		try
 		{
-			final Metrics metrics = new Metrics();
+			metrics = new Metrics();
 			if (!metrics.isOptOut())
 			{
 				getLogger().info("This plugin sends version information to the server http://metrics.griefcraft.com for statistic purposes.");
-				getLogger().info("You can opt out by changing plugins/PluginMetrics/config.yml, set opt-out to true.");
+				getLogger().info("You can opt out by using the command /bleedingmobs disable-metrics or changing plugins/PluginMetrics/config.yml, set opt-out to true.");
+				metrics.addCustomData(this, new Metrics.Plotter()
+				{
+					@Override
+					public String getColumnName()
+					{
+						return "Particles created";
+					}
+
+					@Override
+					public int getValue()
+					{
+						storage.resetParticleStats();
+						return storage.getParticleStats();
+					}
+				});
+				metrics.beginMeasuringPlugin(this);
 			}
-			metrics.beginMeasuringPlugin(this);
 		}
 		catch (IOException e)
 		{
@@ -127,5 +143,11 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 	public Settings getSettings()
 	{
 		return settings;
+	}
+
+	@Override
+	public Metrics getMetrics()
+	{
+		return metrics;
 	}
 }

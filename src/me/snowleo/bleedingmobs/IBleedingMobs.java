@@ -32,4 +32,6 @@ public interface IBleedingMobs extends Plugin
 	void setSpawning(boolean set);
 
 	Settings getSettings();
+	
+	Metrics getMetrics();
 }
