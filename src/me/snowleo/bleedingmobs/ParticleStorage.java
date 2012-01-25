@@ -36,7 +36,7 @@ public class ParticleStorage
 	private final transient IBleedingMobs plugin;
 	private transient int remove = 0;
 	private final transient AtomicIntegerArray partStats = new AtomicIntegerArray(6);
-	private transient AtomicInteger partStatsPos = new AtomicInteger(0);
+	private final transient AtomicInteger partStatsPos = new AtomicInteger(0);
 
 	public ParticleStorage(final IBleedingMobs plugin, final int maxParticles)
 	{

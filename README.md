@@ -1,5 +1,5 @@
-BleedingMobs 3.3 for Bukkit 1597
-================================
+BleedingMobs 3.4 for Bukkit 1818 (Minecraft 1.1)
+================================================
 
 **Not recommended for minors ;)**
 
