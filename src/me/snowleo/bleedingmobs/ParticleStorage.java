@@ -18,7 +18,6 @@
 package me.snowleo.bleedingmobs;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftItem;
@@ -65,23 +64,30 @@ public class ParticleStorage
 	{
 		if (plugin.getSettings().isBleedingEnabled())
 		{
-			final int span = type.getAmountTo() - type.getAmountFrom();
-			final int amount = (span > 0 ? random.nextInt(span) : 0) + type.getAmountFrom();
-			for (int i = 0; i < amount; i++)
+			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable()
 			{
-				Particle particle;
-				synchronized (freeParticles)
+				@Override
+				public void run()
 				{
-					particle = freeParticles.poll();
+					final int span = type.getAmountTo() - type.getAmountFrom();
+					final int amount = (span > 0 ? random.nextInt(span) : 0) + type.getAmountFrom();
+					for (int i = 0; i < amount; i++)
+					{
+						Particle particle;
+						synchronized (freeParticles)
+						{
+							particle = freeParticles.poll();
+						}
+						if (particle == null)
+						{
+							return;
+						}
+						partStats[partStatsPos]++;
+						particles.add(particle);
+						particle.start(loc, type);
+					}
 				}
-				if (particle == null)
-				{
-					return;
-				}
-				partStats[partStatsPos]++;
-				particles.add(particle);
-				particle.start(loc, type);
-			}
+			});
 		}
 	}
 
