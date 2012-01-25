@@ -119,10 +119,10 @@ public class Particle implements Runnable
 			if (mat == type.getParticleMaterial() || mat == Material.WOOL)
 			{
 				Block block = item.getLocation().getBlock();
-				
-				if (block == null 
-					|| block.getType() == Material.AIR 
-					|| block.getType() == Material.SNOW 
+
+				if (block == null
+					|| block.getType() == Material.AIR
+					|| block.getType() == Material.SNOW
 					|| block.getType() == Material.WATER
 					|| block.getType() == Material.STATIONARY_WATER)
 				{

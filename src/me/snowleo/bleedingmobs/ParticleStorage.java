@@ -18,6 +18,8 @@
 package me.snowleo.bleedingmobs;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftItem;
@@ -33,8 +35,8 @@ public class ParticleStorage
 	private final transient Random random = new Random();
 	private final transient IBleedingMobs plugin;
 	private transient int remove = 0;
-	private final transient int[] partStats = new int[6];
-	private transient int partStatsPos = 0;
+	private final transient AtomicIntegerArray partStats = new AtomicIntegerArray(6);
+	private transient AtomicInteger partStatsPos = new AtomicInteger(0);
 
 	public ParticleStorage(final IBleedingMobs plugin, final int maxParticles)
 	{
@@ -53,11 +55,14 @@ public class ParticleStorage
 
 	public void clearAllParticles()
 	{
-		for (Particle particle : particles)
+		synchronized (particles)
 		{
-			particle.restore();
+			for (Particle particle : particles)
+			{
+				particle.restore();
+			}
+			particles.clear();
 		}
-		particles.clear();
 	}
 
 	public void createParticle(final Location loc, final ParticleType type)
@@ -82,8 +87,11 @@ public class ParticleStorage
 						{
 							return;
 						}
-						partStats[partStatsPos]++;
-						particles.add(particle);
+						partStats.incrementAndGet(partStatsPos.get());
+						synchronized (particles)
+						{
+							particles.add(particle);
+						}
 						particle.start(loc, type);
 					}
 				}
@@ -104,7 +112,10 @@ public class ParticleStorage
 				remove++;
 			}
 		}
-		particles.remove(particle);
+		synchronized (particles)
+		{
+			particles.remove(particle);
+		}
 	}
 
 	public void addParticleItem(final UUID entityId, final Particle particle)
@@ -206,20 +217,19 @@ public class ParticleStorage
 
 	public void resetParticleStats()
 	{
-		partStatsPos++;
-		if (partStatsPos >= partStats.length)
+		if (partStatsPos.incrementAndGet() >= partStats.length())
 		{
-			partStatsPos = 0;
+			partStatsPos.set(0);
 		}
-		partStats[partStatsPos] = 0;
+		partStats.set(partStatsPos.get(), 0);
 	}
 
 	public int getParticleStats()
 	{
 		int amount = 0;
-		for (int i = 0; i < partStats.length; i++)
+		for (int i = 0; i < partStats.length(); i++)
 		{
-			amount += partStats[i];
+			amount += partStats.get(i);
 		}
 		return amount;
 	}
