@@ -59,7 +59,7 @@ public class ParticleStorage
 		{
 			for (Particle particle : particles)
 			{
-				particle.restore();
+				particle.restore(true);
 			}
 			particles.clear();
 		}
@@ -139,7 +139,7 @@ public class ParticleStorage
 				final Particle particle = particleItems.get(item.getUniqueId());
 				if (particle != null)
 				{
-					particle.restore();
+					particle.restore(true);
 				}
 			}
 		}
@@ -165,7 +165,7 @@ public class ParticleStorage
 		final Particle particle = particleBlocks.get(blockLocation);
 		if (particle != null)
 		{
-			particle.restore();
+			particle.restore(true);
 		}
 	}
 
@@ -183,7 +183,7 @@ public class ParticleStorage
 			if (entry.getKey().getBlock().getChunk().equals(chunk))
 			{
 				final Particle particle = entry.getValue();
-				particle.restore();
+				particle.restore(false);
 				iterator.remove();
 			}
 		}

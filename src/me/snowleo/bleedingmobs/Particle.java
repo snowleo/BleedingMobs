@@ -153,7 +153,7 @@ public class Particle implements Runnable
 		}
 		else if (state == State.FLOWING)
 		{
-			restoreBlock(true);
+			restoreBlock(true, true);
 		}
 		else
 		{
@@ -193,7 +193,7 @@ public class Particle implements Runnable
 		scheduler.scheduleSyncDelayedTask(plugin, this, (span > 0 ? random.nextInt(span) : 0) + type.getStainLifeFrom());
 	}
 
-	public void restore()
+	public void restore(final boolean removeFromUnbreakable)
 	{
 		if (state == State.SPAWNED)
 		{
@@ -204,13 +204,16 @@ public class Particle implements Runnable
 		if (state == State.FLOWING)
 		{
 			state = State.UNKNOWN;
-			restoreBlock(false);
+			restoreBlock(false, removeFromUnbreakable);
 		}
 	}
 
-	private void restoreBlock(final boolean removeFromSet)
+	private void restoreBlock(final boolean removeFromSet, final boolean removeFromUnbreakable)
 	{
-		plugin.getStorage().removeUnbreakable(savedBlockLoc);
+		if (removeFromUnbreakable)
+		{
+			plugin.getStorage().removeUnbreakable(savedBlockLoc);
+		}
 		savedBlockLoc.getBlock().setTypeIdAndData(savedBlockMat.getId(), savedBlockData, false);
 		if (meltedSnow)
 		{
