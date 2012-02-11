@@ -17,10 +17,13 @@
  */
 package me.snowleo.bleedingmobs;
 
+import java.lang.reflect.Method;
 import java.util.UUID;
+import java.util.logging.Level;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 
@@ -44,11 +47,38 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 	@Override
 	public void onEnable()
 	{
+		final PluginManager pluginManager = getServer().getPluginManager();
+		Plugin bkcommonlib = pluginManager.getPlugin("BKCommonLib");
+		if (bkcommonlib != null)
+		{
+			String version = bkcommonlib.getDescription().getVersion();
+			if (version.equals("1.0") || version.equals("1.01") || version.equals("1.02") || version.equals("1.03") || version.equals("1.04") || version.equals("1.05") || version.equals("1.06")) {
+				getLogger().log(Level.SEVERE, "Conflicting version of BKCommonLib (NoLagg) found, please update it. BleedingMobs is now disabled.");
+				setEnabled(false);
+				return;
+			}
+		}
+		
+		if (getServer().getVersion().contains("CraftBukkit++"))
+		{
+			try
+			{
+				Method itemMergeRadiusMethod = getServer().getClass().getMethod("setItemMergeRadius", double.class);
+				itemMergeRadiusMethod.invoke(getServer(), 0.0);
+				getLogger().log(Level.INFO, "CraftBukkit++ detected. Item Merge Radius set to 0.0.");
+			}
+			catch (Exception ex)
+			{
+				getLogger().log(Level.SEVERE, "Failed to inject into CraftBukkit++. BleedingMobs is now disabled.", ex);
+				setEnabled(false);
+				return;
+			}
+		}
+		
 		settings = new Settings(this);
 		storage = new ParticleStorage(this, settings.getMaxParticles());
 		commands = new Commands(this);
 
-		final PluginManager pluginManager = getServer().getPluginManager();
 		pluginManager.registerEvents(new ParticleEntityListener(this), this);
 		pluginManager.registerEvents(new ParticleProtectionListener(this), this);
 
