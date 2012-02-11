@@ -194,7 +194,7 @@ public class Metrics
 				}
 				catch (IOException e)
 				{
-					plugin.getLogger().log(Level.WARNING, "[Metrics] " + e.getMessage(), e);
+					plugin.getLogger().log(Level.INFO, "[Metrics] {0}", e.getMessage());
 				}
 			}
 		}, PING_INTERVAL * 1200, PING_INTERVAL * 1200);
