@@ -52,13 +52,14 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 		if (bkcommonlib != null)
 		{
 			String version = bkcommonlib.getDescription().getVersion();
-			if (version.equals("1.0") || version.equals("1.01") || version.equals("1.02") || version.equals("1.03") || version.equals("1.04") || version.equals("1.05")) {
+			if (version.equals("1.0") || version.equals("1.01") || version.equals("1.02") || version.equals("1.03") || version.equals("1.04") || version.equals("1.05"))
+			{
 				getLogger().log(Level.SEVERE, "Conflicting version of BKCommonLib (NoLagg) found, please update it. BleedingMobs is now disabled.");
 				setEnabled(false);
 				return;
 			}
 		}
-		
+
 		if (getServer().getVersion().contains("CraftBukkit++"))
 		{
 			try
@@ -74,7 +75,7 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 				return;
 			}
 		}
-		
+
 		settings = new Settings(this);
 		storage = new ParticleStorage(this, settings.getMaxParticles());
 		commands = new Commands(this);
