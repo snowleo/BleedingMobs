@@ -160,6 +160,11 @@ public class Particle implements Runnable
 			}
 			else
 			{
+				if (taskId > 0)
+				{
+					plugin.getServer().getScheduler().cancelTask(taskId);
+					taskId = -1;
+				}
 				plugin.getStorage().freeParticle(this);
 			}
 		}
