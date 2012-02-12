@@ -40,6 +40,7 @@ public class Particle implements Runnable
 	private transient Location startLocation;
 	private transient ItemStack stack;
 	private transient int taskId;
+	private final transient Object lock = new Object();
 
 
 	enum State
@@ -104,60 +105,63 @@ public class Particle implements Runnable
 	@Override
 	public void run()
 	{
-		if (state == State.INIT)
+		synchronized (lock)
 		{
-			init();
-		}
-		else if (state == State.SPAWNED)
-		{
-			if (taskId > 0)
+			if (state == State.INIT)
 			{
-				plugin.getServer().getScheduler().cancelTask(taskId);
-				taskId = -1;
+				init();
 			}
-			final Material mat = stack.getType();
-			if (mat == type.getParticleMaterial() || mat == Material.WOOL)
+			else if (state == State.SPAWNED)
 			{
-				Block block = item.getLocation().getBlock();
-
-				if (block == null
-					|| block.getType() == Material.AIR
-					|| block.getType() == Material.SNOW
-					|| block.getType() == Material.WATER
-					|| block.getType() == Material.STATIONARY_WATER)
+				if (taskId > 0)
 				{
-					block = item.getLocation().subtract(0, 1, 0).getBlock();
+					plugin.getServer().getScheduler().cancelTask(taskId);
+					taskId = -1;
 				}
-				if (block != null && type.isStainingFloor() && type.getSaturatedMaterials().contains(block.getType()) && !plugin.getStorage().isUnbreakable(block.getLocation()))
+				final Material mat = stack.getType();
+				if (mat == type.getParticleMaterial() || mat == Material.WOOL)
 				{
-					if (type.getParticleMaterial() == Material.CAKE)
+					Block block = item.getLocation().getBlock();
+
+					if (block == null
+						|| block.getType() == Material.AIR
+						|| block.getType() == Material.SNOW
+						|| block.getType() == Material.WATER
+						|| block.getType() == Material.STATIONARY_WATER)
 					{
-						stainFloor(block, getRandomColor());
+						block = item.getLocation().subtract(0, 1, 0).getBlock();
+					}
+					if (block != null && type.isStainingFloor() && type.getSaturatedMaterials().contains(block.getType()) && !plugin.getStorage().isUnbreakable(block.getLocation()))
+					{
+						if (type.getParticleMaterial() == Material.CAKE)
+						{
+							stainFloor(block, getRandomColor());
+						}
+						else
+						{
+							stainFloor(block, type.getWoolColor().getData());
+						}
 					}
 					else
 					{
-						stainFloor(block, type.getWoolColor().getData());
+						plugin.getStorage().freeParticle(this);
 					}
-				}
-				else
-				{
-					plugin.getStorage().freeParticle(this);
+					item.remove();
+					plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
+					return;
 				}
 				item.remove();
 				plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
-				return;
+				plugin.getStorage().freeParticle(this);
 			}
-			item.remove();
-			plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
-			plugin.getStorage().freeParticle(this);
-		}
-		else if (state == State.FLOWING)
-		{
-			restoreBlock(true, true);
-		}
-		else
-		{
-			plugin.getStorage().freeParticle(this);
+			else if (state == State.FLOWING)
+			{
+				restoreBlock(true, true);
+			}
+			else
+			{
+				plugin.getStorage().freeParticle(this);
+			}
 		}
 	}
 
@@ -195,16 +199,24 @@ public class Particle implements Runnable
 
 	public void restore(final boolean removeFromUnbreakable)
 	{
-		if (state == State.SPAWNED)
+		synchronized (lock)
 		{
-			state = State.UNKNOWN;
-			item.remove();
-			plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
-		}
-		if (state == State.FLOWING)
-		{
-			state = State.UNKNOWN;
-			restoreBlock(false, removeFromUnbreakable);
+			if (state == State.INIT)
+			{
+				state = State.UNKNOWN;
+				startLocation = null;
+			}
+			if (state == State.SPAWNED)
+			{
+				state = State.UNKNOWN;
+				item.remove();
+				plugin.getStorage().removeParticleItem(((CraftItem)item).getUniqueId());
+			}
+			if (state == State.FLOWING)
+			{
+				state = State.UNKNOWN;
+				restoreBlock(false, removeFromUnbreakable);
+			}
 		}
 	}
 
