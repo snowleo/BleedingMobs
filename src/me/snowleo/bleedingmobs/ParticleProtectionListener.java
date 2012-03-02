@@ -24,7 +24,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
-import org.bukkit.event.entity.EndermanPickupEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -119,7 +119,7 @@ class ParticleProtectionListener implements Listener
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void onEndermanPickup(final EndermanPickupEvent event)
+	public void onEntityChangeBlock(final EntityChangeBlockEvent event)
 	{
 		if (event.isCancelled() || !plugin.isWorldEnabled(event.getBlock().getWorld()))
 		{

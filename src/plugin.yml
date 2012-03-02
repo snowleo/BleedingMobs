@@ -1,6 +1,6 @@
 name: BleedingMobs
 main: me.snowleo.bleedingmobs.BleedingMobs
-version: 3.4e
+version: 3.5
 authors: [snowleo]
 commands:
   bleedingmobs:

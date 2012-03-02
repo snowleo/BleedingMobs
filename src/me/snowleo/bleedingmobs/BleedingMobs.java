@@ -18,16 +18,16 @@
 package me.snowleo.bleedingmobs;
 
 import java.lang.reflect.Method;
-import java.util.UUID;
 import java.util.logging.Level;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
 
-public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements IBleedingMobs
+public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 {
 	private transient ParticleStorage storage;
 	private transient Settings settings;
@@ -48,10 +48,10 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 	public void onEnable()
 	{
 		final PluginManager pluginManager = getServer().getPluginManager();
-		Plugin bkcommonlib = pluginManager.getPlugin("BKCommonLib");
+		final Plugin bkcommonlib = pluginManager.getPlugin("BKCommonLib");
 		if (bkcommonlib != null)
 		{
-			String version = bkcommonlib.getDescription().getVersion();
+			final String version = bkcommonlib.getDescription().getVersion();
 			if (version.equals("1.0") || version.equals("1.01") || version.equals("1.02") || version.equals("1.03") || version.equals("1.04") || version.equals("1.05"))
 			{
 				getLogger().log(Level.SEVERE, "Conflicting version of BKCommonLib (NoLagg) found, please update it. BleedingMobs is now disabled.");
@@ -64,7 +64,7 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 		{
 			try
 			{
-				Method itemMergeRadiusMethod = getServer().getClass().getMethod("setItemMergeRadius", double.class);
+				final Method itemMergeRadiusMethod = getServer().getClass().getMethod("setItemMergeRadius", double.class);
 				itemMergeRadiusMethod.invoke(getServer(), 0.0);
 				getLogger().log(Level.INFO, "CraftBukkit++ detected. Item Merge Radius set to 0.0.");
 			}
@@ -112,16 +112,6 @@ public class BleedingMobs extends me.Perdog.BleedingMobs.BleedingMobs implements
 	public void setSpawning(final boolean spawning)
 	{
 		this.spawning = spawning;
-	}
-
-	/**
-	 * @deprecated Use getStorage().isParticleItem(id) instead.
-	 */
-	@Override
-	@Deprecated
-	public boolean isParticleItem(final UUID uuid)
-	{
-		return getStorage().isParticleItem(uuid);
 	}
 
 	@Override
