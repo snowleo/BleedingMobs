@@ -1,7 +1,7 @@
 /*
  * BleedingMobs - make your monsters and players bleed
  *
- * Copyright (C) 2011 snowleo
+ * Copyright (C) 2011-2012 snowleo
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -34,7 +34,7 @@ public class Particle implements Runnable
 	private final transient BukkitScheduler scheduler;
 	private final transient IBleedingMobs plugin;
 	private final transient Random random = new Random();
-	private transient ParticleType type = ParticleType.ATTACK;
+	private transient ParticleType type;
 	private transient boolean meltedSnow;
 	private transient byte snowData;
 	private transient Location startLocation;
@@ -61,16 +61,16 @@ public class Particle implements Runnable
 		this.scheduler = plugin.getServer().getScheduler();
 	}
 
-	public void start(final Location loc, final ParticleType type)
+	public void start(final Location loc, final ParticleType type, final boolean bones)
 	{
 		this.type = type;
-		this.startLocation = loc;
+		this.startLocation = loc.clone();
 		final int rand = random.nextInt(100);
 		final int span = type.getParticleLifeTo() - type.getParticleLifeFrom();
 		int lifetime = (span > 0 ? random.nextInt(span) : 0) + type.getParticleLifeFrom();
 		if (rand < type.getWoolChance())
 		{
-			if (type.getParticleMaterial() == Material.CAKE)
+			if (type.getParticleMaterial().getItemType() == Material.CAKE)
 			{
 				stack = new ItemStack(Material.WOOL, 1, getRandomColor());
 			}
@@ -79,14 +79,14 @@ public class Particle implements Runnable
 				stack = new ItemStack(Material.WOOL, 1, type.getWoolColor().getData());
 			}
 		}
-		else if (rand > (99 - type.getBoneChance()))
+		else if (bones && rand > (99 - type.getBoneChance()))
 		{
 			stack = new ItemStack(Material.BONE, 1);
 			lifetime += type.getBoneLife();
 		}
 		else
 		{
-			stack = new ItemStack(type.getParticleMaterial(), 1);
+			stack = new ItemStack(type.getParticleMaterial().getItemType(), 1, type.getParticleMaterial().getData());
 		}
 		state = State.INIT;
 		taskId = scheduler.scheduleSyncRepeatingTask(plugin, this, 0, lifetime);
@@ -95,6 +95,9 @@ public class Particle implements Runnable
 	private void init()
 	{
 		plugin.setSpawning(true);
+		// Fix CraftBukkit drop location
+		startLocation.setX(startLocation.getX()-0.5);
+		startLocation.setZ(startLocation.getZ()-0.5);
 		item = startLocation.getWorld().dropItemNaturally(startLocation, stack);
 		plugin.setSpawning(false);
 		plugin.getStorage().addParticleItem(((CraftItem)item).getUniqueId(), this);
@@ -119,7 +122,7 @@ public class Particle implements Runnable
 					taskId = -1;
 				}
 				final Material mat = stack.getType();
-				if (mat == type.getParticleMaterial() || mat == Material.WOOL)
+				if (mat == type.getParticleMaterial().getItemType() || mat == Material.WOOL)
 				{
 					Block block = item.getLocation().getBlock();
 
@@ -133,7 +136,7 @@ public class Particle implements Runnable
 					}
 					if (block != null && type.isStainingFloor() && type.getSaturatedMaterials().contains(block.getType()) && !plugin.getStorage().isUnbreakable(block.getLocation()))
 					{
-						if (type.getParticleMaterial() == Material.CAKE)
+						if (type.getParticleMaterial().getItemType() == Material.CAKE)
 						{
 							stainFloor(block, getRandomColor());
 						}

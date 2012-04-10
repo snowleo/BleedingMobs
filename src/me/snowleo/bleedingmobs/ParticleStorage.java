@@ -1,7 +1,7 @@
 /*
  * BleedingMobs - make your monsters and players bleed
  *
- * Copyright (C) 2011 snowleo
+ * Copyright (C) 2011-2012 snowleo
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -24,6 +24,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 
 
 public class ParticleStorage
@@ -37,6 +38,16 @@ public class ParticleStorage
 	private transient int remove = 0;
 	private final transient AtomicIntegerArray partStats = new AtomicIntegerArray(6);
 	private final transient AtomicInteger partStatsPos = new AtomicInteger(0);
+
+
+	public enum BleedCause
+	{
+		ATTACK,
+		DEATH,
+		PROJECTILE,
+		FALL,
+		BLOODSTREAM
+	}
 
 	public ParticleStorage(final IBleedingMobs plugin, final int maxParticles)
 	{
@@ -65,7 +76,51 @@ public class ParticleStorage
 		}
 	}
 
-	public void createParticle(final Location loc, final ParticleType type)
+	public void createParticle(final LivingEntity entity, final BleedCause cause)
+	{
+		final Location loc = entity.getLocation();
+		if (!plugin.isWorldEnabled(loc.getWorld()))
+		{
+			return;
+		}
+		int percentage;
+		boolean bones;
+		switch (cause)
+		{
+		case BLOODSTREAM:
+			percentage = plugin.getSettings().getBloodstreamPercentage();
+			bones = false;
+			break;
+		case DEATH:
+			percentage = plugin.getSettings().getDeathPercentage();
+			bones = true;
+			break;
+		case FALL:
+			percentage = plugin.getSettings().getFallPercentage();
+			bones = false;
+			break;
+		case PROJECTILE:
+			percentage = plugin.getSettings().getProjectilePercentage();
+			bones = false;
+			break;
+		case ATTACK:
+		default:
+			percentage = 100;
+			bones = false;
+			break;
+		}
+		final ParticleType particleType = ParticleType.get(entity.getType());
+		if (particleType != null)
+		{
+			plugin.getStorage().createParticle(loc, particleType, percentage, bones);
+		}
+		if (cause != BleedCause.BLOODSTREAM)
+		{
+			plugin.getTimer().add(entity);
+		}
+	}
+
+	private void createParticle(final Location loc, final ParticleType type, final int percentage, final boolean bones)
 	{
 		if (plugin.getSettings().isBleedingEnabled())
 		{
@@ -75,7 +130,7 @@ public class ParticleStorage
 				public void run()
 				{
 					final int span = type.getAmountTo() - type.getAmountFrom();
-					final int amount = (span > 0 ? random.nextInt(span) : 0) + type.getAmountFrom();
+					final int amount = ((span > 0 ? random.nextInt(span) : 0) + type.getAmountFrom()) * percentage / 100;
 					for (int i = 0; i < amount; i++)
 					{
 						Particle particle;
@@ -92,7 +147,7 @@ public class ParticleStorage
 						{
 							particles.add(particle);
 						}
-						particle.start(loc, type);
+						particle.start(loc, type, bones);
 					}
 				}
 			});
@@ -131,6 +186,7 @@ public class ParticleStorage
 	public void removeParticleItemFromChunk(final Chunk chunk)
 	{
 		final Entity[] entities = chunk.getEntities();
+		final BloodStreamTimer timer = plugin.getTimer();
 		for (Entity entity : entities)
 		{
 			if (entity instanceof CraftItem)
@@ -141,6 +197,10 @@ public class ParticleStorage
 				{
 					particle.restore(true);
 				}
+			}
+			if (entity instanceof LivingEntity)
+			{
+				timer.remove((LivingEntity)entity);
 			}
 		}
 	}

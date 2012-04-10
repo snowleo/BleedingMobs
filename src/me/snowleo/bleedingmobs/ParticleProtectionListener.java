@@ -1,7 +1,7 @@
 /*
  * BleedingMobs - make your monsters and players bleed
  *
- * Copyright (C) 2011 snowleo
+ * Copyright (C) 2011-2012 snowleo
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -105,10 +105,10 @@ class ParticleProtectionListener implements Listener
 		plugin.getStorage().removeUnbreakableFromChunk(event.getChunk());
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onEntityExplode(final EntityExplodeEvent event)
 	{
-		if (event.isCancelled() || !plugin.isWorldEnabled(event.getLocation().getWorld()))
+		if (!plugin.isWorldEnabled(event.getLocation().getWorld()))
 		{
 			return;
 		}
@@ -118,10 +118,10 @@ class ParticleProtectionListener implements Listener
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onEntityChangeBlock(final EntityChangeBlockEvent event)
 	{
-		if (event.isCancelled() || !plugin.isWorldEnabled(event.getBlock().getWorld()))
+		if (!plugin.isWorldEnabled(event.getBlock().getWorld()))
 		{
 			return;
 		}

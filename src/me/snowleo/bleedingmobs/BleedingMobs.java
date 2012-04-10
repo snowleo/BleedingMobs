@@ -1,7 +1,7 @@
 /*
  * BleedingMobs - make your monsters and players bleed
  *
- * Copyright (C) 2011 snowleo
+ * Copyright (C) 2011-2012 snowleo
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -34,6 +34,8 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	private transient Commands commands;
 	private transient Metrics metrics = null;
 	private transient boolean spawning = false;
+	private transient BloodStreamTimer bloodStreamTimer;
+	private transient int timerId = -1;
 
 	@Override
 	public void onDisable()
@@ -79,6 +81,7 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 		settings = new Settings(this);
 		storage = new ParticleStorage(this, settings.getMaxParticles());
 		commands = new Commands(this);
+		bloodStreamTimer = new BloodStreamTimer(this);
 
 		pluginManager.registerEvents(new ParticleEntityListener(this), this);
 		pluginManager.registerEvents(new ParticleProtectionListener(this), this);
@@ -88,6 +91,8 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 		{
 			getServer().getScheduler().scheduleAsyncDelayedTask(this, metricsStarter, metricsStarter.getDelay());
 		}
+
+		restartTimer();
 	}
 
 	@Override
@@ -150,5 +155,24 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	public void setMetrics(final Metrics metrics)
 	{
 		this.metrics = metrics;
+	}
+
+	@Override
+	public void restartTimer()
+	{
+		if (timerId >= 0)
+		{
+			getServer().getScheduler().cancelTask(timerId);
+		}
+		if (settings.getBloodstreamTime() > 0 && settings.getBloodstreamPercentage() > 0)
+		{
+			timerId = getServer().getScheduler().scheduleSyncRepeatingTask(this, bloodStreamTimer, settings.getBloodstreamInterval(), settings.getBloodstreamInterval());
+		}
+	}
+
+	@Override
+	public BloodStreamTimer getTimer()
+	{
+		return bloodStreamTimer;
 	}
 }

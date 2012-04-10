@@ -1,7 +1,7 @@
 /*
  * BleedingMobs - make your monsters and players bleed
  *
- * Copyright (C) 2011 snowleo
+ * Copyright (C) 2011-2012 snowleo
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -32,8 +32,12 @@ public interface IBleedingMobs extends Plugin
 	void setSpawning(boolean set);
 
 	Settings getSettings();
-	
+
 	Metrics getMetrics();
 
 	void setMetrics(Metrics metrics);
+
+	void restartTimer();
+
+	BloodStreamTimer getTimer();
 }

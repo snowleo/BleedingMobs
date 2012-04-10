@@ -1,7 +1,7 @@
 /*
  * BleedingMobs - make your monsters and players bleed
  *
- * Copyright (C) 2011 snowleo
+ * Copyright (C) 2011-2012 snowleo
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -18,22 +18,82 @@
 package me.snowleo.bleedingmobs;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.material.MaterialData;
 
 
-public enum ParticleType
+public class ParticleType
 {
-	DEATH(40, 12, 5, 15, DyeColor.RED, true, 25, 35, Material.REDSTONE),
-	ATTACK(50, 6, 5, 15, DyeColor.RED, true, 15, 25, Material.REDSTONE),
-	FALL(50, 6, 5, 15, DyeColor.RED, true, 5, 15, Material.REDSTONE),
-	PROJECTILE(50, 6, 5, 15, DyeColor.RED, true, 5, 15, Material.REDSTONE),
-	CREEPER(50, 0, 5, 15, DyeColor.LIME, false, 5, 15, Material.SULPHUR),
-	SKELETON(0, 100, 5, 15, DyeColor.WHITE, false, 5, 15, Material.REDSTONE),
-	ENDERMAN(50, 6, 5, 15, DyeColor.BLACK, true, 15, 25, Material.COAL),
-	ENDERDRAGON(50, 6, 5, 15, DyeColor.BLACK, true, 25, 35, Material.COAL),
-	CHICKEN(20, 0, 5, 15, DyeColor.RED, true, 5, 15, Material.FEATHER);
+	private static EnumMap<EntityType, ParticleType> map = new EnumMap<EntityType, ParticleType>(EntityType.class);
+
+	static
+	{
+		for (EntityType entityType : EntityType.values())
+		{
+			if (!entityType.isAlive())
+			{
+				continue;
+			}
+			if (entityType == EntityType.CREEPER)
+			{
+				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.LIME, false, 5, 15, new MaterialData(Material.SULPHUR)));
+			}
+			else if (entityType == EntityType.SKELETON || entityType == EntityType.GHAST)
+			{
+				map.put(entityType, new ParticleType(entityType, 0, 100, 5, 15, DyeColor.WHITE, false, 5, 15, new MaterialData(Material.BONE)));
+			}
+			else if (entityType == EntityType.ENDERMAN)
+			{
+				map.put(entityType, new ParticleType(entityType, 50, 50, 5, 15, DyeColor.BLACK, true, 15, 25, new MaterialData(Material.COAL)));
+			}
+			else if (entityType == EntityType.ENDER_DRAGON)
+			{
+				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.BLACK, true, 25, 35, new MaterialData(Material.COAL)));
+			}
+			else if (entityType == EntityType.CHICKEN)
+			{
+				map.put(entityType, new ParticleType(entityType, 20, 0, 5, 15, DyeColor.RED, true, 5, 15, new MaterialData(Material.FEATHER)));
+			}
+			else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE)
+			{
+				map.put(entityType, new ParticleType(entityType, 0, 0, 5, 15, DyeColor.GREEN, true, 5, 15, new MaterialData(Material.SLIME_BALL)));
+			}
+			else if (entityType == EntityType.BLAZE)
+			{
+				map.put(entityType, new ParticleType(entityType, 0, 0, 5, 15, DyeColor.YELLOW, true, 15, 25, new MaterialData(Material.BLAZE_POWDER)));
+			}
+			else if (entityType == EntityType.IRON_GOLEM)
+			{
+				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.SILVER, true, 15, 25, new MaterialData(Material.IRON_INGOT)));
+			}
+			else if (entityType == EntityType.SNOWMAN)
+			{
+				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.WHITE, true, 15, 25, new MaterialData(Material.SNOW_BALL)));
+			}
+			else
+			{
+				map.put(entityType, new ParticleType(entityType, 50, 50, 5, 15, DyeColor.RED, true, 15, 25, new MaterialData(Material.REDSTONE)));
+			}
+		}
+
+	}
+
+	public static Collection<ParticleType> values()
+	{
+		return map.values();
+	}
+
+	public static ParticleType get(EntityType entityType)
+	{
+		return map.get(entityType);
+	}
+	private final EntityType entityType;
+	private final String entityName;
 	private int woolChance;
 	private int boneChance;
 	private int particleLifeFrom;
@@ -45,7 +105,7 @@ public enum ParticleType
 	private int stainLifeTo = 120;
 	private int amountFrom;
 	private int amountTo;
-	private Material particleMaterial;
+	private MaterialData particleMaterial;
 	private transient EnumSet<Material> saturatedMats = EnumSet.copyOf(Arrays.asList(new Material[]
 			{
 				Material.GRASS,
@@ -61,13 +121,18 @@ public enum ParticleType
 				Material.SOUL_SAND,
 				Material.NETHERRACK,
 				Material.CLAY,
-				Material.SNOW_BLOCK
+				Material.SNOW_BLOCK,
+				Material.BRICK,
+				Material.MOSSY_COBBLESTONE
 			}));
 
-	private ParticleType(final int woolChance, final int boneChance, final int particleLifeFrom,
-						 final int particleLifeTo, final DyeColor woolColor, final boolean stainsFloor,
-						 final int amountFrom, final int amountTo, final Material particleMaterial)
+	private ParticleType(final EntityType entityType, final int woolChance, final int boneChance,
+						 final int particleLifeFrom, final int particleLifeTo, final DyeColor woolColor,
+						 final boolean stainsFloor, final int amountFrom, final int amountTo,
+						 final MaterialData particleMaterial)
 	{
+		this.entityType = entityType;
+		this.entityName = entityType.toString().replaceAll("_", "");
 		this.woolChance = woolChance;
 		this.boneChance = boneChance;
 		this.particleLifeFrom = particleLifeFrom;
@@ -199,13 +264,24 @@ public enum ParticleType
 		this.saturatedMats = saturatedMats;
 	}
 
-	public Material getParticleMaterial()
+	public MaterialData getParticleMaterial()
 	{
 		return particleMaterial;
 	}
 
-	public void setParticleMaterial(final Material particleMaterial)
+	public void setParticleMaterial(final MaterialData particleMaterial)
 	{
 		this.particleMaterial = particleMaterial;
+	}
+
+	public EntityType getEntityType()
+	{
+		return entityType;
+	}
+
+	@Override
+	public String toString()
+	{
+		return entityName;
 	}
 }

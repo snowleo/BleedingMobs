@@ -1,7 +1,7 @@
 /*
  * BleedingMobs - make your monsters and players bleed
  *
- * Copyright (C) 2011 snowleo
+ * Copyright (C) 2011-2012 snowleo
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -17,117 +17,80 @@
  */
 package me.snowleo.bleedingmobs;
 
-import org.bukkit.Location;
-import org.bukkit.entity.*;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.permissions.Permission;
 
 
 class ParticleEntityListener implements Listener
 {
 	private final transient IBleedingMobs plugin;
+	private final transient Permission bloodstrike;
 
 	public ParticleEntityListener(final IBleedingMobs plugin)
 	{
 		super();
 		this.plugin = plugin;
+		this.bloodstrike = plugin.getServer().getPluginManager().getPermission("bleedingmobs.bloodstrike");
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onEntityDamage(final EntityDamageEvent event)
+	public void onEntityDamageByEntity(final EntityDamageByEntityEvent event)
 	{
 		if (event.isCancelled() && !plugin.getSettings().isBleedingWhenCanceled())
 		{
 			return;
 		}
-		if (event instanceof EntityDamageByEntityEvent)
+		if (plugin.getSettings().isPermissionOnly()
+			&& !((event.getDamager() instanceof Player
+				  && ((Player)event.getDamager()).hasPermission(bloodstrike))
+				 || (event.getDamager() instanceof Projectile
+					 && ((Projectile)event.getDamager()).getShooter() instanceof Player
+					 && ((Player)((Projectile)event.getDamager()).getShooter()).hasPermission(bloodstrike))))
 		{
-			final EntityDamageByEntityEvent entityEvent = (EntityDamageByEntityEvent)event;
-			final Location loc = entityEvent.getEntity().getLocation();
-			if (!plugin.isWorldEnabled(loc.getWorld()))
-			{
-				return;
-			}
-			if (event.getEntity() instanceof Creeper)
-			{
-				plugin.getStorage().createParticle(loc, ParticleType.CREEPER);
-			}
-			else if (event.getEntity() instanceof Skeleton)
-			{
-				plugin.getStorage().createParticle(loc, ParticleType.SKELETON);
-			}
-			else if (event.getEntity() instanceof Enderman)
-			{
-				plugin.getStorage().createParticle(loc, ParticleType.ENDERMAN);
-			}
-			else if (event.getEntity() instanceof EnderDragon)
-			{
-				plugin.getStorage().createParticle(loc, ParticleType.ENDERDRAGON);
-			}
-			else if (event.getEntity() instanceof Chicken)
-			{
-				plugin.getStorage().createParticle(loc, ParticleType.CHICKEN);
-			}
-			else if (entityEvent.getDamager() instanceof Projectile && event.getEntity() instanceof LivingEntity)
-			{
-				plugin.getStorage().createParticle(loc, ParticleType.PROJECTILE);
-			}
-			else if (event.getEntity() instanceof LivingEntity)
-			{
-				plugin.getStorage().createParticle(loc, ParticleType.ATTACK);
-			}
+			return;
 		}
-		if (event.getCause() == EntityDamageEvent.DamageCause.FALL
-			&& event.getEntity() instanceof LivingEntity
-			&& !(event.getEntity() instanceof Creeper
-				 || event.getEntity() instanceof Skeleton
-				 || event.getEntity() instanceof Enderman
-				 || event.getEntity() instanceof EnderDragon))
+		ParticleStorage.BleedCause cause;
+		if (event.getDamager() instanceof Projectile)
 		{
-			final Location loc = event.getEntity().getLocation();
-			if (!plugin.isWorldEnabled(loc.getWorld()))
-			{
-				return;
-			}
-			plugin.getStorage().createParticle(loc, ParticleType.FALL);
+			cause = ParticleStorage.BleedCause.PROJECTILE;
+		}
+		else
+		{
+			cause = ParticleStorage.BleedCause.ATTACK;
+		}
+		if (event.getEntity() instanceof LivingEntity)
+		{
+			plugin.getStorage().createParticle((LivingEntity)event.getEntity(), cause);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onEntityDamage(final EntityDamageEvent event)
+	{
+		if (!plugin.getSettings().isPermissionOnly()
+			&& event.getCause() == EntityDamageEvent.DamageCause.FALL
+			&& event.getEntity() instanceof LivingEntity)
+		{
+			plugin.getStorage().createParticle((LivingEntity)event.getEntity(), ParticleStorage.BleedCause.FALL);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDeath(final EntityDeathEvent event)
 	{
-		final Location loc = event.getEntity().getLocation();
-		if (!plugin.isWorldEnabled(loc.getWorld()))
+		plugin.getTimer().remove(event.getEntity());
+		if (plugin.getSettings().isPermissionOnly())
 		{
 			return;
 		}
-		if (event.getEntity() instanceof Creeper)
-		{
-			plugin.getStorage().createParticle(loc, ParticleType.CREEPER);
-		}
-		else if (event.getEntity() instanceof Skeleton)
-		{
-			plugin.getStorage().createParticle(loc, ParticleType.SKELETON);
-		}
-		else if (event.getEntity() instanceof Enderman)
-		{
-			plugin.getStorage().createParticle(loc, ParticleType.ENDERMAN);
-		}
-		else if (event.getEntity() instanceof EnderDragon)
-		{
-			plugin.getStorage().createParticle(loc, ParticleType.ENDERDRAGON);
-		}
-		else if (event.getEntity() instanceof Chicken)
-		{
-			plugin.getStorage().createParticle(loc, ParticleType.CHICKEN);
-		}
-		else if (event.getEntity() instanceof LivingEntity)
-		{
-			plugin.getStorage().createParticle(loc, ParticleType.DEATH);
-		}
+		plugin.getStorage().createParticle(event.getEntity(), ParticleStorage.BleedCause.DEATH);
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * BleedingMobs - make your monsters and players bleed
  *
- * Copyright (C) 2011 snowleo
+ * Copyright (C) 2011-2012 snowleo
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -23,8 +23,12 @@ import java.util.logging.Level;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Colorable;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.TexturedMaterial;
 
 
 public class Commands
@@ -42,6 +46,12 @@ public class Commands
 		allcommands.put("toggle-world", new ToggleWorld());
 		allcommands.put("set", new SetCommand());
 		allcommands.put("set-maxparticles", new MaxParticles());
+		allcommands.put("set-fallpercentage", new FallPercentage());
+		allcommands.put("set-deathpercentage", new DeathPercentage());
+		allcommands.put("set-projectilepercentage", new ProjectilePercentage());
+		allcommands.put("set-bloodstreampercentage", new BloodstreamPercentage());
+		allcommands.put("set-bloodstreaminterval", new BloodstreamInterval());
+		allcommands.put("set-bloodstreamtime", new BloodstreamTime());
 		allcommands.put("set-bleedwhencanceled", new BleedWhenCanceled());
 		for (ParticleType particleType : ParticleType.values())
 		{
@@ -81,6 +91,7 @@ public class Commands
 			plugin.getSettings().loadConfig();
 			changeConfig(sender, args, plugin.getSettings());
 			plugin.getSettings().saveConfig();
+			plugin.restartTimer();
 		}
 	}
 
@@ -140,8 +151,9 @@ public class Commands
 		{
 			try
 			{
-				if (plugin.getMetrics() != null) {
-					plugin.getMetrics().disable(plugin);
+				if (plugin.getMetrics() != null)
+				{
+					plugin.getMetrics().disable();
 					sender.sendMessage("Metrics disabled.");
 				}
 			}
@@ -256,7 +268,7 @@ public class Commands
 	}
 
 
-	private class MaxParticles extends AbstractConfigCommand
+	private abstract class AbstractConfigIntCommand extends AbstractConfigCommand
 	{
 		@Override
 		public void changeConfig(final CommandSender sender, final String[] args, final Settings settings)
@@ -266,9 +278,89 @@ public class Commands
 				sender.sendMessage("You have to set the number.");
 				return;
 			}
-			final int newMaxParticles = Integer.parseInt(args[0]);
-			plugin.getStorage().changeMaxParticles(newMaxParticles - settings.getMaxParticles());
-			settings.setMaxParticles(newMaxParticles);
+			final int value = Integer.parseInt(args[0]);
+			final int set = changeConfig(sender, value, settings);
+			sender.sendMessage("Value set to " + set);
+		}
+
+		public abstract int changeConfig(final CommandSender sender, final int value, final Settings settings);
+	}
+
+
+	private class MaxParticles extends AbstractConfigIntCommand
+	{
+		@Override
+		public int changeConfig(final CommandSender sender, final int value, final Settings settings)
+		{
+			plugin.getStorage().changeMaxParticles(value - settings.getMaxParticles());
+			settings.setMaxParticles(value);
+			return settings.getMaxParticles();
+		}
+	}
+
+
+	private class FallPercentage extends AbstractConfigIntCommand
+	{
+		@Override
+		public int changeConfig(final CommandSender sender, final int value, final Settings settings)
+		{
+			settings.setFallPercentage(Math.max(0, value));
+			return settings.getFallPercentage();
+		}
+	}
+
+
+	private class DeathPercentage extends AbstractConfigIntCommand
+	{
+		@Override
+		public int changeConfig(final CommandSender sender, final int value, final Settings settings)
+		{
+			settings.setDeathPercentage(Math.max(0, value));
+			return settings.getDeathPercentage();
+		}
+	}
+
+
+	private class ProjectilePercentage extends AbstractConfigIntCommand
+	{
+		@Override
+		public int changeConfig(final CommandSender sender, final int value, final Settings settings)
+		{
+			settings.setProjectilePercentage(Math.max(0, value));
+			return settings.getProjectilePercentage();
+		}
+	}
+
+
+	private class BloodstreamPercentage extends AbstractConfigIntCommand
+	{
+		@Override
+		public int changeConfig(final CommandSender sender, final int value, final Settings settings)
+		{
+			settings.setBloodstreamPercentage(Math.max(0, value));
+			return settings.getBloodstreamPercentage();
+		}
+	}
+
+
+	private class BloodstreamInterval extends AbstractConfigIntCommand
+	{
+		@Override
+		public int changeConfig(final CommandSender sender, final int value, final Settings settings)
+		{
+			settings.setBloodstreamInterval(Math.max(1, value));
+			return settings.getBloodstreamInterval();
+		}
+	}
+
+
+	private class BloodstreamTime extends AbstractConfigIntCommand
+	{
+		@Override
+		public int changeConfig(final CommandSender sender, final int value, final Settings settings)
+		{
+			settings.setBloodstreamTime(Math.max(0, value));
+			return settings.getBloodstreamTime();
 		}
 	}
 
@@ -354,7 +446,7 @@ public class Commands
 			}
 			else if ("particlematerial".equals(key))
 			{
-				final Material mat = parseMaterial(args[1], sender);
+				final MaterialData mat = parseMaterial(args.length > 2 ? args[2] : args[1], args.length > 2 ? args[1] : null, sender);
 				if (mat != null)
 				{
 					type.setParticleMaterial(mat);
@@ -398,48 +490,73 @@ public class Commands
 			}
 			else if ("saturatedmats".equals(key) && args[1].equalsIgnoreCase("add"))
 			{
-				final Material mat = parseMaterial(args[2], sender);
+				final MaterialData mat = parseMaterial(args[2], null, sender);
 				if (mat != null)
 				{
-					type.getSaturatedMaterials().add(mat);
+					type.getSaturatedMaterials().add(mat.getItemType());
 					sender.sendMessage("Material " + mat.toString().replace('_', '-').toLowerCase(Locale.ENGLISH) + " added to saturated materials.");
 				}
 			}
 			else if ("saturatedmats".equals(key) && args[1].equalsIgnoreCase("remove"))
 			{
-				final Material mat = parseMaterial(args[2], sender);
+				final MaterialData mat = parseMaterial(args[2], null, sender);
 				if (mat != null)
 				{
-					type.getSaturatedMaterials().remove(mat);
+					type.getSaturatedMaterials().remove(mat.getItemType());
 					sender.sendMessage("Material " + mat.toString().replace('_', '-').toLowerCase(Locale.ENGLISH) + " removed from saturated materials.");
 				}
 			}
 		}
 
-		private Material parseMaterial(final String arg, final CommandSender sender) throws NumberFormatException
+		private MaterialData parseMaterial(final String arg, final String argData, final CommandSender sender) throws NumberFormatException
 		{
 			final String materialName = arg.replaceAll("[_-]", "").toUpperCase(Locale.ENGLISH);
-			Material mat = null;
+			MaterialData mat = null;
 			if ("HAND".equals(materialName) && sender instanceof Player
 				&& ((Player)sender).getItemInHand() != null)
 			{
-				mat = ((Player)sender).getItemInHand().getType();
+				mat = ((Player)sender).getItemInHand().getData();
 			}
+			Block block;
 			if ("LOOKAT".equals(materialName) && sender instanceof Player
-				&& ((Player)sender).getTargetBlock(null, 100) != null)
+				&& (block = ((Player)sender).getTargetBlock(null, 100)) != null)
 			{
-				mat = ((Player)sender).getTargetBlock(null, 100).getType();
+				mat = block.getType().getNewData(block.getData());
 			}
 			for (Material material : Material.values())
 			{
 				if (material.toString().replace("_", "").equals(materialName))
 				{
-					mat = material;
+					mat = material.getNewData((byte)0);
 				}
 			}
 			if (mat == null)
 			{
-				mat = Material.getMaterial(Integer.parseInt(arg));
+				mat = Material.getMaterial(Integer.parseInt(arg)).getNewData((byte)0);
+			}
+			if (argData != null && !argData.isEmpty())
+			{
+				final String particleMatData = argData.toUpperCase(Locale.ENGLISH).replaceAll("[_-]", "");
+				if (mat instanceof Colorable)
+				{
+					for (DyeColor dyeColor : DyeColor.values())
+					{
+						if (dyeColor.toString().replace("_", "").equals(particleMatData))
+						{
+							((Colorable)mat).setColor(dyeColor);
+						}
+					}
+				}
+				if (mat instanceof TexturedMaterial)
+				{
+					for (Material texture : ((TexturedMaterial)mat).getTextures())
+					{
+						if (texture.toString().replace("_", "").equals(particleMatData))
+						{
+							((TexturedMaterial)mat).setMaterial(texture);
+						}
+					}
+				}
 			}
 			return mat;
 		}
