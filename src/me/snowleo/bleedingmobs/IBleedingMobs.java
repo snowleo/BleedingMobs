@@ -40,4 +40,6 @@ public interface IBleedingMobs extends Plugin
 	void restartTimer();
 
 	BloodStreamTimer getTimer();
+	
+	boolean setItemMergeRadius(World world);
 }

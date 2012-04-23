@@ -28,6 +28,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 
 
 class ParticleProtectionListener implements Listener
@@ -136,5 +137,11 @@ class ParticleProtectionListener implements Listener
 		{
 			event.setCancelled(true);
 		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onWorldLoad(final WorldLoadEvent event)
+	{
+		plugin.setItemMergeRadius(event.getWorld());
 	}
 }

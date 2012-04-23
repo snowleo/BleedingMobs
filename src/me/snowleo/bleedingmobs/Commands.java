@@ -92,6 +92,10 @@ public class Commands
 			changeConfig(sender, args, plugin.getSettings());
 			plugin.getSettings().saveConfig();
 			plugin.restartTimer();
+			for (World world : plugin.getServer().getWorlds())
+			{
+				plugin.setItemMergeRadius(world);
+			}
 		}
 	}
 

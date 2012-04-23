@@ -17,11 +17,15 @@
  */
 package me.snowleo.bleedingmobs;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,6 +40,7 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	private transient boolean spawning = false;
 	private transient BloodStreamTimer bloodStreamTimer;
 	private transient int timerId = -1;
+	private transient boolean cbPlusPlus = false;
 
 	@Override
 	public void onDisable()
@@ -62,7 +67,9 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 			}
 		}
 
-		if (getServer().getVersion().contains("CraftBukkit++"))
+		cbPlusPlus = getServer().getVersion().contains("CraftBukkit++");
+
+		if (cbPlusPlus)
 		{
 			try
 			{
@@ -70,15 +77,33 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 				itemMergeRadiusMethod.invoke(getServer(), 0.0);
 				getLogger().log(Level.INFO, "CraftBukkit++ detected. Item Merge Radius set to 0.0.");
 			}
+			catch (NoSuchMethodException ex)
+			{
+				// Ignore this, method has been removed in newer versions of CraftBukkit++
+			}
 			catch (Exception ex)
 			{
 				getLogger().log(Level.SEVERE, "Failed to inject into CraftBukkit++. BleedingMobs is now disabled.", ex);
 				setEnabled(false);
 				return;
 			}
+			if (!removeItemMergeRadiusCommand())
+			{
+				return;
+			}
 		}
 
 		settings = new Settings(this);
+		if (cbPlusPlus)
+		{
+			for (World world : getServer().getWorlds())
+			{
+				if (!setItemMergeRadius(world))
+				{
+					return;
+				}
+			}
+		}
 		storage = new ParticleStorage(this, settings.getMaxParticles());
 		commands = new Commands(this);
 		bloodStreamTimer = new BloodStreamTimer(this);
@@ -93,6 +118,64 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 		}
 
 		restartTimer();
+	}
+
+	private boolean removeItemMergeRadiusCommand()
+	{
+		try
+		{
+			final Field commandMapField = getServer().getClass().getDeclaredField("commandMap");
+			commandMapField.setAccessible(true);
+			final SimpleCommandMap scm = (SimpleCommandMap)commandMapField.get(getServer());
+			final Field mapField = scm.getClass().getDeclaredField("knownCommands");
+			mapField.setAccessible(true);
+			final Map<String, Command> map = (Map<String, Command>)mapField.get(scm);
+			for (final Iterator<Map.Entry<String, Command>> it = map.entrySet().iterator(); it.hasNext();)
+			{
+				final Map.Entry<String, Command> entry = it.next();
+				if (entry.getValue().getClass().getName().contains("ItemMergeRadiusCommand"))
+				{
+					it.remove();
+				}
+			}
+			getLogger().log(Level.INFO, "CraftBukkit++ detected. Disabled Item Merge Radius Command.");
+		}
+		catch (Exception ex)
+		{
+			getLogger().log(Level.SEVERE, "Failed to inject into CraftBukkit++. BleedingMobs is now disabled.", ex);
+			setEnabled(false);
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean setItemMergeRadius(final World world)
+	{
+		if (cbPlusPlus)
+		{
+			try
+			{
+				if (!settings.isWorldEnabled(world))
+				{
+					return true;
+				}
+				final Method itemMergeRadiusMethod = world.getClass().getMethod("setItemMergeRadius", double.class);
+				itemMergeRadiusMethod.invoke(world, 0.0);
+				getLogger().log(Level.INFO, "CraftBukkit++ detected. Item Merge Radius set to 0.0 in world " + world.getName() + ".");
+			}
+			catch (NoSuchMethodException ex)
+			{
+				// Ignore this, method is only available in newer versions of CraftBukkit++
+			}
+			catch (Exception ex)
+			{
+				getLogger().log(Level.SEVERE, "Failed to inject into CraftBukkit++. BleedingMobs is now disabled.", ex);
+				setEnabled(false);
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
