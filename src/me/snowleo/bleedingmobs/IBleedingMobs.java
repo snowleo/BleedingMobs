@@ -17,6 +17,7 @@
  */
 package me.snowleo.bleedingmobs;
 
+import java.util.UUID;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
@@ -42,4 +43,7 @@ public interface IBleedingMobs extends Plugin
 	BloodStreamTimer getTimer();
 	
 	boolean setItemMergeRadius(World world);
+	
+	@Deprecated
+	boolean isParticleItem(final UUID uuid);
 }

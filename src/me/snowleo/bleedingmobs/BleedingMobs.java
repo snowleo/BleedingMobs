@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -257,5 +258,17 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	public BloodStreamTimer getTimer()
 	{
 		return bloodStreamTimer;
+	}
+
+	/**
+	 *
+	 * @deprecated Use getStorage().isParticleItem(id) instead.
+	 *
+	 */
+	@Override
+	@Deprecated
+	public boolean isParticleItem(final UUID uuid)
+	{
+		return getStorage().isParticleItem(uuid);
 	}
 }
