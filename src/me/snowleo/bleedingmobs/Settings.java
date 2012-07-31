@@ -22,7 +22,6 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
 import org.bukkit.material.Colorable;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.TexturedMaterial;
@@ -38,6 +37,7 @@ public class Settings
 	private transient final IBleedingMobs plugin;
 	private transient boolean showMetricsInfo = true;
 	private transient boolean permissionOnly = false;
+	private transient int attackPercentage = 100;
 	private transient int fallPercentage = 60;
 	private transient int deathPercentage = 150;
 	private transient int projectilePercentage = 60;
@@ -66,6 +66,7 @@ public class Settings
 		bleedWhenCanceled = config.getBoolean("bleed-when-canceled", false);
 		showMetricsInfo = config.getBoolean("show-metrics-info", true);
 		permissionOnly = config.getBoolean("permission-only", false);
+		attackPercentage = Math.max(0, config.getInt("attack-percentage", 100));
 		fallPercentage = Math.max(0, config.getInt("fall-percentage", 60));
 		deathPercentage = Math.max(0, config.getInt("death-percentage", 200));
 		projectilePercentage = Math.max(0, config.getInt("projectile-percentage", 60));
@@ -186,6 +187,7 @@ public class Settings
 		config.set("bleed-when-canceled", bleedWhenCanceled);
 		config.set("show-metrics-info", false);
 		config.set("permission-only", permissionOnly);
+		config.set("attack-percentage", attackPercentage);
 		config.set("fall-percentage", fallPercentage);
 		config.set("death-percentage", deathPercentage);
 		config.set("projectile-percentage", projectilePercentage);
@@ -310,6 +312,16 @@ public class Settings
 	public void setBloodstreamInterval(int bloodstreamInterval)
 	{
 		this.bloodstreamInterval = bloodstreamInterval;
+	}
+
+	public int getAttackPercentage()
+	{
+		return attackPercentage;
+	}
+
+	public void setAttackPercentage(int attackPercentage)
+	{
+		this.attackPercentage = attackPercentage;
 	}
 
 	public int getFallPercentage()

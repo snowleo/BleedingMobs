@@ -105,7 +105,7 @@ public class ParticleStorage
 			break;
 		case ATTACK:
 		default:
-			percentage = 100;
+			percentage = plugin.getSettings().getAttackPercentage();
 			bones = false;
 			break;
 		}

@@ -46,6 +46,7 @@ public class Commands
 		allcommands.put("toggle-world", new ToggleWorld());
 		allcommands.put("set", new SetCommand());
 		allcommands.put("set-maxparticles", new MaxParticles());
+		allcommands.put("set-attackpercentage", new AttackPercentage());
 		allcommands.put("set-fallpercentage", new FallPercentage());
 		allcommands.put("set-deathpercentage", new DeathPercentage());
 		allcommands.put("set-projectilepercentage", new ProjectilePercentage());
@@ -299,6 +300,17 @@ public class Commands
 			plugin.getStorage().changeMaxParticles(value - settings.getMaxParticles());
 			settings.setMaxParticles(value);
 			return settings.getMaxParticles();
+		}
+	}
+
+
+	private class AttackPercentage extends AbstractConfigIntCommand
+	{
+		@Override
+		public int changeConfig(final CommandSender sender, final int value, final Settings settings)
+		{
+			settings.setAttackPercentage(Math.max(0, value));
+			return settings.getAttackPercentage();
 		}
 	}
 
