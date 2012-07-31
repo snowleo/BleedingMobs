@@ -9,7 +9,7 @@ commands:
     aliases: [bm]
     permission: bleedingmobs.admin
     
-permission:
+permissions:
   bleedingmobs.admin:
     description: Allow access to admin command
     default: op
