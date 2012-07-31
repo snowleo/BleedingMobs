@@ -31,14 +31,13 @@ import org.bukkit.permissions.Permission;
 
 class ParticleEntityListener implements Listener
 {
+	private static final String BLEEDINGMOBS_BLOODSTRIKE = "bleedingmobs.bloodstrike";
 	private final transient IBleedingMobs plugin;
-	private final transient Permission bloodstrike;
 
 	public ParticleEntityListener(final IBleedingMobs plugin)
 	{
 		super();
 		this.plugin = plugin;
-		this.bloodstrike = plugin.getServer().getPluginManager().getPermission("bleedingmobs.bloodstrike");
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -50,10 +49,10 @@ class ParticleEntityListener implements Listener
 		}
 		if (plugin.getSettings().isPermissionOnly()
 			&& !((event.getDamager() instanceof Player
-				  && ((Player)event.getDamager()).hasPermission(bloodstrike))
+				  && ((Player)event.getDamager()).hasPermission(BLEEDINGMOBS_BLOODSTRIKE))
 				 || (event.getDamager() instanceof Projectile
 					 && ((Projectile)event.getDamager()).getShooter() instanceof Player
-					 && ((Player)((Projectile)event.getDamager()).getShooter()).hasPermission(bloodstrike))))
+					 && ((Player)((Projectile)event.getDamager()).getShooter()).hasPermission(BLEEDINGMOBS_BLOODSTRIKE))))
 		{
 			return;
 		}

@@ -44,16 +44,17 @@ public class Settings
 	private transient int bloodstreamPercentage = 10;
 	private transient int bloodstreamTime = 200;
 	private transient int bloodstreamInterval = 10;
-	
+
 	public Settings(final IBleedingMobs plugin)
 	{
 		this.plugin = plugin;
 		loadConfig();
 		saveConfig();
 	}
-	
+
 	public final void loadConfig()
 	{
+		plugin.reloadConfig();
 		final FileConfiguration config = plugin.getConfig();
 		bleedingEnabled = config.getBoolean("enabled", true);
 		final int newMaxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
@@ -156,15 +157,11 @@ public class Settings
 					particleType.setParticleMaterial(matData);
 				}
 			}
-			if (particleType.getEntityType() == EntityType.SKELETON && particleType.getParticleMaterial().getItemType() == Material.REDSTONE)
-			{
-				particleType.setParticleMaterial(Material.BONE.getNewData((byte)0));
-			}
 		}
 		final List<String> coll = config.getStringList("worlds");
 		worlds = new HashSet<String>(coll == null ? Collections.<String>emptyList() : coll);
 	}
-	
+
 	public final void saveConfig()
 	{
 		final FileConfiguration config = plugin.getConfig();
@@ -183,7 +180,7 @@ public class Settings
 								+ "When permission-only is set, then everything will only bleed, when they are hit \n"
 								+ "by a player with bleedingmobs.bloodstrike permission. \n"
 								+ "This will disable bleeding on death and on fall damage.\n");
-		
+
 		config.set("enabled", bleedingEnabled);
 		config.set("max-particles", maxParticles);
 		config.set("bleed-when-canceled", bleedWhenCanceled);
@@ -229,117 +226,117 @@ public class Settings
 		config.set("worlds", new ArrayList<String>(worlds));
 		plugin.saveConfig();
 	}
-	
+
 	public boolean isWorldEnabled(final World world)
 	{
 		return worlds.isEmpty() || worlds.contains(world.getName());
 	}
-	
+
 	public int getMaxParticles()
 	{
 		return maxParticles;
 	}
-	
+
 	public boolean isBleedingWhenCanceled()
 	{
 		return bleedWhenCanceled;
 	}
-	
+
 	public boolean isBleedingEnabled()
 	{
 		return bleedingEnabled;
 	}
-	
+
 	public void setBleedingEnabled(final boolean set)
 	{
 		this.bleedingEnabled = set;
 	}
-	
+
 	public Set<String> getWorlds()
 	{
 		return worlds;
 	}
-	
+
 	public void setMaxParticles(final int maxParticles)
 	{
 		this.maxParticles = maxParticles;
 	}
-	
+
 	public void setBleedWhenCanceled(final boolean set)
 	{
 		this.bleedWhenCanceled = set;
 	}
-	
+
 	public boolean isShowMetricsInfo()
 	{
 		return this.showMetricsInfo;
 	}
-	
+
 	public boolean isPermissionOnly()
 	{
 		return permissionOnly;
 	}
-	
+
 	public void setPermissionOnly(boolean permissionOnly)
 	{
 		this.permissionOnly = permissionOnly;
 	}
-	
+
 	public int getBloodstreamPercentage()
 	{
 		return bloodstreamPercentage;
 	}
-	
+
 	public void setBloodstreamPercentage(int bloodstreamPercentage)
 	{
 		this.bloodstreamPercentage = bloodstreamPercentage;
 	}
-	
+
 	public int getBloodstreamTime()
 	{
 		return bloodstreamTime;
 	}
-	
+
 	public void setBloodstreamTime(int bloodstreamTime)
 	{
 		this.bloodstreamTime = bloodstreamTime;
 	}
-	
+
 	public int getBloodstreamInterval()
 	{
 		return bloodstreamInterval;
 	}
-	
+
 	public void setBloodstreamInterval(int bloodstreamInterval)
 	{
 		this.bloodstreamInterval = bloodstreamInterval;
 	}
-	
+
 	public int getFallPercentage()
 	{
 		return fallPercentage;
 	}
-	
+
 	public void setFallPercentage(int fallPercentage)
 	{
 		this.fallPercentage = fallPercentage;
 	}
-	
+
 	public int getDeathPercentage()
 	{
 		return deathPercentage;
 	}
-	
+
 	public void setDeathPercentage(int deathPercentage)
 	{
 		this.deathPercentage = deathPercentage;
 	}
-	
+
 	public int getProjectilePercentage()
 	{
 		return projectilePercentage;
 	}
-	
+
 	public void setProjectilePercentage(int projectilePercentage)
 	{
 		this.projectilePercentage = projectilePercentage;
