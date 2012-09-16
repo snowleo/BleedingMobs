@@ -23,6 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.entity.CraftItem;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -88,6 +89,7 @@ public class Particle implements Runnable
 		{
 			stack = new ItemStack(type.getParticleMaterial().getItemType(), 1, type.getParticleMaterial().getData());
 		}
+		stack.addUnsafeEnchantment(Enchantment.DURABILITY, random.nextInt());
 		state = State.INIT;
 		taskId = scheduler.scheduleSyncRepeatingTask(plugin, this, 0, lifetime);
 	}
