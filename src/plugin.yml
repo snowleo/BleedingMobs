@@ -1,6 +1,6 @@
 name: BleedingMobs
 main: me.snowleo.bleedingmobs.BleedingMobs
-version: 3.7
+version: 3.7a
 authors: [snowleo]
 commands:
   bleedingmobs:
@@ -16,3 +16,6 @@ permissions:
   bleedingmobs.bloodstrike:
     description: When enabled in config, only players with this permission will make other creatures and players bleed
     default: true
+  bleedingmobs.noblood:
+    description: Players with this permission will not bleed
+    default: false

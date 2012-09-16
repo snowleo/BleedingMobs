@@ -89,7 +89,7 @@ public class Particle implements Runnable
 		{
 			stack = new ItemStack(type.getParticleMaterial().getItemType(), 1, type.getParticleMaterial().getData());
 		}
-		stack.addUnsafeEnchantment(Enchantment.DURABILITY, random.nextInt());
+		stack.addUnsafeEnchantment(Enchantment.DURABILITY, random.nextInt(Integer.MAX_VALUE));
 		state = State.INIT;
 		taskId = scheduler.scheduleSyncRepeatingTask(plugin, this, 0, lifetime);
 	}

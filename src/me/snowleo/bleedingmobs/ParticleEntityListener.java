@@ -26,12 +26,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.permissions.Permission;
 
 
 class ParticleEntityListener implements Listener
 {
 	private static final String BLEEDINGMOBS_BLOODSTRIKE = "bleedingmobs.bloodstrike";
+	private static final String BLEEDINGMOBS_NOBLOOD = "bleedingmobs.noblood";
 	private final transient IBleedingMobs plugin;
 
 	public ParticleEntityListener(final IBleedingMobs plugin)
@@ -56,6 +56,11 @@ class ParticleEntityListener implements Listener
 		{
 			return;
 		}
+		if ((event.getEntity() instanceof Player)
+			&& ((Player)event.getEntity()).hasPermission(BLEEDINGMOBS_NOBLOOD))
+		{
+			return;
+		}
 		ParticleStorage.BleedCause cause;
 		if (event.getDamager() instanceof Projectile)
 		{
@@ -76,7 +81,9 @@ class ParticleEntityListener implements Listener
 	{
 		if (!plugin.getSettings().isPermissionOnly()
 			&& event.getCause() == EntityDamageEvent.DamageCause.FALL
-			&& event.getEntity() instanceof LivingEntity)
+			&& event.getEntity() instanceof LivingEntity
+			&& !((event.getEntity() instanceof Player)
+				 && ((Player)event.getEntity()).hasPermission(BLEEDINGMOBS_NOBLOOD)))
 		{
 			plugin.getStorage().createParticle((LivingEntity)event.getEntity(), ParticleStorage.BleedCause.FALL);
 		}
@@ -86,7 +93,9 @@ class ParticleEntityListener implements Listener
 	public void onEntityDeath(final EntityDeathEvent event)
 	{
 		plugin.getTimer().remove(event.getEntity());
-		if (plugin.getSettings().isPermissionOnly())
+		if (plugin.getSettings().isPermissionOnly()
+			|| ((event.getEntity() instanceof Player)
+				&& ((Player)event.getEntity()).hasPermission(BLEEDINGMOBS_NOBLOOD)))
 		{
 			return;
 		}
