@@ -15,8 +15,10 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.listener;
 
+import me.snowleo.bleedingmobs.IBleedingMobs;
+import me.snowleo.bleedingmobs.particles.BleedCause;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -28,7 +30,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 
-class ParticleEntityListener implements Listener
+public class ParticleEntityListener implements Listener
 {
 	private static final String BLEEDINGMOBS_BLOODSTRIKE = "bleedingmobs.bloodstrike";
 	private static final String BLEEDINGMOBS_NOBLOOD = "bleedingmobs.noblood";
@@ -61,18 +63,18 @@ class ParticleEntityListener implements Listener
 		{
 			return;
 		}
-		ParticleStorage.BleedCause cause;
+		BleedCause cause;
 		if (event.getDamager() instanceof Projectile)
 		{
-			cause = ParticleStorage.BleedCause.PROJECTILE;
+			cause = BleedCause.PROJECTILE;
 		}
 		else
 		{
-			cause = ParticleStorage.BleedCause.ATTACK;
+			cause = BleedCause.ATTACK;
 		}
 		if (event.getEntity() instanceof LivingEntity)
 		{
-			plugin.getStorage().createParticle((LivingEntity)event.getEntity(), cause);
+			plugin.getStorage().createParticles((LivingEntity)event.getEntity(), cause);
 		}
 	}
 
@@ -85,7 +87,7 @@ class ParticleEntityListener implements Listener
 			&& !((event.getEntity() instanceof Player)
 				 && ((Player)event.getEntity()).hasPermission(BLEEDINGMOBS_NOBLOOD)))
 		{
-			plugin.getStorage().createParticle((LivingEntity)event.getEntity(), ParticleStorage.BleedCause.FALL);
+			plugin.getStorage().createParticles((LivingEntity)event.getEntity(), BleedCause.FALL);
 		}
 	}
 
@@ -99,6 +101,6 @@ class ParticleEntityListener implements Listener
 		{
 			return;
 		}
-		plugin.getStorage().createParticle(event.getEntity(), ParticleStorage.BleedCause.DEATH);
+		plugin.getStorage().createParticles(event.getEntity(), BleedCause.DEATH);
 	}
 }

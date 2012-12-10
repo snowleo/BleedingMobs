@@ -18,6 +18,8 @@
 package me.snowleo.bleedingmobs;
 
 import java.util.*;
+import me.snowleo.bleedingmobs.particles.ParticleType;
+import me.snowleo.bleedingmobs.particles.Util;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -60,7 +62,7 @@ public class Settings
 		final int newMaxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
 		if (plugin.getStorage() != null)
 		{
-			plugin.getStorage().changeMaxParticles(newMaxParticles - maxParticles);
+			plugin.getStorage().getItems().setLimit(newMaxParticles);
 		}
 		maxParticles = newMaxParticles;
 		bleedWhenCanceled = config.getBoolean("bleed-when-canceled", false);
@@ -128,7 +130,7 @@ public class Settings
 					particleMatData = parts[0];
 				}
 				final Material material = Material.matchMaterial(particleMatName.replaceAll("-", "_"));
-				if (material != null)
+				if (material != null && Util.isAllowedMaterial(material))
 				{
 					final MaterialData matData = material.getNewData((byte)0);
 					if (particleMatData != null && !particleMatData.isEmpty())

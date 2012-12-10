@@ -15,35 +15,26 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.commands.set.type;
 
-import java.util.UUID;
-import me.snowleo.bleedingmobs.metrics.Metrics;
-import me.snowleo.bleedingmobs.particles.Storage;
-import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import me.snowleo.bleedingmobs.IBleedingMobs;
+import me.snowleo.bleedingmobs.commands.AbstractTypeCommand;
+import me.snowleo.bleedingmobs.commands.parser.PercentageParser;
+import me.snowleo.bleedingmobs.particles.ParticleType;
+import org.bukkit.command.CommandSender;
 
+class BoneChance extends AbstractTypeCommand<Integer> {
 
-public interface IBleedingMobs extends Plugin
-{
-	Storage getStorage();
+	public BoneChance(ParticleType type, IBleedingMobs plugin)
+	{
+		super(type, plugin, new PercentageParser());
+	}
 
-	boolean isWorldEnabled(World world);
+	@Override
+	public void run(CommandSender sender, Integer bonechance, ParticleType type)
+	{
+		type.setBoneChance(bonechance);
+		sender.sendMessage("Bone chance set to " + bonechance + "%.");
+	}
 
-	boolean isSpawning();
-
-	void setSpawning(boolean set);
-
-	Settings getSettings();
-
-	Metrics getMetrics();
-
-	void setMetrics(Metrics metrics);
-
-	void restartTimer();
-
-	BloodStreamTask getTimer();
-
-	boolean isParticleItem(final UUID uuid);
 }

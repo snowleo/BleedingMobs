@@ -1,4 +1,4 @@
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.metrics;
 
 /*
  * Copyright 2011 Tyler Blair. All rights reserved.
@@ -49,6 +49,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.scheduler.BukkitTask;
 
 
 /**
@@ -116,7 +117,7 @@ public class Metrics
 	/**
 	 * Id of the scheduled task
 	 */
-	private volatile int taskId = -1;
+	private BukkitTask task = null;
 
 	public Metrics(final Plugin plugin) throws IOException
 	{
@@ -226,13 +227,13 @@ public class Metrics
 			}
 
 			// Is metrics already running?
-			if (taskId >= 0)
+			if (task != null)
 			{
 				return true;
 			}
 
 			// Begin hitting the server with glorious data
-			taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable()
+			task = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable()
 			{
 				private boolean firstPost = true;
 
@@ -244,10 +245,10 @@ public class Metrics
 						synchronized (optOutLock)
 						{
 							// Disable Task, if it is running and the server owner decided to opt-out
-							if (isOptOut() && taskId > 0)
+							if (isOptOut() && task != null)
 							{
-								plugin.getServer().getScheduler().cancelTask(taskId);
-								taskId = -1;
+								task.cancel();
+								task = null;
 								// Tell all plotters to stop gathering information.
 								for (Graph graph : graphs)
 								{
@@ -323,7 +324,7 @@ public class Metrics
 			}
 
 			// Enable Task, if it is not running
-			if (taskId < 0)
+			if (task != null)
 			{
 				start();
 			}
@@ -349,10 +350,10 @@ public class Metrics
 			}
 
 			// Disable Task, if it is running
-			if (taskId > 0)
+			if (task != null)
 			{
-				this.plugin.getServer().getScheduler().cancelTask(taskId);
-				taskId = -1;
+				task.cancel();
+				task = null;
 			}
 		}
 	}
@@ -363,7 +364,7 @@ public class Metrics
 	 *
 	 * @return the File object for the config file
 	 */
-	public File getConfigFile()
+	public final File getConfigFile()
 	{
 		// I believe the easiest way to get the base folder (e.g craftbukkit set via -P) for plugins to use
 		// is to abuse the plugin object we already have

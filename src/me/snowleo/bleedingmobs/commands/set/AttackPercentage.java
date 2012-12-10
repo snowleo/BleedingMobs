@@ -15,35 +15,26 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.commands.set;
 
-import java.util.UUID;
-import me.snowleo.bleedingmobs.metrics.Metrics;
-import me.snowleo.bleedingmobs.particles.Storage;
-import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import me.snowleo.bleedingmobs.IBleedingMobs;
+import me.snowleo.bleedingmobs.Settings;
+import me.snowleo.bleedingmobs.commands.AbstractConfigCommand;
+import me.snowleo.bleedingmobs.commands.parser.PercentageParser;
+import org.bukkit.command.CommandSender;
 
 
-public interface IBleedingMobs extends Plugin
+public class AttackPercentage extends AbstractConfigCommand<Integer>
 {
-	Storage getStorage();
+	public AttackPercentage(IBleedingMobs plugin)
+	{
+		super(plugin, new PercentageParser());
+	}
 
-	boolean isWorldEnabled(World world);
-
-	boolean isSpawning();
-
-	void setSpawning(boolean set);
-
-	Settings getSettings();
-
-	Metrics getMetrics();
-
-	void setMetrics(Metrics metrics);
-
-	void restartTimer();
-
-	BloodStreamTask getTimer();
-
-	boolean isParticleItem(final UUID uuid);
+	@Override
+	public void run(final CommandSender sender, final Integer value, final Settings settings)
+	{
+		settings.setAttackPercentage(value);
+		sender.sendMessage("Attack percentage set to " + value + "%.");
+	}
 }

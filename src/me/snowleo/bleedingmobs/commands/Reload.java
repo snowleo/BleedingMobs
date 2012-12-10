@@ -15,35 +15,24 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.commands;
 
-import java.util.UUID;
-import me.snowleo.bleedingmobs.metrics.Metrics;
-import me.snowleo.bleedingmobs.particles.Storage;
-import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import me.snowleo.bleedingmobs.IBleedingMobs;
+import me.snowleo.bleedingmobs.Settings;
+import me.snowleo.bleedingmobs.commands.parser.VoidParser;
+import org.bukkit.command.CommandSender;
 
 
-public interface IBleedingMobs extends Plugin
+class Reload extends AbstractConfigCommand<Void>
 {
-	Storage getStorage();
+	public Reload(IBleedingMobs plugin)
+	{
+		super(plugin, new VoidParser());
+	}
 
-	boolean isWorldEnabled(World world);
-
-	boolean isSpawning();
-
-	void setSpawning(boolean set);
-
-	Settings getSettings();
-
-	Metrics getMetrics();
-
-	void setMetrics(Metrics metrics);
-
-	void restartTimer();
-
-	BloodStreamTask getTimer();
-
-	boolean isParticleItem(final UUID uuid);
+	@Override
+	public void run(final CommandSender sender, final Void arg, final Settings settings)
+	{
+		sender.sendMessage("BleedingMobs " + plugin.getDescription().getVersion() + " reloaded.");
+	}
 }

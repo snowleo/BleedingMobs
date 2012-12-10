@@ -15,35 +15,24 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.commands.parser;
 
-import java.util.UUID;
-import me.snowleo.bleedingmobs.metrics.Metrics;
-import me.snowleo.bleedingmobs.particles.Storage;
-import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import java.util.Collections;
+import java.util.List;
+import org.bukkit.command.CommandSender;
 
 
-public interface IBleedingMobs extends Plugin
+public class VoidParser implements Parser<Void>
 {
-	Storage getStorage();
+	@Override
+	public Void parse(CommandSender sender, String[] args) throws ParserException
+	{
+		return null;
+	}
 
-	boolean isWorldEnabled(World world);
-
-	boolean isSpawning();
-
-	void setSpawning(boolean set);
-
-	Settings getSettings();
-
-	Metrics getMetrics();
-
-	void setMetrics(Metrics metrics);
-
-	void restartTimer();
-
-	BloodStreamTask getTimer();
-
-	boolean isParticleItem(final UUID uuid);
+	@Override
+	public List<String> getTabValues(String[] args)
+	{
+		return Collections.emptyList();
+	}
 }

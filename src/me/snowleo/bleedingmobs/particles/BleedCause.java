@@ -15,35 +15,45 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.particles;
 
-import java.util.UUID;
-import me.snowleo.bleedingmobs.metrics.Metrics;
-import me.snowleo.bleedingmobs.particles.Storage;
-import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import me.snowleo.bleedingmobs.Settings;
 
 
-public interface IBleedingMobs extends Plugin
+public enum BleedCause
 {
-	Storage getStorage();
+	ATTACK, DEATH, PROJECTILE, FALL, BLOODSTREAM;
 
-	boolean isWorldEnabled(World world);
+	public int getPercentages(Settings settings)
+	{
+		switch (this)
+		{
+		case BLOODSTREAM:
+			return settings.getBloodstreamPercentage();
+		case DEATH:
+			return settings.getDeathPercentage();
+		case FALL:
+			return settings.getFallPercentage();
+		case PROJECTILE:
+			return settings.getProjectilePercentage();
+		case ATTACK:
+		default:
+			return settings.getAttackPercentage();
+		}
+	}
 
-	boolean isSpawning();
-
-	void setSpawning(boolean set);
-
-	Settings getSettings();
-
-	Metrics getMetrics();
-
-	void setMetrics(Metrics metrics);
-
-	void restartTimer();
-
-	BloodStreamTask getTimer();
-
-	boolean isParticleItem(final UUID uuid);
+	public boolean dropBones()
+	{
+		switch (this)
+		{
+		case DEATH:
+			return true;
+		case BLOODSTREAM:
+		case FALL:
+		case PROJECTILE:
+		case ATTACK:
+		default:
+			return false;
+		}
+	}
 }

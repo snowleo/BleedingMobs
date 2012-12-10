@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.particles;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,13 +51,17 @@ public class ParticleType
 			{
 				map.put(entityType, new ParticleType(entityType, 50, 50, 5, 15, DyeColor.BLACK, true, 15, 25, new MaterialData(Material.COAL)));
 			}
-			else if (entityType == EntityType.ENDER_DRAGON)
+			else if (entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER)
 			{
 				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.BLACK, true, 25, 35, new MaterialData(Material.COAL)));
 			}
 			else if (entityType == EntityType.CHICKEN)
 			{
 				map.put(entityType, new ParticleType(entityType, 20, 0, 5, 15, DyeColor.RED, true, 5, 15, new MaterialData(Material.FEATHER)));
+			}
+			else if (entityType == EntityType.BAT)
+			{
+				map.put(entityType, new ParticleType(entityType, 20, 0, 5, 15, DyeColor.RED, true, 5, 15, new MaterialData(Material.COAL)));
 			}
 			else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE)
 			{
@@ -74,6 +78,10 @@ public class ParticleType
 			else if (entityType == EntityType.SNOWMAN)
 			{
 				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.WHITE, true, 15, 25, new MaterialData(Material.SNOW_BALL)));
+			}
+			else if (entityType == EntityType.MUSHROOM_COW)
+			{
+				map.put(entityType, new ParticleType(entityType, 50, 50, 5, 15, DyeColor.RED, true, 15, 25, new MaterialData(Material.RED_MUSHROOM)));
 			}
 			else
 			{
@@ -283,5 +291,10 @@ public class ParticleType
 	public String toString()
 	{
 		return entityName;
+	}
+	
+	public boolean isMagicMaterial()
+	{
+		return this.getParticleMaterial().getItemType() == Material.CAKE;
 	}
 }

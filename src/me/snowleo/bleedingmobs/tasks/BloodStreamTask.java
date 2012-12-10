@@ -15,20 +15,37 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.tasks;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
+import me.snowleo.bleedingmobs.IBleedingMobs;
+import me.snowleo.bleedingmobs.particles.BleedCause;
 import org.bukkit.entity.LivingEntity;
 
 
-public class BloodStreamTimer implements Runnable
+public class BloodStreamTask implements Runnable
 {
-	private final transient Map<LivingEntity, Integer> entities = new HashMap<LivingEntity, Integer>();
+	private final transient Map<UUID, BleedingEntity> entities = new HashMap<UUID, BleedingEntity>();
 	private final transient IBleedingMobs plugin;
 
-	public BloodStreamTimer(final IBleedingMobs plugin)
+
+	private class BleedingEntity
+	{
+		public WeakReference<LivingEntity> entity;
+		public int timeleft;
+
+		public BleedingEntity(LivingEntity entity, int timeleft)
+		{
+			this.entity = new WeakReference<LivingEntity>(entity);
+			this.timeleft = timeleft;
+		}
+	}
+
+	public BloodStreamTask(final IBleedingMobs plugin)
 	{
 		this.plugin = plugin;
 	}
@@ -39,17 +56,15 @@ public class BloodStreamTimer implements Runnable
 		synchronized (entities)
 		{
 			final int interval = plugin.getSettings().getBloodstreamInterval();
-			final Iterator<Map.Entry<LivingEntity, Integer>> iterator = entities.entrySet().iterator();
+			final Iterator<BleedingEntity> iterator = entities.values().iterator();
 			while (iterator.hasNext())
 			{
-				final Map.Entry<LivingEntity, Integer> entry = iterator.next();
-				int timeleft = entry.getValue();
-				timeleft -= interval;
-				final LivingEntity entity = entry.getKey();
-				if (timeleft > 0 && !entity.isDead() && entity.getLocation() != null)
+				final BleedingEntity entry = iterator.next();
+				entry.timeleft -= interval;
+				final LivingEntity entity = entry.entity.get();
+				if (entry.timeleft > 0 && entity != null && !entity.isDead() && entity.getLocation() != null)
 				{
-					plugin.getStorage().createParticle(entity, ParticleStorage.BleedCause.BLOODSTREAM);
-					entry.setValue(timeleft);
+					plugin.getStorage().createParticles(entity, BleedCause.BLOODSTREAM);
 				}
 				else
 				{
@@ -63,7 +78,7 @@ public class BloodStreamTimer implements Runnable
 	{
 		synchronized (entities)
 		{
-			entities.put(entity, plugin.getSettings().getBloodstreamTime());
+			entities.put(entity.getUniqueId(), new BleedingEntity(entity, plugin.getSettings().getBloodstreamTime()));
 		}
 	}
 
@@ -71,7 +86,7 @@ public class BloodStreamTimer implements Runnable
 	{
 		synchronized (entities)
 		{
-			entities.remove(entity);
+			entities.remove(entity.getUniqueId());
 		}
 	}
 }

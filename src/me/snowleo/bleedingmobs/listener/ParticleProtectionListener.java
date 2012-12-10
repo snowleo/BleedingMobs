@@ -15,23 +15,29 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.listener;
 
+import me.snowleo.bleedingmobs.IBleedingMobs;
+import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.entity.CraftItem;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.event.world.WorldLoadEvent;
 
 
-class ParticleProtectionListener implements Listener
+public class ParticleProtectionListener implements Listener
 {
 	private final transient IBleedingMobs plugin;
 
@@ -41,37 +47,40 @@ class ParticleProtectionListener implements Listener
 		this.plugin = plugin;
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockBreak(final BlockBreakEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (plugin.isWorldEnabled(loc.getWorld()) && plugin.getStorage().isUnbreakable(loc))
+		if (plugin.isWorldEnabled(loc.getWorld())
+			&& plugin.getStorage().getUnbreakables().contains(loc))
 		{
 			event.setCancelled(true);
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockBurn(final BlockBurnEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (plugin.isWorldEnabled(loc.getWorld()) && plugin.getStorage().isUnbreakable(loc))
+		if (plugin.isWorldEnabled(loc.getWorld())
+			&& plugin.getStorage().getUnbreakables().contains(loc))
 		{
 			event.setCancelled(true);
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockIgnite(final BlockIgniteEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (plugin.isWorldEnabled(loc.getWorld()) && plugin.getStorage().isUnbreakable(loc))
+		if (plugin.isWorldEnabled(loc.getWorld())
+			&& plugin.getStorage().getUnbreakables().contains(loc))
 		{
 			event.setCancelled(true);
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockPistonExtend(final BlockPistonExtendEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
@@ -81,7 +90,7 @@ class ParticleProtectionListener implements Listener
 		}
 		for (Block block : event.getBlocks())
 		{
-			if (plugin.getStorage().isUnbreakable(block.getLocation()))
+			if (plugin.getStorage().getUnbreakables().contains(block.getLocation()))
 			{
 				event.setCancelled(true);
 				break;
@@ -89,11 +98,12 @@ class ParticleProtectionListener implements Listener
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockPistonRetract(final BlockPistonRetractEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (plugin.isWorldEnabled(loc.getWorld()) && plugin.getStorage().isUnbreakable(event.getRetractLocation()))
+		if (plugin.isWorldEnabled(loc.getWorld())
+			&& plugin.getStorage().getUnbreakables().contains(event.getRetractLocation()))
 		{
 			event.setCancelled(true);
 		}
@@ -102,8 +112,20 @@ class ParticleProtectionListener implements Listener
 	@EventHandler(priority = EventPriority.LOW)
 	public void onChunkUnload(final ChunkUnloadEvent event)
 	{
-		plugin.getStorage().removeParticleItemFromChunk(event.getChunk());
-		plugin.getStorage().removeUnbreakableFromChunk(event.getChunk());
+		final Entity[] entities = event.getChunk().getEntities();
+		final BloodStreamTask timer = plugin.getTimer();
+		for (Entity entity : entities)
+		{
+			if (entity instanceof Item)
+			{
+				plugin.getStorage().getItems().restore((Item)entity);
+			}
+			if (entity instanceof LivingEntity)
+			{
+				timer.remove((LivingEntity)entity);
+			}
+		}
+		plugin.getStorage().getUnbreakables().removeByChunk(event.getChunk());
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -115,7 +137,7 @@ class ParticleProtectionListener implements Listener
 		}
 		for (Block block : event.blockList())
 		{
-			plugin.getStorage().removeUnbreakableBeforeExplosion(block.getLocation());
+			plugin.getStorage().getUnbreakables().restore(block.getLocation());
 		}
 	}
 
@@ -126,22 +148,38 @@ class ParticleProtectionListener implements Listener
 		{
 			return;
 		}
-		plugin.getStorage().removeUnbreakableBeforeExplosion(event.getBlock().getLocation());
+		plugin.getStorage().getUnbreakables().restore(event.getBlock().getLocation());
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerPickupItem(final PlayerPickupItemEvent event)
 	{
 		if (plugin.isWorldEnabled(event.getPlayer().getWorld())
-			&& plugin.getStorage().isParticleItem(((CraftItem)event.getItem()).getUniqueId()))
+			&& plugin.isParticleItem(event.getItem().getUniqueId()))
 		{
 			event.setCancelled(true);
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onWorldLoad(final WorldLoadEvent event)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onEntityTeleport(final EntityTeleportEvent event)
 	{
-		plugin.setItemMergeRadius(event.getWorld());
+		if (event.getEntityType() == EntityType.DROPPED_ITEM
+			&& plugin.isWorldEnabled(event.getFrom().getWorld())
+			&& plugin.isParticleItem(event.getEntity().getUniqueId()))
+		{
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onEntityCombust(final EntityCombustEvent event)
+	{
+		if (event.getEntityType() == EntityType.DROPPED_ITEM
+			&& plugin.isWorldEnabled(event.getEntity().getWorld())
+			&& plugin.isParticleItem(event.getEntity().getUniqueId()))
+		{
+			event.setCancelled(true);
+		}
 	}
 }

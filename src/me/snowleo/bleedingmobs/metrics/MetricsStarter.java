@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.metrics;
 
 import java.io.IOException;
 import java.util.logging.Level;
+import me.snowleo.bleedingmobs.IBleedingMobs;
 
 
 public class MetricsStarter implements Runnable
@@ -60,7 +61,8 @@ public class MetricsStarter implements Runnable
 	@Override
 	public void run()
 	{
-		if (metrics == null) {
+		if (metrics == null)
+		{
 			return;
 		}
 		metrics.addCustomData(new Metrics.Plotter()

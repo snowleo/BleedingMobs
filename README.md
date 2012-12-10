@@ -1,4 +1,4 @@
-BleedingMobs 3.6 for Bukkit 1.2.5-R1 (Minecraft 1.2.5)
+BleedingMobs 4.0 for Bukkit 1.4.5-R0.3 (Minecraft 1.4.5)
 ================================================
 
 **Not recommended for minors ;)**

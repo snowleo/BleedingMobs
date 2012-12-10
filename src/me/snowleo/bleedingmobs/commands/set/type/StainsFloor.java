@@ -15,35 +15,26 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.commands.set.type;
 
-import java.util.UUID;
-import me.snowleo.bleedingmobs.metrics.Metrics;
-import me.snowleo.bleedingmobs.particles.Storage;
-import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import me.snowleo.bleedingmobs.IBleedingMobs;
+import me.snowleo.bleedingmobs.commands.AbstractTypeCommand;
+import me.snowleo.bleedingmobs.commands.parser.BooleanParser;
+import me.snowleo.bleedingmobs.particles.ParticleType;
+import org.bukkit.command.CommandSender;
 
 
-public interface IBleedingMobs extends Plugin
+public class StainsFloor extends AbstractTypeCommand<Boolean>
 {
-	Storage getStorage();
+	public StainsFloor(ParticleType type, IBleedingMobs plugin)
+	{
+		super(type, plugin, new BooleanParser());
+	}
 
-	boolean isWorldEnabled(World world);
-
-	boolean isSpawning();
-
-	void setSpawning(boolean set);
-
-	Settings getSettings();
-
-	Metrics getMetrics();
-
-	void setMetrics(Metrics metrics);
-
-	void restartTimer();
-
-	BloodStreamTask getTimer();
-
-	boolean isParticleItem(final UUID uuid);
+	@Override
+	public void run(CommandSender sender, Boolean arg, ParticleType type)
+	{
+		type.setStainsFloor(arg);
+		sender.sendMessage("Stains floor set to " + (type.isStainingFloor() ? "true" : "false") + ".");
+	}
 }

@@ -15,35 +15,31 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.particles;
 
-import java.util.UUID;
-import me.snowleo.bleedingmobs.metrics.Metrics;
-import me.snowleo.bleedingmobs.particles.Storage;
-import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import java.util.Random;
 
 
-public interface IBleedingMobs extends Plugin
+public enum DropType
 {
-	Storage getStorage();
-
-	boolean isWorldEnabled(World world);
-
-	boolean isSpawning();
-
-	void setSpawning(boolean set);
-
-	Settings getSettings();
-
-	Metrics getMetrics();
-
-	void setMetrics(Metrics metrics);
-
-	void restartTimer();
-
-	BloodStreamTask getTimer();
-
-	boolean isParticleItem(final UUID uuid);
+	WOOL, BONE, PARTICLE;
+	
+	private final static Random RANDOM = new Random();
+	
+	public static DropType getRandom(final ParticleType type, final boolean bones)
+	{
+		final int rand = RANDOM.nextInt(100);
+		if (rand < type.getWoolChance())
+		{
+			return DropType.WOOL;
+		}
+		else if (bones && rand > (99 - type.getBoneChance()))
+		{
+			return DropType.BONE;
+		}
+		else
+		{
+			return DropType.PARTICLE;
+		}
+	}
 }

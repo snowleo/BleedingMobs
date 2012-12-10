@@ -15,35 +15,28 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.snowleo.bleedingmobs;
+package me.snowleo.bleedingmobs.commands.set.type;
 
-import java.util.UUID;
-import me.snowleo.bleedingmobs.metrics.Metrics;
-import me.snowleo.bleedingmobs.particles.Storage;
-import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import java.util.EnumSet;
+import me.snowleo.bleedingmobs.IBleedingMobs;
+import me.snowleo.bleedingmobs.commands.AbstractTypeCommand;
+import me.snowleo.bleedingmobs.commands.parser.VoidParser;
+import me.snowleo.bleedingmobs.particles.ParticleType;
+import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 
 
-public interface IBleedingMobs extends Plugin
+class SaturatedMatsClear extends AbstractTypeCommand<Void>
 {
-	Storage getStorage();
+	public SaturatedMatsClear(ParticleType type, IBleedingMobs plugin)
+	{
+		super(type, plugin, new VoidParser());
+	}
 
-	boolean isWorldEnabled(World world);
-
-	boolean isSpawning();
-
-	void setSpawning(boolean set);
-
-	Settings getSettings();
-
-	Metrics getMetrics();
-
-	void setMetrics(Metrics metrics);
-
-	void restartTimer();
-
-	BloodStreamTask getTimer();
-
-	boolean isParticleItem(final UUID uuid);
+	@Override
+	public void run(CommandSender sender, Void arg, ParticleType type)
+	{
+		type.setSaturatedMaterials(EnumSet.noneOf(Material.class));
+		sender.sendMessage("Saturated materials cleared.");
+	}
 }
