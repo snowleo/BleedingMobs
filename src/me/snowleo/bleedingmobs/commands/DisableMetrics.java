@@ -24,7 +24,9 @@ import java.util.logging.Level;
 import me.snowleo.bleedingmobs.IBleedingMobs;
 import org.bukkit.command.CommandSender;
 
-class DisableMetrics implements Command {
+
+class DisableMetrics implements Command
+{
 	private final IBleedingMobs plugin;
 
 	public DisableMetrics(IBleedingMobs plugin)
@@ -55,5 +57,4 @@ class DisableMetrics implements Command {
 	{
 		return Collections.emptyList();
 	}
-
 }

@@ -38,6 +38,5 @@ public class WoolColor extends AbstractTypeCommand<DyeColor>
 	{
 		type.setWoolColor(dyecolor);
 		sender.sendMessage("Wool color set to " + dyecolor.toString().replace('_', '-').toLowerCase(Locale.ENGLISH) + ".");
-
 	}
 }

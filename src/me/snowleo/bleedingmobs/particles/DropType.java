@@ -23,9 +23,8 @@ import java.util.Random;
 public enum DropType
 {
 	WOOL, BONE, PARTICLE;
-	
 	private final static Random RANDOM = new Random();
-	
+
 	public static DropType getRandom(final ParticleType type, final boolean bones)
 	{
 		final int rand = RANDOM.nextInt(100);

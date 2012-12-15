@@ -17,10 +17,10 @@
  */
 package me.snowleo.bleedingmobs.commands.parser;
 
-public class InvalidArgumentException extends ParserException{
 
+public class InvalidArgumentException extends ParserException
+{
 	public InvalidArgumentException()
 	{
 	}
-
 }

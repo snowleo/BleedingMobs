@@ -71,9 +71,12 @@ public class ColoredMaterialParser extends DoubleValueParser<MaterialData>
 	@Override
 	public List<String> getValidSecondValues(String arg1)
 	{
-		if (validFirstValues.contains(prepareFirstTabValue(arg1))) {
+		if (validFirstValues.contains(prepareFirstTabValue(arg1)))
+		{
 			return validSecondValues;
-		} else {
+		}
+		else
+		{
 			return Collections.emptyList();
 		}
 	}

@@ -49,7 +49,8 @@ public class MaterialDataParser extends AbstractParser<MaterialData>
 		MaterialData mat = parseAdditional(sender, args);
 		if (mat == null)
 		{
-			if (args.length == 2) {
+			if (args.length == 2)
+			{
 				try
 				{
 					mat = coloredMaterialParser.parse(sender, args);
@@ -58,7 +59,9 @@ public class MaterialDataParser extends AbstractParser<MaterialData>
 				{
 					mat = texturedMaterialParser.parse(sender, args);
 				}
-			} else {
+			}
+			else
+			{
 				mat = materialParser.parse(sender, args).getNewData((byte)0);
 			}
 		}

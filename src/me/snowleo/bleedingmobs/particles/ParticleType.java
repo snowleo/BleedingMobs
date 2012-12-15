@@ -292,7 +292,7 @@ public class ParticleType
 	{
 		return entityName;
 	}
-	
+
 	public boolean isMagicMaterial()
 	{
 		return this.getParticleMaterial().getItemType() == Material.CAKE;

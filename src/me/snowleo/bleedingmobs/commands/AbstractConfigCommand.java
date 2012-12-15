@@ -23,6 +23,7 @@ import me.snowleo.bleedingmobs.commands.parser.InvalidArgumentException;
 import me.snowleo.bleedingmobs.commands.parser.Parser;
 import org.bukkit.command.CommandSender;
 
+
 public abstract class AbstractConfigCommand<T> extends AbstractParserCommand<T>
 {
 	protected final IBleedingMobs plugin;

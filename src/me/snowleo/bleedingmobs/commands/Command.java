@@ -25,6 +25,6 @@ import org.bukkit.command.CommandSender;
 public interface Command
 {
 	void run(CommandSender sender, String[] args) throws ParserException;
-	
+
 	List<String> tabComplete(CommandSender sender, String[] args);
 }

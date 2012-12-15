@@ -82,7 +82,7 @@ public class ParticleStateTask implements Runnable
 
 	public synchronized void restore()
 	{
-		
+
 		switch (state)
 		{
 		case INIT:

@@ -10,15 +10,18 @@ import java.util.Map;
 import me.snowleo.bleedingmobs.commands.parser.ParserException;
 import org.bukkit.command.CommandSender;
 
-public abstract class AbstractSubCommand implements Command {
+
+public abstract class AbstractSubCommand implements Command
+{
 	private transient final Map<String, Command> subcommands = new HashMap<String, Command>();
-	
-	protected final void register(String name, Command command) {
+
+	protected final void register(String name, Command command)
+	{
 		subcommands.put(name.toLowerCase(Locale.ENGLISH), command);
 	}
-	
+
 	public abstract String[] getInfo();
-	
+
 	@Override
 	public void run(final CommandSender sender, final String[] args) throws ParserException
 	{
@@ -43,16 +46,19 @@ public abstract class AbstractSubCommand implements Command {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args)
 	{
-		if (args.length == 0) {
+		if (args.length == 0)
+		{
 			return new ArrayList<String>(subcommands.keySet());
 		}
-		if (args.length == 1) {
-			
+		if (args.length == 1)
+		{
+
 			List<String> values = new ArrayList<String>();
 			final String commandString = args[0].toLowerCase(Locale.ENGLISH);
 			for (String command : subcommands.keySet())
 			{
-				if (command.startsWith(commandString)) {
+				if (command.startsWith(commandString))
+				{
 					values.add(command);
 				}
 			}

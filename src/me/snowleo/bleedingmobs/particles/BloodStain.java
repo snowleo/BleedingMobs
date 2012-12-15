@@ -35,7 +35,9 @@ public class BloodStain
 				stainFloor(block, type.getWoolColor().getData());
 			}
 			duration = Util.getRandomBetween(type.getStainLifeFrom(), type.getStainLifeTo());
-		} else {
+		}
+		else
+		{
 			duration = -1;
 		}
 	}
