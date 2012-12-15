@@ -46,7 +46,7 @@ public class Storage
 	public void createParticles(final LivingEntity entity, final BleedCause cause)
 	{
 		final Location loc = entity.getLocation();
-		if (!plugin.getSettings().isBleedingEnabled() || !plugin.isWorldEnabled(loc.getWorld()))
+		if (!plugin.getSettings().isBleedingEnabled() || !plugin.getSettings().isWorldEnabled(loc.getWorld()))
 		{
 			return;
 		}

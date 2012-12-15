@@ -86,22 +86,17 @@ public class Items
 		}
 	}
 
-	public int getAvailableParticles()
+	public int getCurrentParticleAmount()
 	{
-		int available = getMaxParticles();
+		int amount = 0;
 		synchronized (particlesPerWorld)
 		{
 			for (Integer integer : particlesPerWorld.values())
 			{
-				available -= integer.intValue();
+				amount += integer.intValue();
 			}
 		}
-		return available;
-	}
-
-	public int getMaxParticles()
-	{
-		return Bukkit.getWorlds().size() * limitPerWorld;
+		return amount;
 	}
 
 	private void removeFromLimit(Item item) throws IllegalStateException
@@ -136,5 +131,10 @@ public class Items
 	public boolean contains(UUID uuid)
 	{
 		return items.contains(uuid);
+	}
+
+	public int getLimit()
+	{
+		return limitPerWorld;
 	}
 }

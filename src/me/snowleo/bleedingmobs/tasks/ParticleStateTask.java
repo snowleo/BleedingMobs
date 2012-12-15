@@ -5,6 +5,7 @@ import me.snowleo.bleedingmobs.particles.BleedCause;
 import me.snowleo.bleedingmobs.particles.BloodStain;
 import me.snowleo.bleedingmobs.particles.Particle;
 import me.snowleo.bleedingmobs.particles.ParticleType;
+import me.snowleo.bleedingmobs.particles.Util;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -37,7 +38,7 @@ public class ParticleStateTask implements Runnable
 
 	public void start()
 	{
-		changeState(State.INIT, 0);
+		changeState(State.INIT, Util.getRandomBetween(0, 3));
 	}
 
 	private void changeState(State state, int ticks)

@@ -31,11 +31,11 @@ import org.bukkit.material.TexturedMaterial;
 
 public class Settings
 {
-	private final static int MAX_PARTICLES = 200;
+	private final static int MAX_PARTICLES = 2000;
 	private transient Set<String> worlds = Collections.emptySet();
 	private transient boolean bleedWhenCanceled = false;
 	private transient boolean bleedingEnabled = true;
-	private transient int maxParticles = 200;
+	private transient int maxParticles = 2000;
 	private transient final IBleedingMobs plugin;
 	private transient boolean showMetricsInfo = true;
 	private transient boolean permissionOnly = false;
@@ -59,7 +59,7 @@ public class Settings
 		plugin.reloadConfig();
 		final FileConfiguration config = plugin.getConfig();
 		bleedingEnabled = config.getBoolean("enabled", true);
-		final int newMaxParticles = Math.max(20, config.getInt("max-particles", MAX_PARTICLES));
+		final int newMaxParticles = Math.max(20, Math.min(Short.MAX_VALUE - 1, config.getInt("max-particles", MAX_PARTICLES)));
 		if (plugin.getStorage() != null)
 		{
 			plugin.getStorage().getItems().setLimit(newMaxParticles);
@@ -68,20 +68,20 @@ public class Settings
 		bleedWhenCanceled = config.getBoolean("bleed-when-canceled", false);
 		showMetricsInfo = config.getBoolean("show-metrics-info", true);
 		permissionOnly = config.getBoolean("permission-only", false);
-		attackPercentage = Math.max(0, config.getInt("attack-percentage", 100));
-		fallPercentage = Math.max(0, config.getInt("fall-percentage", 60));
-		deathPercentage = Math.max(0, config.getInt("death-percentage", 200));
-		projectilePercentage = Math.max(0, config.getInt("projectile-percentage", 60));
-		bloodstreamPercentage = Math.max(0, config.getInt("bloodstream.percentage", 10));
-		bloodstreamTime = Math.max(0, config.getInt("bloodstream.time", 200));
-		bloodstreamInterval = Math.max(1, config.getInt("bloodstream.interval", 10));
+		attackPercentage = Math.max(0, Math.min(2000, config.getInt("attack-percentage", 100)));
+		fallPercentage = Math.max(0, Math.min(2000, config.getInt("fall-percentage", 60)));
+		deathPercentage = Math.max(0, Math.min(2000, config.getInt("death-percentage", 200)));
+		projectilePercentage = Math.max(0, Math.min(2000, config.getInt("projectile-percentage", 60)));
+		bloodstreamPercentage = Math.max(0, Math.min(2000, config.getInt("bloodstream.percentage", 10)));
+		bloodstreamTime = Math.max(0, Math.min(72000, config.getInt("bloodstream.time", 200)));
+		bloodstreamInterval = Math.max(1, Math.min(1200, config.getInt("bloodstream.interval", 10)));
 		for (ParticleType particleType : ParticleType.values())
 		{
 			final String name = particleType.toString().toLowerCase(Locale.ENGLISH);
 			particleType.setWoolChance(Math.min(100, Math.max(0, config.getInt(name + ".wool-chance", particleType.getWoolChance()))));
 			particleType.setBoneChance(Math.min(100, Math.max(0, config.getInt(name + ".bone-chance", particleType.getBoneChance()))));
-			particleType.setParticleLifeFrom(Math.max(0, config.getInt(name + ".particle-life.from", particleType.getParticleLifeFrom())));
-			particleType.setParticleLifeTo(Math.max(particleType.getParticleLifeFrom(), config.getInt(name + ".particle-life.to", particleType.getParticleLifeTo())));
+			particleType.setParticleLifeFrom(Math.max(0, Math.min(1200, config.getInt(name + ".particle-life.from", particleType.getParticleLifeFrom()))));
+			particleType.setParticleLifeTo(Math.max(particleType.getParticleLifeFrom(), Math.min(1200, config.getInt(name + ".particle-life.to", particleType.getParticleLifeTo()))));
 			final String colorName = config.getString(name + ".wool-color", particleType.getWoolColor().toString()).replaceAll("[_-]", "").toUpperCase(Locale.ENGLISH);
 			byte woolcolor = -1;
 			for (DyeColor dyeColor : DyeColor.values())
@@ -97,11 +97,11 @@ public class Settings
 			}
 			particleType.setWoolColor(DyeColor.getByData(woolcolor));
 			particleType.setStainsFloor(config.getBoolean(name + ".stains-floor", particleType.isStainingFloor()));
-			particleType.setBoneLife(Math.max(0, config.getInt(name + ".bone-life", particleType.getBoneLife())));
-			particleType.setStainLifeFrom(Math.max(0, config.getInt(name + ".stain-life.from", particleType.getStainLifeFrom())));
-			particleType.setStainLifeTo(Math.max(particleType.getStainLifeFrom(), config.getInt(name + ".stain-life.to", particleType.getStainLifeTo())));
-			particleType.setAmountFrom(Math.max(0, config.getInt(name + ".amount.from", particleType.getAmountFrom())));
-			particleType.setAmountTo(Math.max(particleType.getAmountFrom(), config.getInt(name + ".amount.to", particleType.getAmountTo())));
+			particleType.setBoneLife(Math.max(0, Math.min(1200, config.getInt(name + ".bone-life", particleType.getBoneLife()))));
+			particleType.setStainLifeFrom(Math.max(0, Math.min(12000, config.getInt(name + ".stain-life.from", particleType.getStainLifeFrom()))));
+			particleType.setStainLifeTo(Math.max(particleType.getStainLifeFrom(), Math.min(12000, config.getInt(name + ".stain-life.to", particleType.getStainLifeTo()))));
+			particleType.setAmountFrom(Math.max(0, Math.min(1000, config.getInt(name + ".amount.from", particleType.getAmountFrom()))));
+			particleType.setAmountTo(Math.max(particleType.getAmountFrom(), Math.min(1000, config.getInt(name + ".amount.to", particleType.getAmountTo()))));
 			final List<String> mats = config.getStringList(name + ".saturated-materials");
 			final EnumSet<Material> materials = EnumSet.noneOf(Material.class);
 			if (mats != null)
@@ -170,8 +170,6 @@ public class Settings
 		final FileConfiguration config = plugin.getConfig();
 		config.options().header("Bleeding Mobs config\n"
 								+ "Don't use tabs in this file\n"
-								+ "Be careful, if you change the amounts of particles, it can break your server.\n"
-								+ "For example creating thousands of particles on hit is not a good idea.\n"
 								+ "You can always reset this to the defaults by removing the file.\n"
 								+ "Chances are from 0 to 100, no fractions allowed. 100 means 100% chance of drop.\n"
 								+ "There is no chance value for the particle material (e.g. redstone), \n"

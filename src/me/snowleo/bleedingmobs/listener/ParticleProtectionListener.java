@@ -51,7 +51,7 @@ public class ParticleProtectionListener implements Listener
 	public void onBlockBreak(final BlockBreakEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (plugin.isWorldEnabled(loc.getWorld())
+		if (plugin.getSettings().isWorldEnabled(loc.getWorld())
 			&& plugin.getStorage().getUnbreakables().contains(loc))
 		{
 			event.setCancelled(true);
@@ -62,7 +62,7 @@ public class ParticleProtectionListener implements Listener
 	public void onBlockBurn(final BlockBurnEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (plugin.isWorldEnabled(loc.getWorld())
+		if (plugin.getSettings().isWorldEnabled(loc.getWorld())
 			&& plugin.getStorage().getUnbreakables().contains(loc))
 		{
 			event.setCancelled(true);
@@ -73,7 +73,7 @@ public class ParticleProtectionListener implements Listener
 	public void onBlockIgnite(final BlockIgniteEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (plugin.isWorldEnabled(loc.getWorld())
+		if (plugin.getSettings().isWorldEnabled(loc.getWorld())
 			&& plugin.getStorage().getUnbreakables().contains(loc))
 		{
 			event.setCancelled(true);
@@ -84,7 +84,7 @@ public class ParticleProtectionListener implements Listener
 	public void onBlockPistonExtend(final BlockPistonExtendEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (!plugin.isWorldEnabled(loc.getWorld()))
+		if (!plugin.getSettings().isWorldEnabled(loc.getWorld()))
 		{
 			return;
 		}
@@ -102,7 +102,7 @@ public class ParticleProtectionListener implements Listener
 	public void onBlockPistonRetract(final BlockPistonRetractEvent event)
 	{
 		final Location loc = event.getBlock().getLocation();
-		if (plugin.isWorldEnabled(loc.getWorld())
+		if (plugin.getSettings().isWorldEnabled(loc.getWorld())
 			&& plugin.getStorage().getUnbreakables().contains(event.getRetractLocation()))
 		{
 			event.setCancelled(true);
@@ -131,7 +131,7 @@ public class ParticleProtectionListener implements Listener
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onEntityExplode(final EntityExplodeEvent event)
 	{
-		if (!plugin.isWorldEnabled(event.getLocation().getWorld()))
+		if (!plugin.getSettings().isWorldEnabled(event.getLocation().getWorld()))
 		{
 			return;
 		}
@@ -144,7 +144,7 @@ public class ParticleProtectionListener implements Listener
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onEntityChangeBlock(final EntityChangeBlockEvent event)
 	{
-		if (!plugin.isWorldEnabled(event.getBlock().getWorld()))
+		if (!plugin.getSettings().isWorldEnabled(event.getBlock().getWorld()))
 		{
 			return;
 		}
@@ -154,8 +154,8 @@ public class ParticleProtectionListener implements Listener
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerPickupItem(final PlayerPickupItemEvent event)
 	{
-		if (plugin.isWorldEnabled(event.getPlayer().getWorld())
-			&& plugin.isParticleItem(event.getItem().getUniqueId()))
+		if (plugin.getSettings().isWorldEnabled(event.getPlayer().getWorld())
+			&& plugin.getStorage().getItems().contains(event.getItem().getUniqueId()))
 		{
 			event.setCancelled(true);
 		}
@@ -165,8 +165,8 @@ public class ParticleProtectionListener implements Listener
 	public void onEntityTeleport(final EntityTeleportEvent event)
 	{
 		if (event.getEntityType() == EntityType.DROPPED_ITEM
-			&& plugin.isWorldEnabled(event.getFrom().getWorld())
-			&& plugin.isParticleItem(event.getEntity().getUniqueId()))
+			&& plugin.getSettings().isWorldEnabled(event.getFrom().getWorld())
+			&& plugin.getStorage().getItems().contains(event.getEntity().getUniqueId()))
 		{
 			event.setCancelled(true);
 		}
@@ -176,8 +176,8 @@ public class ParticleProtectionListener implements Listener
 	public void onEntityCombust(final EntityCombustEvent event)
 	{
 		if (event.getEntityType() == EntityType.DROPPED_ITEM
-			&& plugin.isWorldEnabled(event.getEntity().getWorld())
-			&& plugin.isParticleItem(event.getEntity().getUniqueId()))
+			&& plugin.getSettings().isWorldEnabled(event.getEntity().getWorld())
+			&& plugin.getStorage().getItems().contains(event.getEntity().getUniqueId()))
 		{
 			event.setCancelled(true);
 		}
