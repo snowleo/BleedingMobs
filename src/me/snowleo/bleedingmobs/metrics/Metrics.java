@@ -1,5 +1,4 @@
 package me.snowleo.bleedingmobs.metrics;
-
 /*
  * Copyright 2011 Tyler Blair. All rights reserved.
  *
@@ -27,6 +26,7 @@ package me.snowleo.bleedingmobs.metrics;
  * authors and contributors and should not be interpreted as representing official policies,
  * either expressed or implied, of anybody else.
  */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +67,7 @@ public class Metrics
 	/**
 	 * The current revision number
 	 */
-	private final static int REVISION = 5;
+	private final static int REVISION = 6;
 	/**
 	 * The base url of the metrics domain
 	 */
@@ -111,13 +111,17 @@ public class Metrics
 	 */
 	private final String guid;
 	/**
+	 * Debug mode
+	 */
+	private final boolean debug;
+	/**
 	 * Lock for synchronization
 	 */
 	private final Object optOutLock = new Object();
 	/**
-	 * Id of the scheduled task
+	 * The scheduled task
 	 */
-	private BukkitTask task = null;
+	private volatile BukkitTask task = null;
 
 	public Metrics(final Plugin plugin) throws IOException
 	{
@@ -135,6 +139,7 @@ public class Metrics
 		// add some defaults
 		configuration.addDefault("opt-out", false);
 		configuration.addDefault("guid", UUID.randomUUID().toString());
+		configuration.addDefault("debug", false);
 
 		// Do we need to create the file?
 		if (configuration.get("guid", null) == null)
@@ -145,6 +150,7 @@ public class Metrics
 
 		// Load the guid then
 		guid = configuration.getString("guid");
+		debug = configuration.getBoolean("debug", false);
 	}
 
 	/**
@@ -233,7 +239,7 @@ public class Metrics
 			}
 
 			// Begin hitting the server with glorious data
-			task = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable()
+			task = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable()
 			{
 				private boolean firstPost = true;
 
@@ -268,7 +274,10 @@ public class Metrics
 					}
 					catch (IOException e)
 					{
-						Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
+						if (debug)
+						{
+							Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
+						}
 					}
 				}
 			}, 0, PING_INTERVAL * 1200);
@@ -293,12 +302,18 @@ public class Metrics
 			}
 			catch (IOException ex)
 			{
-				Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
+				if (debug)
+				{
+					Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
+				}
 				return true;
 			}
 			catch (InvalidConfigurationException ex)
 			{
-				Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
+				if (debug)
+				{
+					Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
+				}
 				return true;
 			}
 			return configuration.getBoolean("opt-out", false);
@@ -324,7 +339,7 @@ public class Metrics
 			}
 
 			// Enable Task, if it is not running
-			if (task != null)
+			if (task == null)
 			{
 				start();
 			}
@@ -382,16 +397,45 @@ public class Metrics
 	 */
 	private void postPlugin(final boolean isPing) throws IOException
 	{
-		// The plugin's description file containg all of the plugin data such as name, version, author, etc
+		// Server software specific section
 		final PluginDescriptionFile description = plugin.getDescription();
+		final String pluginName = description.getName();
+		final boolean onlineMode = Bukkit.getServer().getOnlineMode(); // TRUE if online mode is enabled
+		final String pluginVersion = description.getVersion();
+		final String serverVersion = Bukkit.getVersion();
+		final int playersOnline = Bukkit.getServer().getOnlinePlayers().length;
+
+		// END server software specific section -- all code below does not use any code outside of this class / Java
 
 		// Construct the post data
 		final StringBuilder data = new StringBuilder();
+
+		// The plugin's description file containg all of the plugin data such as name, version, author, etc
 		data.append(encode("guid")).append('=').append(encode(guid));
-		encodeDataPair(data, "version", description.getVersion());
-		encodeDataPair(data, "server", Bukkit.getVersion());
-		encodeDataPair(data, "players", Integer.toString(Bukkit.getServer().getOnlinePlayers().length));
+		encodeDataPair(data, "version", pluginVersion);
+		encodeDataPair(data, "server", serverVersion);
+		encodeDataPair(data, "players", Integer.toString(playersOnline));
 		encodeDataPair(data, "revision", String.valueOf(REVISION));
+
+		// New data as of R6
+		final String osname = System.getProperty("os.name");
+		String osarch = System.getProperty("os.arch");
+		final String osversion = System.getProperty("os.version");
+		final String java_version = System.getProperty("java.version");
+		final int coreCount = Runtime.getRuntime().availableProcessors();
+
+		// normalize os arch .. amd64 -> x86_64
+		if (osarch.equals("amd64"))
+		{
+			osarch = "x86_64";
+		}
+
+		encodeDataPair(data, "osname", osname);
+		encodeDataPair(data, "osarch", osarch);
+		encodeDataPair(data, "osversion", osversion);
+		encodeDataPair(data, "cores", Integer.toString(coreCount));
+		encodeDataPair(data, "online-mode", Boolean.toString(onlineMode));
+		encodeDataPair(data, "java_version", java_version);
 
 		// If we're pinging, append it
 		if (isPing)
@@ -427,7 +471,7 @@ public class Metrics
 		}
 
 		// Create the url
-		URL url = new URL(BASE_URL + String.format(REPORT_URL, encode(plugin.getDescription().getName())));
+		final URL url = new URL(BASE_URL + String.format(REPORT_URL, encode(pluginName)));
 
 		// Connect to the website
 		URLConnection connection;
