@@ -28,6 +28,9 @@ public final class Util
 {
 	private final static Random RANDOM = new Random();
 	private final static Map<UUID, Integer> counter = new HashMap<UUID, Integer>();
+	public final static int COUNTER_MIN = 2767;
+	public final static int COUNTER_MAX = 32767;
+	public final static int COUNTER_SIZE = COUNTER_MAX - COUNTER_MIN;
 
 	private Util()
 	{
@@ -58,17 +61,8 @@ public final class Util
 		synchronized (counter)
 		{
 			Integer c = counter.get(worldId);
-			if (c == null)
-			{
-				c = Integer.valueOf(1);
-			}
-			int r = c;
-			if (r > Short.MAX_VALUE)
-			{
-				r = 1;
-			}
-			c = Integer.valueOf(r + 1);
-			counter.put(worldId, c);
+			int r = c == null ? COUNTER_MIN : (c >= COUNTER_MAX ? COUNTER_MIN : c + 1);
+			counter.put(worldId, Integer.valueOf(r));
 			return r;
 		}
 	}

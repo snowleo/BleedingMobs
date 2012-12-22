@@ -18,9 +18,11 @@
 package me.snowleo.bleedingmobs.listener;
 
 import me.snowleo.bleedingmobs.IBleedingMobs;
+import me.snowleo.bleedingmobs.particles.Util;
 import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -31,10 +33,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 
 
 public class ParticleProtectionListener implements Listener
@@ -180,6 +186,38 @@ public class ParticleProtectionListener implements Listener
 			&& plugin.getStorage().getItems().contains(event.getEntity().getUniqueId()))
 		{
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+	public void onEntityDamage(final EntityDamageEvent event)
+	{
+		if (event.getEntity() instanceof LivingEntity)
+		{
+			removeParticleFromEntityEquipment(((LivingEntity)event.getEntity()).getEquipment());
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+	public void onEntityDeathEvent(final EntityDeathEvent event)
+	{
+		removeParticleFromEntityEquipment(event.getEntity().getEquipment());
+	}
+
+	private void removeParticleFromEntityEquipment(EntityEquipment equipment)
+	{
+		if (equipment == null) {
+			return;
+		}
+		final ItemStack item = equipment.getItemInHand();
+		if (item != null)
+		{
+			Integer level = item.getEnchantments().get(Enchantment.DURABILITY);
+			if (level != null && level >= Util.COUNTER_MIN
+				&& plugin.getSettings().getParticleMaterials().contains(item.getType()))
+			{
+				equipment.setItemInHand(null);
+			}
 		}
 	}
 }

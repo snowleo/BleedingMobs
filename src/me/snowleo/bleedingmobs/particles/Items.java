@@ -30,7 +30,7 @@ public class Items
 {
 	private final TaskMap<UUID> items;
 	private final Map<UUID, Integer> particlesPerWorld = Collections.synchronizedMap(new HashMap<UUID, Integer>());
-	private int limitPerWorld = Short.MAX_VALUE - 1;
+	private int limitPerWorld = Util.COUNTER_SIZE;
 
 	public Items(final int maxParticles)
 	{
@@ -40,7 +40,7 @@ public class Items
 
 	public final void setLimit(int limitPerWorld)
 	{
-		this.limitPerWorld = Math.max(0, Math.min(Short.MAX_VALUE - 1, limitPerWorld));
+		this.limitPerWorld = Math.max(1, Math.min(Util.COUNTER_SIZE, limitPerWorld));
 	}
 
 	public void add(Item item, ParticleStateTask particleTask)

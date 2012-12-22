@@ -20,7 +20,8 @@ package me.snowleo.bleedingmobs.commands.set;
 import me.snowleo.bleedingmobs.IBleedingMobs;
 import me.snowleo.bleedingmobs.Settings;
 import me.snowleo.bleedingmobs.commands.AbstractConfigCommand;
-import me.snowleo.bleedingmobs.commands.parser.LowerBoundIntegerParser;
+import me.snowleo.bleedingmobs.commands.parser.BoundedIntegerParser;
+import me.snowleo.bleedingmobs.particles.Util;
 import org.bukkit.command.CommandSender;
 
 
@@ -28,7 +29,7 @@ public class MaxParticles extends AbstractConfigCommand<Integer>
 {
 	public MaxParticles(IBleedingMobs plugin)
 	{
-		super(plugin, new LowerBoundIntegerParser(20));
+		super(plugin, new BoundedIntegerParser(1, Util.COUNTER_SIZE));
 	}
 
 	@Override

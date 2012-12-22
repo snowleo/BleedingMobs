@@ -46,6 +46,7 @@ public class Settings
 	private transient int bloodstreamPercentage = 10;
 	private transient int bloodstreamTime = 200;
 	private transient int bloodstreamInterval = 10;
+	private transient EnumSet<Material> particleMaterials = EnumSet.allOf(Material.class);
 
 	public Settings(final IBleedingMobs plugin)
 	{
@@ -59,7 +60,7 @@ public class Settings
 		plugin.reloadConfig();
 		final FileConfiguration config = plugin.getConfig();
 		bleedingEnabled = config.getBoolean("enabled", true);
-		final int newMaxParticles = Math.max(20, Math.min(Short.MAX_VALUE - 1, config.getInt("max-particles", MAX_PARTICLES)));
+		final int newMaxParticles = Math.max(1, Math.min(Util.COUNTER_SIZE, config.getInt("max-particles", MAX_PARTICLES)));
 		if (plugin.getStorage() != null)
 		{
 			plugin.getStorage().getItems().setLimit(newMaxParticles);
@@ -75,6 +76,11 @@ public class Settings
 		bloodstreamPercentage = Math.max(0, Math.min(2000, config.getInt("bloodstream.percentage", 10)));
 		bloodstreamTime = Math.max(0, Math.min(72000, config.getInt("bloodstream.time", 200)));
 		bloodstreamInterval = Math.max(1, Math.min(1200, config.getInt("bloodstream.interval", 10)));
+		EnumSet<Material> partMaterials = EnumSet.noneOf(Material.class);
+		partMaterials.add(Material.CAKE);
+		partMaterials.add(Material.BONE);
+		partMaterials.add(Material.WOOL);
+		partMaterials.add(Material.REDSTONE);
 		for (ParticleType particleType : ParticleType.values())
 		{
 			final String name = particleType.toString().toLowerCase(Locale.ENGLISH);
@@ -158,9 +164,11 @@ public class Settings
 						}
 					}
 					particleType.setParticleMaterial(matData);
+					partMaterials.add(material);
 				}
 			}
 		}
+		particleMaterials = partMaterials;
 		final List<String> coll = config.getStringList("worlds");
 		worlds = new HashSet<String>(coll == null ? Collections.<String>emptyList() : coll);
 	}
@@ -352,5 +360,10 @@ public class Settings
 	public void setProjectilePercentage(int projectilePercentage)
 	{
 		this.projectilePercentage = projectilePercentage;
+	}
+
+	public Set<Material> getParticleMaterials()
+	{
+		return particleMaterials;
 	}
 }
