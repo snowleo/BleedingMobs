@@ -1,6 +1,6 @@
 name: BleedingMobs
 main: me.snowleo.bleedingmobs.BleedingMobs
-version: 4.0
+version: 4.1
 authors: [snowleo]
 commands:
   bleedingmobs:
@@ -12,6 +12,9 @@ commands:
 permissions:
   bleedingmobs.admin:
     description: Allow access to admin command
+    default: op
+  bleedingmobs.update:
+    description: Show update notices to player
     default: op
   bleedingmobs.bloodstrike:
     description: When enabled in config, only players with this permission will make other creatures and players bleed

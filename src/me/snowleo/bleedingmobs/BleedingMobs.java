@@ -25,6 +25,7 @@ import me.snowleo.bleedingmobs.metrics.Metrics;
 import me.snowleo.bleedingmobs.metrics.MetricsStarter;
 import me.snowleo.bleedingmobs.particles.Storage;
 import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
+import me.snowleo.bleedingmobs.update.UpdateNotifier;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -53,6 +54,8 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	@Override
 	public void onEnable()
 	{
+		UpdateNotifier notifier = new UpdateNotifier(this);
+		notifier.check();
 		final PluginManager pluginManager = getServer().getPluginManager();
 
 		settings = new Settings(this);
@@ -65,6 +68,7 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 
 		pluginManager.registerEvents(new ParticleEntityListener(this), this);
 		pluginManager.registerEvents(new ParticleProtectionListener(this), this);
+		pluginManager.registerEvents(notifier, this);
 
 		final MetricsStarter metricsStarter = new MetricsStarter(this);
 		if (metricsStarter.getDelay() > 0)
