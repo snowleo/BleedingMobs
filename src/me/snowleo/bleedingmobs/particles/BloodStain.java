@@ -89,11 +89,7 @@ public class BloodStain
 
 	public void restore()
 	{
-		if (savedBlockLoc != null)
-		{
-			restoreBlock();
-			savedBlockLoc = null;
-		}
+		restoreBlock();
 	}
 
 	private void restoreBlock()
@@ -103,7 +99,6 @@ public class BloodStain
 		{
 			savedBlockLoc.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(Material.SNOW.getId(), snowData, false);
 		}
-		savedBlockLoc = null;
 	}
 
 	public int getDuration()
