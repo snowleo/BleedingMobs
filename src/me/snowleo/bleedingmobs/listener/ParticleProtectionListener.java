@@ -167,8 +167,7 @@ public class ParticleProtectionListener implements Listener
 			return;
 		}
 		ItemStack stack = event.getItem().getItemStack();
-		if (stack.containsEnchantment(Enchantment.DURABILITY)
-			&& stack.getEnchantmentLevel(Enchantment.DURABILITY) >= Util.COUNTER_MIN)
+		if (isParticleItemStack(stack))
 		{
 			event.setCancelled(true);
 			plugin.getServer().getScheduler().runTask(plugin, new Runnable()
@@ -226,14 +225,17 @@ public class ParticleProtectionListener implements Listener
 			return;
 		}
 		final ItemStack item = equipment.getItemInHand();
-		if (item != null)
+		if (isParticleItemStack(item))
 		{
-			Integer level = item.getEnchantments().get(Enchantment.DURABILITY);
-			if (level != null && level >= Util.COUNTER_MIN
-				&& plugin.getSettings().getParticleMaterials().contains(item.getType()))
-			{
-				equipment.setItemInHand(null);
-			}
+			equipment.setItemInHand(null);
 		}
+	}
+	
+	private boolean isParticleItemStack(final ItemStack item)
+	{
+		return item != null
+			   && item.containsEnchantment(Enchantment.DURABILITY)
+			   && item.getEnchantmentLevel(Enchantment.DURABILITY) >= Util.COUNTER_MIN
+			   && plugin.getSettings().getParticleMaterials().contains(item.getType());
 	}
 }
