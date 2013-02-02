@@ -52,7 +52,7 @@ public class DyeColorParser extends SingleValueParser<DyeColor>
 		if (dyecolor == null)
 		{
 			Integer parse = INTEGER_PARSER.parse(arg);
-			dyecolor = DyeColor.getByData(parse.byteValue());
+			dyecolor = DyeColor.getByWoolData(parse.byteValue());
 		}
 		return dyecolor;
 	}

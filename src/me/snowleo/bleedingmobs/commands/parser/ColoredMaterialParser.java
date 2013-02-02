@@ -53,7 +53,7 @@ public class ColoredMaterialParser extends DoubleValueParser<MaterialData>
 		MaterialData data = coloredMaterial.getNewData((byte)0);
 		if (data instanceof Colorable)
 		{
-			data.setData(dyeColor.getData());
+			data.setData(dyeColor.getWoolData());
 		}
 		else
 		{

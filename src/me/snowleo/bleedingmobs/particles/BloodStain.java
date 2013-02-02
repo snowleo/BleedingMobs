@@ -71,7 +71,7 @@ public class BloodStain
 			}
 			else
 			{
-				stainedBlock = new StainedBlock(block, type.getWoolColor().getData());
+				stainedBlock = new StainedBlock(block, type.getWoolColor().getWoolData());
 			}
 			duration = Util.getRandomBetween(type.getStainLifeFrom(), type.getStainLifeTo());
 		}

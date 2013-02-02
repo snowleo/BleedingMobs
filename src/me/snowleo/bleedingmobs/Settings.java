@@ -97,14 +97,14 @@ public class Settings
 			{
 				if (dyeColor.toString().replace("_", "").equals(colorName))
 				{
-					woolcolor = dyeColor.getData();
+					woolcolor = dyeColor.getWoolData();
 				}
 			}
 			if (woolcolor < 0)
 			{
-				woolcolor = ((Number)Math.min(15, Math.max(0, config.getInt(name + ".wool-color", builder.getWoolColor().getData())))).byteValue();
+				woolcolor = ((Number)Math.min(15, Math.max(0, config.getInt(name + ".wool-color", builder.getWoolColor().getWoolData())))).byteValue();
 			}
-			builder.setWoolColor(DyeColor.getByData(woolcolor));
+			builder.setWoolColor(DyeColor.getByWoolData(woolcolor));
 			builder.setStainsFloor(config.getBoolean(name + ".stains-floor", builder.isStainsFloor()));
 			builder.setBoneLife(Math.max(0, Math.min(1200, config.getInt(name + ".bone-life", builder.getBoneLife()))));
 			builder.setStainLifeFrom(Math.max(0, Math.min(12000, config.getInt(name + ".stain-life.from", builder.getStainLifeFrom()))));

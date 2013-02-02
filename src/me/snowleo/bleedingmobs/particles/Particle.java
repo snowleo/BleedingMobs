@@ -77,7 +77,7 @@ public class Particle
 		}
 		else
 		{
-			return new ItemStack(Material.WOOL, 1, type.getWoolColor().getData());
+			return new ItemStack(Material.WOOL, 1, type.getWoolColor().getWoolData());
 		}
 	}
 
