@@ -20,14 +20,14 @@ package me.snowleo.bleedingmobs.commands.parser;
 import org.bukkit.command.CommandSender;
 
 
-public abstract class SingleValueParser<T> extends SingleTabParser<T>
+abstract class SingleValueParser<T> extends SingleTabParser<T>
 {
 	@Override
-	public final T parse(CommandSender sender, String[] args) throws ParserException
+	public final T parse(final CommandSender sender, final String[] args) throws ParserException
 	{
 		assertLength(args, 1);
 		return parse(args[0]);
 	}
 
-	public abstract T parse(String arg) throws InvalidArgumentException;
+	protected abstract T parse(final String arg) throws InvalidArgumentException;
 }

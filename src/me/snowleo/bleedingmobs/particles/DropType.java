@@ -20,14 +20,14 @@ package me.snowleo.bleedingmobs.particles;
 import java.util.Random;
 
 
-public enum DropType
+enum DropType
 {
 	WOOL, BONE, PARTICLE;
-	private final static Random RANDOM = new Random();
+	private static final Random RANDOM = new Random();
 
-	public static DropType getRandom(final ParticleType type, final boolean bones)
+	static DropType getRandom(final ParticleType type, final boolean bones)
 	{
-		final int rand = RANDOM.nextInt(100);
+		int rand = RANDOM.nextInt(100);
 		if (rand < type.getWoolChance())
 		{
 			return DropType.WOOL;

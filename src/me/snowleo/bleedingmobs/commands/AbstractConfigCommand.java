@@ -26,15 +26,15 @@ import org.bukkit.command.CommandSender;
 
 public abstract class AbstractConfigCommand<T> extends AbstractParserCommand<T>
 {
-	protected final IBleedingMobs plugin;
+	private final IBleedingMobs plugin;
 
-	public AbstractConfigCommand(IBleedingMobs plugin, Parser<T> parser)
+	protected AbstractConfigCommand(final IBleedingMobs plugin, final Parser<T> parser)
 	{
 		super(parser);
 		this.plugin = plugin;
 	}
 
-	public abstract void run(CommandSender sender, T args, Settings settings) throws InvalidArgumentException;
+	protected abstract void run(final CommandSender sender, final T args, final Settings settings) throws InvalidArgumentException;
 
 	@Override
 	public final void run(final CommandSender sender, final T args) throws InvalidArgumentException
@@ -43,5 +43,10 @@ public abstract class AbstractConfigCommand<T> extends AbstractParserCommand<T>
 		run(sender, args, plugin.getSettings());
 		plugin.getSettings().saveConfig();
 		plugin.restartTimer();
+	}
+
+	protected IBleedingMobs getPlugin()
+	{
+		return plugin;
 	}
 }

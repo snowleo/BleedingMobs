@@ -30,7 +30,7 @@ class Info implements Command
 {
 	private final IBleedingMobs plugin;
 
-	public Info(IBleedingMobs plugin)
+	Info(final IBleedingMobs plugin)
 	{
 		this.plugin = plugin;
 	}
@@ -64,7 +64,7 @@ class Info implements Command
 	}
 
 	@Override
-	public List<String> tabComplete(CommandSender sender, String[] args)
+	public List<String> tabComplete(final CommandSender sender, final String[] args)
 	{
 		return Collections.emptyList();
 	}

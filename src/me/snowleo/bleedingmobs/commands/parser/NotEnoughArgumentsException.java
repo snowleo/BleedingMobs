@@ -20,7 +20,8 @@ package me.snowleo.bleedingmobs.commands.parser;
 
 public class NotEnoughArgumentsException extends ParserException
 {
-	public NotEnoughArgumentsException()
+	NotEnoughArgumentsException()
 	{
+		super("Not enough arguments.");
 	}
 }

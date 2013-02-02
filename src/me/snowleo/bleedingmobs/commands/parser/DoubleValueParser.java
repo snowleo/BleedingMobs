@@ -20,14 +20,14 @@ package me.snowleo.bleedingmobs.commands.parser;
 import org.bukkit.command.CommandSender;
 
 
-public abstract class DoubleValueParser<T> extends DoubleTabParser<T>
+abstract class DoubleValueParser<T> extends DoubleTabParser<T>
 {
 	@Override
-	public final T parse(CommandSender sender, String[] args) throws ParserException
+	public final T parse(final CommandSender sender, final String[] args) throws ParserException
 	{
 		assertLength(args, 2);
 		return parse(args[0], args[1]);
 	}
 
-	public abstract T parse(String arg1, String arg2) throws InvalidArgumentException;
+	protected abstract T parse(final String arg1, final String arg2) throws InvalidArgumentException;
 }

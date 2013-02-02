@@ -24,15 +24,15 @@ import me.snowleo.bleedingmobs.commands.parser.LowerBoundIntegerParser;
 import org.bukkit.command.CommandSender;
 
 
-public class ProjectilePercentage extends AbstractConfigCommand<Integer>
+class ProjectilePercentage extends AbstractConfigCommand<Integer>
 {
-	public ProjectilePercentage(IBleedingMobs plugin)
+	ProjectilePercentage(final IBleedingMobs plugin)
 	{
 		super(plugin, new LowerBoundIntegerParser(0));
 	}
 
 	@Override
-	public void run(final CommandSender sender, final Integer value, final Settings settings)
+	protected void run(final CommandSender sender, final Integer value, final Settings settings)
 	{
 		settings.setProjectilePercentage(value);
 		sender.sendMessage("Projectile percentage set to " + value + "%.");

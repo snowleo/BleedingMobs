@@ -23,17 +23,18 @@ import me.snowleo.bleedingmobs.commands.parser.FromToIntegerParser;
 import me.snowleo.bleedingmobs.commands.parser.LowerBoundIntegerParser;
 import me.snowleo.bleedingmobs.particles.ParticleType;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 
 
-public class StainLife extends AbstractTypeCommand<Integer[]>
+class StainLife extends AbstractTypeCommand<Integer[]>
 {
-	public StainLife(ParticleType type, IBleedingMobs plugin)
+	StainLife(final EntityType type, final IBleedingMobs plugin)
 	{
 		super(type, plugin, new FromToIntegerParser(new LowerBoundIntegerParser(0)));
 	}
 
 	@Override
-	public void run(CommandSender sender, Integer[] arg, ParticleType type)
+	protected void run(final CommandSender sender, final Integer[] arg, final ParticleType.Builder type)
 	{
 		final int stainlifefrom = arg[0];
 		final int stainlifeto = arg[1];

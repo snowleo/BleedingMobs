@@ -24,18 +24,19 @@ import me.snowleo.bleedingmobs.commands.parser.MaterialDataParser;
 import me.snowleo.bleedingmobs.particles.ParticleType;
 import me.snowleo.bleedingmobs.particles.Util;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.material.MaterialData;
 
 
-public class ParticleMaterial extends AbstractTypeCommand<MaterialData>
+class ParticleMaterial extends AbstractTypeCommand<MaterialData>
 {
-	public ParticleMaterial(ParticleType type, IBleedingMobs plugin)
+	ParticleMaterial(final EntityType type, final IBleedingMobs plugin)
 	{
 		super(type, plugin, new MaterialDataParser());
 	}
 
 	@Override
-	public void run(CommandSender sender, MaterialData mat, ParticleType type)
+	protected void run(final CommandSender sender, final MaterialData mat, final ParticleType.Builder type)
 	{
 		if (Util.isAllowedMaterial(mat.getItemType()))
 		{

@@ -25,7 +25,7 @@ import me.snowleo.bleedingmobs.tasks.ParticleStateTask;
 
 public class TaskMap<K>
 {
-	protected final transient Map<K, ParticleStateTask> particleMap;
+	private final Map<K, ParticleStateTask> particleMap;
 
 	public TaskMap(final int maxParticles)
 	{
@@ -75,5 +75,10 @@ public class TaskMap<K>
 			}
 		}
 		particleMap.clear();
+	}
+
+	protected Map<K, ParticleStateTask> getParticleMap()
+	{
+		return particleMap;
 	}
 }

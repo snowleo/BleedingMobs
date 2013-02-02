@@ -23,13 +23,13 @@ import java.util.List;
 
 public class BooleanParser extends SingleValueParser<Boolean>
 {
-	private static final List<String> validValues = Arrays.asList(new String[]
+	private static final List<String> VALID_VALUES = Arrays.asList(new String[]
 			{
 				"true", "false", "on", "off"
 			});
 
 	@Override
-	public Boolean parse(String arg) throws InvalidArgumentException
+	protected Boolean parse(final String arg) throws InvalidArgumentException
 	{
 		if (arg.equalsIgnoreCase("true") || arg.equalsIgnoreCase("on"))
 		{
@@ -43,8 +43,8 @@ public class BooleanParser extends SingleValueParser<Boolean>
 	}
 
 	@Override
-	public List<String> getValidValues()
+	protected List<String> getValidValues()
 	{
-		return validValues;
+		return VALID_VALUES;
 	}
 }

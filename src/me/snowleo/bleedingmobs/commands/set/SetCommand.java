@@ -22,11 +22,12 @@ import me.snowleo.bleedingmobs.IBleedingMobs;
 import me.snowleo.bleedingmobs.commands.AbstractSubCommand;
 import me.snowleo.bleedingmobs.commands.set.type.TypeCommand;
 import me.snowleo.bleedingmobs.particles.ParticleType;
+import org.bukkit.entity.EntityType;
 
 
 public class SetCommand extends AbstractSubCommand
 {
-	public SetCommand(IBleedingMobs plugin)
+	public SetCommand(final IBleedingMobs plugin)
 	{
 		super();
 		register("maxparticles", new MaxParticles(plugin));
@@ -38,23 +39,23 @@ public class SetCommand extends AbstractSubCommand
 		register("bloodstreaminterval", new BloodstreamInterval(plugin));
 		register("bloodstreamtime", new BloodstreamTime(plugin));
 		register("bleedwhencanceled", new BleedWhenCanceled(plugin));
-		for (ParticleType particleType : ParticleType.values())
+		for (EntityType particleType : ParticleType.keys())
 		{
 			register(particleType.toString(), new TypeCommand(plugin, particleType));
 		}
 	}
 
 	@Override
-	public String[] getInfo()
+	protected String[] getInfo()
 	{
 		final StringBuilder builder = new StringBuilder();
-		for (ParticleType particleType : ParticleType.values())
+		for (EntityType entityType : ParticleType.keys())
 		{
 			if (builder.length() != 0)
 			{
 				builder.append(", ");
 			}
-			builder.append(particleType.toString().toLowerCase(Locale.ENGLISH));
+			builder.append(entityType.toString().toLowerCase(Locale.ENGLISH));
 		}
 		String[] info = new String[]
 		{

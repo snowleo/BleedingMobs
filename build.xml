@@ -71,4 +71,26 @@
     nbproject/build-impl.xml file. 
 
     -->
+	<!-- Define the Sonar global properties (the most usual way is to pass these properties via the command line) -->
+	<property name="sonar.jdbc.url" value="jdbc:h2:tcp://localhost:9092/sonar" />
+	<property name="sonar.jdbc.username" value="sonar" />
+	<property name="sonar.jdbc.password" value="sonar" />
+
+	<!-- Define the Sonar project properties -->
+	<property name="sonar.projectKey" value="me.snowleo:bleedingmobs" />
+	<property name="sonar.projectName" value="BleedingMobs" />
+	<property name="sonar.projectVersion" value="4.2" />
+	<property name="sonar.language" value="java" />
+	<property name="sonar.sources" value="src" />
+	<property name="sonar.binaries" value="build" />
+
+	<!-- Define the Sonar target -->
+	<target name="sonar" xmlns:sonar="antlib:org.sonar.ant">
+	    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+	        <classpath path="lib/sonar-ant-task-2.0.jar" />
+	    </taskdef>
+
+	    <!-- Execute Sonar -->
+	    <sonar:sonar />
+	</target>
 </project>

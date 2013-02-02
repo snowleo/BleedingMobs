@@ -13,14 +13,14 @@ import org.bukkit.command.CommandSender;
 
 public abstract class AbstractSubCommand implements Command
 {
-	private transient final Map<String, Command> subcommands = new HashMap<String, Command>();
+	private final Map<String, Command> subcommands = new HashMap<String, Command>();
 
-	protected final void register(String name, Command command)
+	protected final void register(final String name, final Command command)
 	{
 		subcommands.put(name.toLowerCase(Locale.ENGLISH), command);
 	}
 
-	public abstract String[] getInfo();
+	protected abstract String[] getInfo();
 
 	@Override
 	public void run(final CommandSender sender, final String[] args) throws ParserException
@@ -44,7 +44,7 @@ public abstract class AbstractSubCommand implements Command
 	}
 
 	@Override
-	public List<String> tabComplete(CommandSender sender, String[] args)
+	public List<String> tabComplete(final CommandSender sender, final String[] args)
 	{
 		if (args.length == 0)
 		{

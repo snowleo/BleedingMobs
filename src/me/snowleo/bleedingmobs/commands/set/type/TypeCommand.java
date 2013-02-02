@@ -19,12 +19,12 @@ package me.snowleo.bleedingmobs.commands.set.type;
 
 import me.snowleo.bleedingmobs.IBleedingMobs;
 import me.snowleo.bleedingmobs.commands.AbstractSubCommand;
-import me.snowleo.bleedingmobs.particles.ParticleType;
+import org.bukkit.entity.EntityType;
 
 
 public class TypeCommand extends AbstractSubCommand
 {
-	public TypeCommand(final IBleedingMobs plugin, final ParticleType type)
+	public TypeCommand(final IBleedingMobs plugin, final EntityType type)
 	{
 		super();
 		register("amount", new Amount(type, plugin));
@@ -40,7 +40,7 @@ public class TypeCommand extends AbstractSubCommand
 	}
 
 	@Override
-	public String[] getInfo()
+	protected String[] getInfo()
 	{
 		String[] info = new String[]
 		{

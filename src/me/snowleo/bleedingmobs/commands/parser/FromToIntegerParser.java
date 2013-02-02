@@ -25,13 +25,13 @@ public class FromToIntegerParser extends DoubleValueParser<Integer[]>
 {
 	private final IntegerParser integerParser;
 
-	public FromToIntegerParser(IntegerParser integerParser)
+	public FromToIntegerParser(final IntegerParser integerParser)
 	{
 		this.integerParser = integerParser;
 	}
 
 	@Override
-	public Integer[] parse(String arg1, String arg2) throws InvalidArgumentException
+	protected Integer[] parse(final String arg1, final String arg2) throws InvalidArgumentException
 	{
 		Integer[] values = new Integer[2];
 		values[0] = integerParser.parse(arg1);
@@ -44,13 +44,13 @@ public class FromToIntegerParser extends DoubleValueParser<Integer[]>
 	}
 
 	@Override
-	public List<String> getValidFirstValues()
+	protected List<String> getValidFirstValues()
 	{
 		return Collections.emptyList();
 	}
 
 	@Override
-	public List<String> getValidSecondValues(String arg1)
+	protected List<String> getValidSecondValues(final String arg1)
 	{
 		return Collections.emptyList();
 	}

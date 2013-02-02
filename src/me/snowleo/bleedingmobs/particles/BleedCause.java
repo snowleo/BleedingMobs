@@ -24,7 +24,7 @@ public enum BleedCause
 {
 	ATTACK, DEATH, PROJECTILE, FALL, BLOODSTREAM;
 
-	public int getPercentages(Settings settings)
+	int getPercentages(final Settings settings)
 	{
 		switch (this)
 		{
@@ -37,8 +37,9 @@ public enum BleedCause
 		case PROJECTILE:
 			return settings.getProjectilePercentage();
 		case ATTACK:
-		default:
 			return settings.getAttackPercentage();
+		default:
+			throw new AssertionError();
 		}
 	}
 
@@ -52,8 +53,9 @@ public enum BleedCause
 		case FALL:
 		case PROJECTILE:
 		case ATTACK:
-		default:
 			return false;
+		default:
+			throw new AssertionError();
 		}
 	}
 }

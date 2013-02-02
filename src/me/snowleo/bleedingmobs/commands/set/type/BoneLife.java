@@ -22,17 +22,18 @@ import me.snowleo.bleedingmobs.commands.AbstractTypeCommand;
 import me.snowleo.bleedingmobs.commands.parser.LowerBoundIntegerParser;
 import me.snowleo.bleedingmobs.particles.ParticleType;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 
 
-public class BoneLife extends AbstractTypeCommand<Integer>
+class BoneLife extends AbstractTypeCommand<Integer>
 {
-	public BoneLife(ParticleType type, IBleedingMobs plugin)
+	BoneLife(final EntityType type, final IBleedingMobs plugin)
 	{
 		super(type, plugin, new LowerBoundIntegerParser(0));
 	}
 
 	@Override
-	public void run(CommandSender sender, Integer value, ParticleType type)
+	protected void run(final CommandSender sender, final Integer value, final ParticleType.Builder type)
 	{
 		type.setBoneLife(value);
 		sender.sendMessage("Bone life set to " + value + " ticks.");

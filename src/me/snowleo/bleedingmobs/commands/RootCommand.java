@@ -20,7 +20,6 @@ package me.snowleo.bleedingmobs.commands;
 import java.util.Collections;
 import java.util.List;
 import me.snowleo.bleedingmobs.IBleedingMobs;
-import me.snowleo.bleedingmobs.commands.parser.InvalidArgumentException;
 import me.snowleo.bleedingmobs.commands.parser.ParserException;
 import me.snowleo.bleedingmobs.commands.set.SetCommand;
 import org.bukkit.command.Command;
@@ -54,7 +53,7 @@ public class RootCommand extends AbstractSubCommand implements TabCompleter, Com
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String string, String[] strings)
+	public boolean onCommand(final CommandSender sender, final Command command, final String string, final String[] strings)
 	{
 		if (strings.length < 1)
 		{
@@ -69,14 +68,7 @@ public class RootCommand extends AbstractSubCommand implements TabCompleter, Com
 			}
 			catch (ParserException ex)
 			{
-				if (ex instanceof InvalidArgumentException)
-				{
-					sender.sendMessage("Invalid argument.");
-				}
-				else
-				{
-					sender.sendMessage("Not enough arguments.");
-				}
+				sender.sendMessage(ex.getMessage());
 			}
 		}
 		else
@@ -87,7 +79,7 @@ public class RootCommand extends AbstractSubCommand implements TabCompleter, Com
 	}
 
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmnd, String string, String[] strings)
+	public List<String> onTabComplete(final CommandSender sender, final Command cmnd, final String string, final String[] strings)
 	{
 		if (sender.hasPermission("bleedingmobs.admin"))
 		{

@@ -30,7 +30,7 @@ public class Items
 {
 	private final TaskMap<UUID> items;
 	private final Map<UUID, Integer> particlesPerWorld = Collections.synchronizedMap(new HashMap<UUID, Integer>());
-	private int limitPerWorld = Util.COUNTER_SIZE;
+	private volatile int limitPerWorld = Util.COUNTER_SIZE;
 
 	public Items(final int maxParticles)
 	{
@@ -38,12 +38,12 @@ public class Items
 		setLimit(maxParticles);
 	}
 
-	public final void setLimit(int limitPerWorld)
+	public final void setLimit(final int limitPerWorld)
 	{
 		this.limitPerWorld = Math.max(1, Math.min(Util.COUNTER_SIZE, limitPerWorld));
 	}
 
-	public void add(Item item, ParticleStateTask particleTask)
+	public void add(final Item item, final ParticleStateTask particleTask)
 	{
 		items.add(item.getUniqueId(), particleTask);
 		addToLimit(item);
@@ -55,20 +55,13 @@ public class Items
 		particlesPerWorld.clear();
 	}
 
-	public boolean testLimit(UUID worldId)
+	public boolean testLimit(final UUID worldId)
 	{
 		Integer c = particlesPerWorld.get(worldId);
-		if (c == null || c < limitPerWorld)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return c == null || c < limitPerWorld;
 	}
 
-	public void remove(Item item)
+	public void remove(final Item item)
 	{
 		boolean found = items.remove(item.getUniqueId());
 		if (found)
@@ -77,7 +70,7 @@ public class Items
 		}
 	}
 
-	public void restore(Item item)
+	public void restore(final Item item)
 	{
 		boolean found = items.restore(item.getUniqueId());
 		if (found)
@@ -99,7 +92,7 @@ public class Items
 		return amount;
 	}
 
-	private void removeFromLimit(Item item) throws IllegalStateException
+	private void removeFromLimit(final Item item)
 	{
 		final UUID worldId = item.getWorld().getUID();
 		synchronized (particlesPerWorld)
@@ -117,7 +110,7 @@ public class Items
 		}
 	}
 
-	private void addToLimit(Item item)
+	private void addToLimit(final Item item)
 	{
 		final UUID worldId = item.getWorld().getUID();
 		synchronized (particlesPerWorld)
@@ -128,7 +121,7 @@ public class Items
 		}
 	}
 
-	public boolean contains(UUID uuid)
+	public boolean contains(final UUID uuid)
 	{
 		return items.contains(uuid);
 	}

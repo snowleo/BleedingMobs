@@ -24,19 +24,21 @@ import me.snowleo.bleedingmobs.commands.parser.MaterialParser;
 import me.snowleo.bleedingmobs.particles.ParticleType;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 
 
 class SaturatedMatsRemove extends AbstractTypeCommand<Material>
 {
-	public SaturatedMatsRemove(ParticleType type, IBleedingMobs plugin)
+	SaturatedMatsRemove(final EntityType type, final IBleedingMobs plugin)
 	{
-		super(type, plugin, new MaterialParser()); //TODO: Add additional
+		super(type, plugin, new MaterialParser());
+		//TODO: Add additional
 	}
 
 	@Override
-	public void run(CommandSender sender, Material mat, ParticleType type)
+	protected void run(final CommandSender sender, final Material mat, final ParticleType.Builder type)
 	{
-		type.getSaturatedMaterials().remove(mat);
+		type.getSaturatedMats().remove(mat);
 		sender.sendMessage("Material " + mat.toString().replace('_', '-').toLowerCase(Locale.ENGLISH) + " removed from saturated materials.");
 	}
 }

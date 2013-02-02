@@ -24,9 +24,9 @@ import me.snowleo.bleedingmobs.IBleedingMobs;
 
 public class MetricsStarter implements Runnable
 {
-	private final transient IBleedingMobs plugin;
-	private transient long delay;
-	private transient Metrics metrics = null;
+	private final IBleedingMobs plugin;
+	private volatile long delay;
+	private volatile Metrics metrics = null;
 
 	public MetricsStarter(final IBleedingMobs plugin)
 	{

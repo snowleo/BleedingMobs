@@ -29,7 +29,7 @@ class DisableMetrics implements Command
 {
 	private final IBleedingMobs plugin;
 
-	public DisableMetrics(IBleedingMobs plugin)
+	DisableMetrics(final IBleedingMobs plugin)
 	{
 		this.plugin = plugin;
 	}
@@ -53,7 +53,7 @@ class DisableMetrics implements Command
 	}
 
 	@Override
-	public List<String> tabComplete(CommandSender sender, String[] args)
+	public List<String> tabComplete(final CommandSender sender, final String[] args)
 	{
 		return Collections.emptyList();
 	}

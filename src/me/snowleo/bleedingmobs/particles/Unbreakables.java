@@ -33,15 +33,16 @@ public class Unbreakables extends TaskMap<Location>
 
 	public void removeByChunk(final Chunk chunk)
 	{
-		synchronized (particleMap)
+		Map<Location, ParticleStateTask> map = getParticleMap();
+		synchronized (map)
 		{
-			final Iterator<Map.Entry<Location, ParticleStateTask>> iterator = particleMap.entrySet().iterator();
+			Iterator<Map.Entry<Location, ParticleStateTask>> iterator = map.entrySet().iterator();
 			while (iterator.hasNext())
 			{
-				final Map.Entry<Location, ParticleStateTask> entry = iterator.next();
+				Map.Entry<Location, ParticleStateTask> entry = iterator.next();
 				if (entry.getKey().getBlock().getChunk().equals(chunk))
 				{
-					final ParticleStateTask particle = entry.getValue();
+					ParticleStateTask particle = entry.getValue();
 					particle.restore();
 					iterator.remove();
 				}

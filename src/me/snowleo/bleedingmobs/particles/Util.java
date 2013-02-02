@@ -26,19 +26,19 @@ import org.bukkit.Material;
 
 public final class Util
 {
-	private final static Random RANDOM = new Random();
-	private final static Map<UUID, Integer> counter = new HashMap<UUID, Integer>();
-	public final static int COUNTER_MIN = 2767;
-	public final static int COUNTER_MAX = 32767;
-	public final static int COUNTER_SIZE = COUNTER_MAX - COUNTER_MIN;
+	private static final Random RANDOM = new Random();
+	private static final Map<UUID, Integer> COUNTER = new HashMap<UUID, Integer>();
+	public static final int COUNTER_MIN = 2767;
+	public static final int COUNTER_MAX = 32767;
+	public static final int COUNTER_SIZE = COUNTER_MAX - COUNTER_MIN;
 
 	private Util()
 	{
 	}
 
-	public static int getRandomBetween(int from, int to)
+	public static int getRandomBetween(final int from, final int to)
 	{
-		final int span = to - from;
+		int span = to - from;
 		return (span > 0 ? RANDOM.nextInt(span) : 0) + from;
 	}
 
@@ -51,18 +51,18 @@ public final class Util
 		return (byte)color;
 	}
 
-	public static boolean isAllowedMaterial(Material mat)
+	public static boolean isAllowedMaterial(final Material mat)
 	{
 		return mat.getMaxDurability() == 0 && mat != Material.PUMPKIN && mat != Material.SKULL_ITEM && mat != Material.SKULL;
 	}
 
 	public static int getCounter(final UUID worldId)
 	{
-		synchronized (counter)
+		synchronized (COUNTER)
 		{
-			Integer c = counter.get(worldId);
+			Integer c = COUNTER.get(worldId);
 			int r = c == null ? COUNTER_MIN : (c >= COUNTER_MAX ? COUNTER_MIN : c + 1);
-			counter.put(worldId, Integer.valueOf(r));
+			COUNTER.put(worldId, Integer.valueOf(r));
 			return r;
 		}
 	}

@@ -24,15 +24,15 @@ import me.snowleo.bleedingmobs.commands.parser.BooleanParser;
 import org.bukkit.command.CommandSender;
 
 
-public class BleedWhenCanceled extends AbstractConfigCommand<Boolean>
+class BleedWhenCanceled extends AbstractConfigCommand<Boolean>
 {
-	public BleedWhenCanceled(IBleedingMobs plugin)
+	BleedWhenCanceled(final IBleedingMobs plugin)
 	{
 		super(plugin, new BooleanParser());
 	}
 
 	@Override
-	public void run(final CommandSender sender, final Boolean value, final Settings settings)
+	protected void run(final CommandSender sender, final Boolean value, final Settings settings)
 	{
 		settings.setBleedWhenCanceled(value);
 		sender.sendMessage("Bleed when cancelled set to " + (value ? "true" : "false") + ".");

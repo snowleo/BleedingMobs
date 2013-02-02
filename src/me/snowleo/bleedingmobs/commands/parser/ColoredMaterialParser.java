@@ -29,10 +29,10 @@ import org.bukkit.material.MaterialData;
 
 public class ColoredMaterialParser extends DoubleValueParser<MaterialData>
 {
-	private static final DyeColorParser dyeColorParser = new DyeColorParser();
-	private static final MaterialParser materialParser = new MaterialParser();
-	private static final List<String> validFirstValues = dyeColorParser.getValidValues();
-	private static final List<String> validSecondValues = new ArrayList<String>();
+	private static final DyeColorParser DYE_COLOR_PARSER = new DyeColorParser();
+	private static final MaterialParser MATERIAL_PARSER = new MaterialParser();
+	private static final List<String> VALID_FIRST_VALUES = DYE_COLOR_PARSER.getValidValues();
+	private static final List<String> VALID_SECOND_VALUES = new ArrayList<String>();
 
 	static
 	{
@@ -40,16 +40,16 @@ public class ColoredMaterialParser extends DoubleValueParser<MaterialData>
 		{
 			if (Colorable.class.isAssignableFrom(material.getData()))
 			{
-				validSecondValues.add(material.name().replaceAll("_", "").toLowerCase(Locale.ENGLISH));
+				VALID_SECOND_VALUES.add(material.name().replaceAll("_", "").toLowerCase(Locale.ENGLISH));
 			}
 		}
 	}
 
 	@Override
-	public MaterialData parse(String color, String material) throws InvalidArgumentException
+	protected MaterialData parse(final String color, final String material) throws InvalidArgumentException
 	{
-		DyeColor dyeColor = dyeColorParser.parse(color);
-		Material coloredMaterial = materialParser.parse(material);
+		DyeColor dyeColor = DYE_COLOR_PARSER.parse(color);
+		Material coloredMaterial = MATERIAL_PARSER.parse(material);
 		MaterialData data = coloredMaterial.getNewData((byte)0);
 		if (data instanceof Colorable)
 		{
@@ -63,17 +63,17 @@ public class ColoredMaterialParser extends DoubleValueParser<MaterialData>
 	}
 
 	@Override
-	public List<String> getValidFirstValues()
+	protected List<String> getValidFirstValues()
 	{
-		return validFirstValues;
+		return VALID_FIRST_VALUES;
 	}
 
 	@Override
-	public List<String> getValidSecondValues(String arg1)
+	protected List<String> getValidSecondValues(final String arg1)
 	{
-		if (validFirstValues.contains(prepareFirstTabValue(arg1)))
+		if (VALID_FIRST_VALUES.contains(prepareFirstTabValue(arg1)))
 		{
-			return validSecondValues;
+			return VALID_SECOND_VALUES;
 		}
 		else
 		{
@@ -82,13 +82,13 @@ public class ColoredMaterialParser extends DoubleValueParser<MaterialData>
 	}
 
 	@Override
-	public String prepareFirstTabValue(String arg1)
+	protected String prepareFirstTabValue(final String arg1)
 	{
 		return arg1.replaceAll("[_-]", "").toLowerCase(Locale.ENGLISH);
 	}
 
 	@Override
-	public String prepareSecondTabValue(String arg1, String arg2)
+	protected String prepareSecondTabValue(final String arg1, final String arg2)
 	{
 		return arg2.replaceAll("[_-]", "").toLowerCase(Locale.ENGLISH);
 	}

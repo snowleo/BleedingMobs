@@ -19,12 +19,12 @@ package me.snowleo.bleedingmobs.commands.set.type;
 
 import me.snowleo.bleedingmobs.IBleedingMobs;
 import me.snowleo.bleedingmobs.commands.AbstractSubCommand;
-import me.snowleo.bleedingmobs.particles.ParticleType;
+import org.bukkit.entity.EntityType;
 
 
-public class SaturatedMats extends AbstractSubCommand
+class SaturatedMats extends AbstractSubCommand
 {
-	public SaturatedMats(ParticleType type, IBleedingMobs plugin)
+	SaturatedMats(final EntityType type, final IBleedingMobs plugin)
 	{
 		super();
 		register("clear", new SaturatedMatsClear(type, plugin));
@@ -33,7 +33,7 @@ public class SaturatedMats extends AbstractSubCommand
 	}
 
 	@Override
-	public String[] getInfo()
+	protected String[] getInfo()
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

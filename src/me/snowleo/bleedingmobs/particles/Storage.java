@@ -28,13 +28,11 @@ import org.bukkit.entity.LivingEntity;
 
 public class Storage
 {
-	private final transient Items items;
-	private final transient Unbreakables unbreakables;
-	private final transient Random random = new Random();
-	private final transient IBleedingMobs plugin;
-	private transient int remove = 0;
-	private final transient AtomicIntegerArray partStats = new AtomicIntegerArray(6);
-	private final transient AtomicInteger partStatsPos = new AtomicInteger(0);
+	private final Items items;
+	private final Unbreakables unbreakables;
+	private final IBleedingMobs plugin;
+	private final AtomicIntegerArray partStats = new AtomicIntegerArray(6);
+	private final AtomicInteger partStatsPos = new AtomicInteger(0);
 
 	public Storage(final IBleedingMobs plugin, final int maxParticles)
 	{
@@ -80,7 +78,7 @@ public class Storage
 		unbreakables.restoreAll();
 	}
 
-	public boolean isParticleItem(UUID id)
+	public boolean isParticleItem(final UUID id)
 	{
 		return items.contains(id);
 	}

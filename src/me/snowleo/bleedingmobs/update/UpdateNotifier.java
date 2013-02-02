@@ -11,7 +11,7 @@ import org.bukkit.plugin.Plugin;
 public class UpdateNotifier implements Listener
 {
 	private final Plugin plugin;
-	private VersionInfo info;
+	private volatile VersionInfo info;
 
 	public UpdateNotifier(final Plugin plugin)
 	{

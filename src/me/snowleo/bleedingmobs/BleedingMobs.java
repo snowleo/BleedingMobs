@@ -35,12 +35,12 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 {
-	private transient Storage storage;
-	private transient Settings settings;
-	private transient Metrics metrics = null;
-	private transient boolean spawning = false;
-	private transient BloodStreamTask bloodStreamTimer;
-	private transient BukkitTask timer = null;
+	private volatile Storage storage;
+	private volatile Settings settings;
+	private volatile Metrics metrics = null;
+	private volatile boolean spawning = false;
+	private volatile BloodStreamTask bloodStreamTimer;
+	private volatile BukkitTask timer = null;
 
 	@Override
 	public void onDisable()

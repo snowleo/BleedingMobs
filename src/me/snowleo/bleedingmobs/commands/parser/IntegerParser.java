@@ -23,10 +23,10 @@ import java.util.List;
 
 public class IntegerParser extends SingleValueParser<Integer>
 {
-	private static final List<String> validValues = Collections.emptyList();
+	private static final List<String> VALID_VALUES = Collections.emptyList();
 
 	@Override
-	public Integer parse(String arg) throws InvalidArgumentException
+	protected Integer parse(final String arg) throws InvalidArgumentException
 	{
 		try
 		{
@@ -34,13 +34,13 @@ public class IntegerParser extends SingleValueParser<Integer>
 		}
 		catch (NumberFormatException e)
 		{
-			throw new InvalidArgumentException();
+			throw new InvalidArgumentException(e);
 		}
 	}
 
 	@Override
-	public List<String> getValidValues()
+	protected List<String> getValidValues()
 	{
-		return validValues;
+		return VALID_VALUES;
 	}
 }

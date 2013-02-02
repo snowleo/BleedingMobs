@@ -20,10 +20,10 @@ package me.snowleo.bleedingmobs.commands.parser;
 import java.util.List;
 
 
-public abstract class SingleTabParser<T> extends AbstractParser<T>
+abstract class SingleTabParser<T> extends AbstractParser<T>
 {
 	@Override
-	public final List<String> getTabValues(String[] args)
+	public final List<String> getTabValues(final String[] args)
 	{
 		List<String> validValues = getValidValues();
 		if (args.length == 0)
@@ -33,10 +33,10 @@ public abstract class SingleTabParser<T> extends AbstractParser<T>
 		return searchList(validValues, prepareTabValue(args[0]));
 	}
 
-	public String prepareTabValue(String arg)
+	protected String prepareTabValue(final String arg)
 	{
 		return arg;
 	}
 
-	public abstract List<String> getValidValues();
+	protected abstract List<String> getValidValues();
 }

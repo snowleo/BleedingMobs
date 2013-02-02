@@ -25,17 +25,17 @@ import me.snowleo.bleedingmobs.particles.Util;
 import org.bukkit.command.CommandSender;
 
 
-public class MaxParticles extends AbstractConfigCommand<Integer>
+class MaxParticles extends AbstractConfigCommand<Integer>
 {
-	public MaxParticles(IBleedingMobs plugin)
+	MaxParticles(final IBleedingMobs plugin)
 	{
 		super(plugin, new BoundedIntegerParser(1, Util.COUNTER_SIZE));
 	}
 
 	@Override
-	public void run(final CommandSender sender, final Integer value, final Settings settings)
+	protected void run(final CommandSender sender, final Integer value, final Settings settings)
 	{
-		plugin.getStorage().getItems().setLimit(value);
+		getPlugin().getStorage().getItems().setLimit(value);
 		settings.setMaxParticles(value);
 		sender.sendMessage("Maximum particles set to " + value + ".");
 	}

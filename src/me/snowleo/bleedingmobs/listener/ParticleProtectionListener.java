@@ -45,14 +45,14 @@ import org.bukkit.inventory.ItemStack;
 
 public class ParticleProtectionListener implements Listener
 {
-	private final transient IBleedingMobs plugin;
-
+	private final IBleedingMobs plugin;
+	
 	public ParticleProtectionListener(final IBleedingMobs plugin)
 	{
 		super();
 		this.plugin = plugin;
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockBreak(final BlockBreakEvent event)
 	{
@@ -63,7 +63,7 @@ public class ParticleProtectionListener implements Listener
 			event.setCancelled(true);
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockBurn(final BlockBurnEvent event)
 	{
@@ -74,7 +74,7 @@ public class ParticleProtectionListener implements Listener
 			event.setCancelled(true);
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockIgnite(final BlockIgniteEvent event)
 	{
@@ -85,7 +85,7 @@ public class ParticleProtectionListener implements Listener
 			event.setCancelled(true);
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockPistonExtend(final BlockPistonExtendEvent event)
 	{
@@ -103,7 +103,7 @@ public class ParticleProtectionListener implements Listener
 			}
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockPistonRetract(final BlockPistonRetractEvent event)
 	{
@@ -114,7 +114,7 @@ public class ParticleProtectionListener implements Listener
 			event.setCancelled(true);
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onChunkUnload(final ChunkUnloadEvent event)
 	{
@@ -133,7 +133,7 @@ public class ParticleProtectionListener implements Listener
 		}
 		plugin.getStorage().getUnbreakables().removeByChunk(event.getChunk());
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onEntityExplode(final EntityExplodeEvent event)
 	{
@@ -146,7 +146,7 @@ public class ParticleProtectionListener implements Listener
 			plugin.getStorage().getUnbreakables().restore(block.getLocation());
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onEntityChangeBlock(final EntityChangeBlockEvent event)
 	{
@@ -156,7 +156,7 @@ public class ParticleProtectionListener implements Listener
 		}
 		plugin.getStorage().getUnbreakables().restore(event.getBlock().getLocation());
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerPickupItem(final PlayerPickupItemEvent event)
 	{
@@ -164,9 +164,24 @@ public class ParticleProtectionListener implements Listener
 			&& plugin.getStorage().getItems().contains(event.getItem().getUniqueId()))
 		{
 			event.setCancelled(true);
+			return;
+		}
+		ItemStack stack = event.getItem().getItemStack();
+		if (stack.containsEnchantment(Enchantment.DURABILITY)
+			&& stack.getEnchantmentLevel(Enchantment.DURABILITY) >= Util.COUNTER_MIN)
+		{
+			event.setCancelled(true);
+			plugin.getServer().getScheduler().runTask(plugin, new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					event.getItem().remove();
+				}
+			});
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onEntityTeleport(final EntityTeleportEvent event)
 	{
@@ -177,7 +192,7 @@ public class ParticleProtectionListener implements Listener
 			event.setCancelled(true);
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onEntityCombust(final EntityCombustEvent event)
 	{
@@ -188,7 +203,7 @@ public class ParticleProtectionListener implements Listener
 			event.setCancelled(true);
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onEntityDamage(final EntityDamageEvent event)
 	{
@@ -197,16 +212,17 @@ public class ParticleProtectionListener implements Listener
 			removeParticleFromEntityEquipment(((LivingEntity)event.getEntity()).getEquipment());
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onEntityDeathEvent(final EntityDeathEvent event)
 	{
 		removeParticleFromEntityEquipment(event.getEntity().getEquipment());
 	}
-
-	private void removeParticleFromEntityEquipment(EntityEquipment equipment)
+	
+	private void removeParticleFromEntityEquipment(final EntityEquipment equipment)
 	{
-		if (equipment == null) {
+		if (equipment == null)
+		{
 			return;
 		}
 		final ItemStack item = equipment.getItemInHand();

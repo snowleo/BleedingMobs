@@ -25,13 +25,13 @@ import org.bukkit.command.CommandSender;
 public class VoidParser implements Parser<Void>
 {
 	@Override
-	public Void parse(CommandSender sender, String[] args) throws ParserException
+	public Void parse(final CommandSender sender, final String[] args) throws ParserException
 	{
 		return null;
 	}
 
 	@Override
-	public List<String> getTabValues(String[] args)
+	public List<String> getTabValues(final String[] args)
 	{
 		return Collections.emptyList();
 	}

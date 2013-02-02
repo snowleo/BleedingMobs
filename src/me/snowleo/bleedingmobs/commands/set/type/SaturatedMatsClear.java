@@ -24,19 +24,20 @@ import me.snowleo.bleedingmobs.commands.parser.VoidParser;
 import me.snowleo.bleedingmobs.particles.ParticleType;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 
 
 class SaturatedMatsClear extends AbstractTypeCommand<Void>
 {
-	public SaturatedMatsClear(ParticleType type, IBleedingMobs plugin)
+	SaturatedMatsClear(final EntityType type, final IBleedingMobs plugin)
 	{
 		super(type, plugin, new VoidParser());
 	}
 
 	@Override
-	public void run(CommandSender sender, Void arg, ParticleType type)
+	protected void run(final CommandSender sender, final Void arg, final ParticleType.Builder type)
 	{
-		type.setSaturatedMaterials(EnumSet.noneOf(Material.class));
+		type.setSaturatedMats(EnumSet.noneOf(Material.class));
 		sender.sendMessage("Saturated materials cleared.");
 	}
 }

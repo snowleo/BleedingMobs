@@ -24,17 +24,18 @@ import me.snowleo.bleedingmobs.commands.parser.DyeColorParser;
 import me.snowleo.bleedingmobs.particles.ParticleType;
 import org.bukkit.DyeColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 
 
-public class WoolColor extends AbstractTypeCommand<DyeColor>
+class WoolColor extends AbstractTypeCommand<DyeColor>
 {
-	public WoolColor(ParticleType type, IBleedingMobs plugin)
+	WoolColor(final EntityType type, final IBleedingMobs plugin)
 	{
 		super(type, plugin, new DyeColorParser());
 	}
 
 	@Override
-	public void run(CommandSender sender, DyeColor dyecolor, ParticleType type)
+	protected void run(final CommandSender sender, final DyeColor dyecolor, final ParticleType.Builder type)
 	{
 		type.setWoolColor(dyecolor);
 		sender.sendMessage("Wool color set to " + dyecolor.toString().replace('_', '-').toLowerCase(Locale.ENGLISH) + ".");

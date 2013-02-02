@@ -29,19 +29,30 @@ import org.bukkit.entity.LivingEntity;
 
 public class BloodStreamTask implements Runnable
 {
-	private final transient Map<UUID, BleedingEntity> entities = new HashMap<UUID, BleedingEntity>();
-	private final transient IBleedingMobs plugin;
+	private final Map<UUID, BleedingEntity> entities = new HashMap<UUID, BleedingEntity>();
+	private final IBleedingMobs plugin;
 
 
-	private class BleedingEntity
+	private static final class BleedingEntity
 	{
-		public WeakReference<LivingEntity> entity;
-		public int timeleft;
+		private WeakReference<LivingEntity> entity;
+		private int timeleft;
 
-		public BleedingEntity(LivingEntity entity, int timeleft)
+		private BleedingEntity(LivingEntity entity, int timeleft)
 		{
 			this.entity = new WeakReference<LivingEntity>(entity);
 			this.timeleft = timeleft;
+		}
+
+		private LivingEntity getEntity()
+		{
+			return entity.get();
+		}
+
+		private int reduceTimeleft(final int interval)
+		{
+			timeleft -= interval;
+			return timeleft;
 		}
 	}
 
@@ -60,9 +71,9 @@ public class BloodStreamTask implements Runnable
 			while (iterator.hasNext())
 			{
 				final BleedingEntity entry = iterator.next();
-				entry.timeleft -= interval;
-				final LivingEntity entity = entry.entity.get();
-				if (entry.timeleft > 0 && entity != null && !entity.isDead() && entity.getLocation() != null)
+				final int timeleft = entry.reduceTimeleft(interval);
+				final LivingEntity entity = entry.getEntity();
+				if (timeleft > 0 && entity != null && !entity.isDead() && entity.getLocation() != null)
 				{
 					plugin.getStorage().createParticles(entity, BleedCause.BLOODSTREAM);
 				}

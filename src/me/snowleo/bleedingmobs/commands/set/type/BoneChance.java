@@ -22,17 +22,18 @@ import me.snowleo.bleedingmobs.commands.AbstractTypeCommand;
 import me.snowleo.bleedingmobs.commands.parser.PercentageParser;
 import me.snowleo.bleedingmobs.particles.ParticleType;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 
 
 class BoneChance extends AbstractTypeCommand<Integer>
 {
-	public BoneChance(ParticleType type, IBleedingMobs plugin)
+	BoneChance(final EntityType type, final IBleedingMobs plugin)
 	{
 		super(type, plugin, new PercentageParser());
 	}
 
 	@Override
-	public void run(CommandSender sender, Integer bonechance, ParticleType type)
+	protected void run(final CommandSender sender, final Integer bonechance, final ParticleType.Builder type)
 	{
 		type.setBoneChance(bonechance);
 		sender.sendMessage("Bone chance set to " + bonechance + "%.");

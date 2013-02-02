@@ -27,7 +27,7 @@ public class BoundedIntegerParser extends IntegerParser
 	private final int lower;
 	private final int upper;
 
-	public BoundedIntegerParser(int lower, int upper)
+	public BoundedIntegerParser(final int lower, final int upper)
 	{
 		super();
 		this.lower = lower;
@@ -35,7 +35,7 @@ public class BoundedIntegerParser extends IntegerParser
 	}
 
 	@Override
-	public Integer parse(String arg) throws InvalidArgumentException
+	protected Integer parse(final String arg) throws InvalidArgumentException
 	{
 		Integer value = super.parse(arg);
 		if (value < lower || value > upper)
@@ -46,7 +46,7 @@ public class BoundedIntegerParser extends IntegerParser
 	}
 
 	@Override
-	public List<String> getValidValues()
+	protected List<String> getValidValues()
 	{
 		if (validValues.isEmpty())
 		{

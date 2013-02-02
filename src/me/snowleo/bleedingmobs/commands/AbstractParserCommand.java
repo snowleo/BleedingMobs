@@ -9,23 +9,23 @@ import org.bukkit.command.CommandSender;
 
 public abstract class AbstractParserCommand<T> implements Command
 {
-	protected final Parser<T> parser;
+	private final Parser<T> parser;
 
-	public AbstractParserCommand(Parser<T> parser)
+	protected AbstractParserCommand(final Parser<T> parser)
 	{
 		this.parser = parser;
 	}
 
 	@Override
-	public final void run(CommandSender sender, String[] args) throws ParserException
+	public final void run(final CommandSender sender, final String[] args) throws ParserException
 	{
 		run(sender, parser.parse(sender, args));
 	}
 
-	public abstract void run(CommandSender sender, T arg) throws InvalidArgumentException;
+	protected abstract void run(final CommandSender sender, final T arg) throws InvalidArgumentException;
 
 	@Override
-	public List<String> tabComplete(CommandSender sender, String[] args)
+	public List<String> tabComplete(final CommandSender sender, final String[] args)
 	{
 		return parser.getTabValues(args);
 	}

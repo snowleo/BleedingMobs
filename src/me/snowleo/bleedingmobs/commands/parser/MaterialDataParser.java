@@ -28,22 +28,22 @@ import org.bukkit.material.MaterialData;
 
 public class MaterialDataParser extends AbstractParser<MaterialData>
 {
-	private static final Parser<Additional> additionalParser = new EnumParser<MaterialDataParser.Additional>(Additional.class);
-	private static final MaterialParser materialParser = new MaterialParser();
-	private static final ColoredMaterialParser coloredMaterialParser = new ColoredMaterialParser();
-	private static final TexturedMaterialParser texturedMaterialParser = new TexturedMaterialParser();
-	private static final List<String> validValues = new ArrayList<String>();
+	private static final Parser<Additional> ADDITIONAL_PARSER = new EnumParser<MaterialDataParser.Additional>(Additional.class);
+	private static final MaterialParser MATERIAL_PARSER = new MaterialParser();
+	private static final ColoredMaterialParser COLORED_MATERIAL_PARSER = new ColoredMaterialParser();
+	private static final TexturedMaterialParser TEXTURED_MATERIAL_PARSER = new TexturedMaterialParser();
+	private static final List<String> VALID_VALUES = new ArrayList<String>();
 
 	static
 	{
-		validValues.add(Additional.HAND.name().toLowerCase());
-		validValues.add(Additional.LOOKAT.name().toLowerCase());
-		validValues.addAll(materialParser.getValidValues());
-		validValues.addAll(coloredMaterialParser.getValidFirstValues());
+		VALID_VALUES.add(Additional.HAND.name().toLowerCase());
+		VALID_VALUES.add(Additional.LOOKAT.name().toLowerCase());
+		VALID_VALUES.addAll(MATERIAL_PARSER.getValidValues());
+		VALID_VALUES.addAll(COLORED_MATERIAL_PARSER.getValidFirstValues());
 	}
 
 	@Override
-	public MaterialData parse(CommandSender sender, String[] args) throws ParserException
+	public MaterialData parse(final CommandSender sender, final String[] args) throws ParserException
 	{
 		assertLength(args, 1);
 		MaterialData mat = parseAdditional(sender, args);
@@ -53,43 +53,43 @@ public class MaterialDataParser extends AbstractParser<MaterialData>
 			{
 				try
 				{
-					mat = coloredMaterialParser.parse(sender, args);
+					mat = COLORED_MATERIAL_PARSER.parse(sender, args);
 				}
 				catch (ParserException e2)
 				{
-					mat = texturedMaterialParser.parse(sender, args);
+					mat = TEXTURED_MATERIAL_PARSER.parse(sender, args);
 				}
 			}
 			else
 			{
-				mat = materialParser.parse(sender, args).getNewData((byte)0);
+				mat = MATERIAL_PARSER.parse(sender, args).getNewData((byte)0);
 			}
 		}
 		return mat;
 	}
 
 	@Override
-	public List<String> getTabValues(String[] args)
+	public List<String> getTabValues(final String[] args)
 	{
 		if (args.length == 0)
 		{
-			return validValues;
+			return VALID_VALUES;
 		}
 		if (args.length == 1)
 		{
-			return searchList(validValues, materialParser.prepareTabValue(args[0]));
+			return searchList(VALID_VALUES, MATERIAL_PARSER.prepareTabValue(args[0]));
 		}
 		List<String> validSecondValues = new ArrayList<String>();
-		validSecondValues.addAll(coloredMaterialParser.getTabValues(args));
-		validSecondValues.addAll(texturedMaterialParser.getTabValues(args));
+		validSecondValues.addAll(COLORED_MATERIAL_PARSER.getTabValues(args));
+		validSecondValues.addAll(TEXTURED_MATERIAL_PARSER.getTabValues(args));
 		return validSecondValues;
 	}
 
-	private MaterialData parseAdditional(CommandSender sender, String[] args)
+	private MaterialData parseAdditional(final CommandSender sender, final String[] args)
 	{
 		try
 		{
-			Additional add = additionalParser.parse(sender, args);
+			Additional add = ADDITIONAL_PARSER.parse(sender, args);
 			switch (add)
 			{
 			case HAND:

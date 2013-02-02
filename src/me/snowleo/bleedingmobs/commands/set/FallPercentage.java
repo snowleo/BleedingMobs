@@ -24,15 +24,15 @@ import me.snowleo.bleedingmobs.commands.parser.LowerBoundIntegerParser;
 import org.bukkit.command.CommandSender;
 
 
-public class FallPercentage extends AbstractConfigCommand<Integer>
+class FallPercentage extends AbstractConfigCommand<Integer>
 {
-	public FallPercentage(IBleedingMobs plugin)
+	FallPercentage(final IBleedingMobs plugin)
 	{
 		super(plugin, new LowerBoundIntegerParser(0));
 	}
 
 	@Override
-	public void run(final CommandSender sender, final Integer value, final Settings settings)
+	protected void run(final CommandSender sender, final Integer value, final Settings settings)
 	{
 		settings.setFallPercentage(value);
 		sender.sendMessage("Fall percentage set to " + value + "%.");

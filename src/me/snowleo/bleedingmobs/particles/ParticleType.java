@@ -18,18 +18,20 @@
 package me.snowleo.bleedingmobs.particles;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.material.MaterialData;
 
 
-public class ParticleType
+public final class ParticleType
 {
-	private static EnumMap<EntityType, ParticleType> map = new EnumMap<EntityType, ParticleType>(EntityType.class);
+	private static final Map<EntityType, ParticleType> MAP = Collections.synchronizedMap(new EnumMap<EntityType, ParticleType>(EntityType.class));
 
 	static
 	{
@@ -41,115 +43,129 @@ public class ParticleType
 			}
 			if (entityType == EntityType.CREEPER)
 			{
-				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.LIME, false, 5, 15, new MaterialData(Material.SULPHUR)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setBoneChance(0).setWoolColor(DyeColor.LIME).setStainsFloor(false).setAmountFrom(5).setAmountTo(15).setParticleMaterial(Material.SULPHUR).build());
 			}
 			else if (entityType == EntityType.SKELETON || entityType == EntityType.GHAST)
 			{
-				map.put(entityType, new ParticleType(entityType, 0, 100, 5, 15, DyeColor.WHITE, false, 5, 15, new MaterialData(Material.BONE)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setWoolChance(0).setBoneChance(100).setWoolColor(DyeColor.WHITE).setStainsFloor(false).setAmountFrom(5).setAmountTo(15).setParticleMaterial(Material.BONE).build());
 			}
 			else if (entityType == EntityType.ENDERMAN)
 			{
-				map.put(entityType, new ParticleType(entityType, 50, 50, 5, 15, DyeColor.BLACK, true, 15, 25, new MaterialData(Material.COAL)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setWoolColor(DyeColor.BLACK).setParticleMaterial(Material.COAL).build());
 			}
 			else if (entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER)
 			{
-				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.BLACK, true, 25, 35, new MaterialData(Material.COAL)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setBoneChance(0).setWoolColor(DyeColor.BLACK).setAmountFrom(25).setAmountTo(35).setParticleMaterial(Material.COAL).build());
 			}
 			else if (entityType == EntityType.CHICKEN)
 			{
-				map.put(entityType, new ParticleType(entityType, 20, 0, 5, 15, DyeColor.RED, true, 5, 15, new MaterialData(Material.FEATHER)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setWoolChance(20).setBoneChance(0).setAmountFrom(5).setAmountTo(15).setParticleMaterial(Material.FEATHER).build());
 			}
 			else if (entityType == EntityType.BAT)
 			{
-				map.put(entityType, new ParticleType(entityType, 20, 0, 5, 15, DyeColor.RED, true, 5, 15, new MaterialData(Material.COAL)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setWoolChance(20).setBoneChance(0).setAmountFrom(5).setAmountTo(15).setParticleMaterial(Material.COAL).build());
 			}
 			else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE)
 			{
-				map.put(entityType, new ParticleType(entityType, 0, 0, 5, 15, DyeColor.GREEN, true, 5, 15, new MaterialData(Material.SLIME_BALL)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setWoolChance(0).setBoneChance(0).setWoolColor(DyeColor.GREEN).setAmountFrom(5).setAmountTo(15).setParticleMaterial(Material.SLIME_BALL).build());
 			}
 			else if (entityType == EntityType.BLAZE)
 			{
-				map.put(entityType, new ParticleType(entityType, 0, 0, 5, 15, DyeColor.YELLOW, true, 15, 25, new MaterialData(Material.BLAZE_POWDER)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setWoolChance(0).setBoneChance(0).setWoolColor(DyeColor.YELLOW).setParticleMaterial(Material.BLAZE_POWDER).build());
 			}
 			else if (entityType == EntityType.IRON_GOLEM)
 			{
-				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.SILVER, true, 15, 25, new MaterialData(Material.IRON_INGOT)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setBoneChance(0).setWoolColor(DyeColor.SILVER).setParticleMaterial(Material.IRON_INGOT).build());
 			}
 			else if (entityType == EntityType.SNOWMAN)
 			{
-				map.put(entityType, new ParticleType(entityType, 50, 0, 5, 15, DyeColor.WHITE, true, 15, 25, new MaterialData(Material.SNOW_BALL)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setBoneChance(0).setWoolColor(DyeColor.WHITE).setParticleMaterial(Material.SNOW_BALL).build());
 			}
 			else if (entityType == EntityType.MUSHROOM_COW)
 			{
-				map.put(entityType, new ParticleType(entityType, 50, 50, 5, 15, DyeColor.RED, true, 15, 25, new MaterialData(Material.RED_MUSHROOM)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).setParticleMaterial(Material.RED_MUSHROOM).build());
 			}
 			else
 			{
-				map.put(entityType, new ParticleType(entityType, 50, 50, 5, 15, DyeColor.RED, true, 15, 25, new MaterialData(Material.REDSTONE)));
+				MAP.put(entityType, new ParticleType.Builder(entityType).build());
 			}
 		}
-
 	}
 
-	public static Collection<ParticleType> values()
+	public static Set<EntityType> keys()
 	{
-		return map.values();
+		synchronized (MAP)
+		{
+			return EnumSet.copyOf(MAP.keySet());
+		}
 	}
 
-	public static ParticleType get(EntityType entityType)
+	public static ParticleType get(final EntityType entityType)
 	{
-		return map.get(entityType);
+		return MAP.get(entityType);
+	}
+
+	public static void save(final ParticleType type)
+	{
+		MAP.put(type.getEntityType(), type);
+	}
+
+	public static Builder getBuilder(final EntityType type)
+	{
+		ParticleType p = get(type);
+		if (p == null)
+		{
+			throw new IllegalStateException();
+		}
+		ParticleType.Builder builder = new ParticleType.Builder(p.getEntityType());
+		builder.setAmountFrom(p.getAmountFrom());
+		builder.setAmountTo(p.getAmountTo());
+		builder.setBoneChance(p.getBoneChance());
+		builder.setBoneLife(p.getBoneLife());
+		builder.setParticleLifeFrom(p.getParticleLifeFrom());
+		builder.setParticleLifeTo(p.getParticleLifeTo());
+		builder.setParticleMaterial(p.getParticleMaterial());
+		builder.setSaturatedMats(p.getSaturatedMaterials());
+		builder.setStainLifeFrom(p.getStainLifeFrom());
+		builder.setStainLifeTo(p.getStainLifeTo());
+		builder.setStainsFloor(p.isStainingFloor());
+		builder.setWoolChance(p.getWoolChance());
+		builder.setWoolColor(p.getWoolColor());
+		return builder;
 	}
 	private final EntityType entityType;
 	private final String entityName;
-	private int woolChance;
-	private int boneChance;
-	private int particleLifeFrom;
-	private int particleLifeTo;
-	private DyeColor woolColor;
-	private boolean stainsFloor;
-	private int boneLife = 100;
-	private int stainLifeFrom = 80;
-	private int stainLifeTo = 120;
-	private int amountFrom;
-	private int amountTo;
-	private MaterialData particleMaterial;
-	private transient EnumSet<Material> saturatedMats = EnumSet.copyOf(Arrays.asList(new Material[]
-			{
-				Material.GRASS,
-				Material.DIRT,
-				Material.STONE,
-				Material.COBBLESTONE,
-				Material.SAND,
-				Material.SANDSTONE,
-				Material.WOOD,
-				Material.GRAVEL,
-				Material.WOOL,
-				Material.DOUBLE_STEP,
-				Material.SOUL_SAND,
-				Material.NETHERRACK,
-				Material.CLAY,
-				Material.SNOW_BLOCK,
-				Material.BRICK,
-				Material.MOSSY_COBBLESTONE
-			}));
+	private final int woolChance;
+	private final int boneChance;
+	private final int particleLifeFrom;
+	private final int particleLifeTo;
+	private final DyeColor woolColor;
+	private final boolean stainsFloor;
+	private final int boneLife;
+	private final int stainLifeFrom;
+	private final int stainLifeTo;
+	private final int amountFrom;
+	private final int amountTo;
+	private final MaterialData particleMaterial;
+	private final EnumSet<Material> saturatedMats;
 
-	private ParticleType(final EntityType entityType, final int woolChance, final int boneChance,
-						 final int particleLifeFrom, final int particleLifeTo, final DyeColor woolColor,
-						 final boolean stainsFloor, final int amountFrom, final int amountTo,
-						 final MaterialData particleMaterial)
+	private ParticleType(final Builder builder)
 	{
-		this.entityType = entityType;
-		this.entityName = entityType.toString().replaceAll("_", "");
-		this.woolChance = woolChance;
-		this.boneChance = boneChance;
-		this.particleLifeFrom = particleLifeFrom;
-		this.particleLifeTo = particleLifeTo;
-		this.woolColor = woolColor;
-		this.stainsFloor = stainsFloor;
-		this.amountFrom = amountFrom;
-		this.amountTo = amountTo;
-		this.particleMaterial = particleMaterial;
+		this.entityType = builder.getEntityType();
+		this.entityName = builder.getEntityName();
+		this.woolChance = builder.getWoolChance();
+		this.boneChance = builder.getBoneChance();
+		this.particleLifeFrom = builder.getParticleLifeFrom();
+		this.particleLifeTo = builder.getParticleLifeTo();
+		this.woolColor = builder.getWoolColor();
+		this.stainsFloor = builder.isStainsFloor();
+		this.boneLife = builder.getBoneLife();
+		this.stainLifeFrom = builder.getStainLifeFrom();
+		this.stainLifeTo = builder.getStainLifeTo();
+		this.amountFrom = builder.getAmountFrom();
+		this.amountTo = builder.getAmountTo();
+		this.particleMaterial = builder.getParticleMaterial();
+		this.saturatedMats = builder.getSaturatedMats();
 	}
 
 	public int getWoolChance()
@@ -157,19 +173,9 @@ public class ParticleType
 		return woolChance;
 	}
 
-	public void setWoolChance(final int woolChance)
-	{
-		this.woolChance = woolChance;
-	}
-
 	public int getBoneChance()
 	{
 		return boneChance;
-	}
-
-	public void setBoneChance(final int boneChance)
-	{
-		this.boneChance = boneChance;
 	}
 
 	public int getParticleLifeFrom()
@@ -177,19 +183,9 @@ public class ParticleType
 		return particleLifeFrom;
 	}
 
-	public void setParticleLifeFrom(final int particleLifeFrom)
-	{
-		this.particleLifeFrom = particleLifeFrom;
-	}
-
 	public int getParticleLifeTo()
 	{
 		return particleLifeTo;
-	}
-
-	public void setParticleLifeTo(final int particleLifeTo)
-	{
-		this.particleLifeTo = particleLifeTo;
 	}
 
 	public DyeColor getWoolColor()
@@ -197,19 +193,9 @@ public class ParticleType
 		return woolColor;
 	}
 
-	public void setWoolColor(final DyeColor woolColor)
-	{
-		this.woolColor = woolColor;
-	}
-
 	public boolean isStainingFloor()
 	{
 		return stainsFloor;
-	}
-
-	public void setStainsFloor(final boolean stainsFloor)
-	{
-		this.stainsFloor = stainsFloor;
 	}
 
 	public int getBoneLife()
@@ -217,19 +203,9 @@ public class ParticleType
 		return boneLife;
 	}
 
-	public void setBoneLife(final int boneLife)
-	{
-		this.boneLife = boneLife;
-	}
-
 	public int getStainLifeFrom()
 	{
 		return stainLifeFrom;
-	}
-
-	public void setStainLifeFrom(final int stainLifeFrom)
-	{
-		this.stainLifeFrom = stainLifeFrom;
 	}
 
 	public int getStainLifeTo()
@@ -237,19 +213,9 @@ public class ParticleType
 		return stainLifeTo;
 	}
 
-	public void setStainLifeTo(final int stainLifeTo)
-	{
-		this.stainLifeTo = stainLifeTo;
-	}
-
 	public int getAmountFrom()
 	{
 		return amountFrom;
-	}
-
-	public void setAmountFrom(final int amountFrom)
-	{
-		this.amountFrom = amountFrom;
 	}
 
 	public int getAmountTo()
@@ -257,29 +223,14 @@ public class ParticleType
 		return amountTo;
 	}
 
-	public void setAmountTo(final int amountTo)
-	{
-		this.amountTo = amountTo;
-	}
-
 	public EnumSet<Material> getSaturatedMaterials()
 	{
 		return saturatedMats;
 	}
 
-	public void setSaturatedMaterials(final EnumSet<Material> saturatedMats)
-	{
-		this.saturatedMats = saturatedMats;
-	}
-
 	public MaterialData getParticleMaterial()
 	{
 		return particleMaterial;
-	}
-
-	public void setParticleMaterial(final MaterialData particleMaterial)
-	{
-		this.particleMaterial = particleMaterial;
 	}
 
 	public EntityType getEntityType()
@@ -296,5 +247,219 @@ public class ParticleType
 	public boolean isMagicMaterial()
 	{
 		return this.getParticleMaterial().getItemType() == Material.CAKE;
+	}
+
+
+	public static class Builder
+	{
+		private final EntityType entityType;
+		private final String entityName;
+		private int woolChance = 50;
+		private int boneChance = 50;
+		private int particleLifeFrom = 5;
+		private int particleLifeTo = 15;
+		private DyeColor woolColor = DyeColor.RED;
+		private boolean stainsFloor = true;
+		private int boneLife = 100;
+		private int stainLifeFrom = 80;
+		private int stainLifeTo = 120;
+		private int amountFrom = 15;
+		private int amountTo = 25;
+		private MaterialData particleMaterial = new MaterialData(Material.REDSTONE);
+		private EnumSet<Material> saturatedMats = EnumSet.copyOf(Arrays.asList(new Material[]
+				{
+					Material.GRASS,
+					Material.DIRT,
+					Material.STONE,
+					Material.COBBLESTONE,
+					Material.SAND,
+					Material.SANDSTONE,
+					Material.WOOD,
+					Material.GRAVEL,
+					Material.WOOL,
+					Material.DOUBLE_STEP,
+					Material.SOUL_SAND,
+					Material.NETHERRACK,
+					Material.CLAY,
+					Material.SNOW_BLOCK,
+					Material.BRICK,
+					Material.MOSSY_COBBLESTONE
+				}));
+
+		public Builder(final EntityType entityType)
+		{
+			this.entityType = entityType;
+			this.entityName = entityType.toString().replaceAll("_", "");
+		}
+
+		public EntityType getEntityType()
+		{
+			return entityType;
+		}
+
+		public String getEntityName()
+		{
+			return entityName;
+		}
+
+		public int getWoolChance()
+		{
+			return woolChance;
+		}
+
+		public Builder setWoolChance(final int woolChance)
+		{
+			this.woolChance = woolChance;
+			return this;
+		}
+
+		public int getBoneChance()
+		{
+			return boneChance;
+		}
+
+		public Builder setBoneChance(final int boneChance)
+		{
+			this.boneChance = boneChance;
+			return this;
+		}
+
+		public int getParticleLifeFrom()
+		{
+			return particleLifeFrom;
+		}
+
+		public Builder setParticleLifeFrom(final int particleLifeFrom)
+		{
+			this.particleLifeFrom = particleLifeFrom;
+			return this;
+		}
+
+		public int getParticleLifeTo()
+		{
+			return particleLifeTo;
+		}
+
+		public Builder setParticleLifeTo(final int particleLifeTo)
+		{
+			this.particleLifeTo = particleLifeTo;
+			return this;
+		}
+
+		public DyeColor getWoolColor()
+		{
+			return woolColor;
+		}
+
+		public Builder setWoolColor(final DyeColor woolColor)
+		{
+			this.woolColor = woolColor;
+			return this;
+		}
+
+		public boolean isStainsFloor()
+		{
+			return stainsFloor;
+		}
+
+		public Builder setStainsFloor(final boolean stainsFloor)
+		{
+			this.stainsFloor = stainsFloor;
+			return this;
+		}
+
+		public int getBoneLife()
+		{
+			return boneLife;
+		}
+
+		public Builder setBoneLife(final int boneLife)
+		{
+			this.boneLife = boneLife;
+			return this;
+		}
+
+		public int getStainLifeFrom()
+		{
+			return stainLifeFrom;
+		}
+
+		public Builder setStainLifeFrom(final int stainLifeFrom)
+		{
+			this.stainLifeFrom = stainLifeFrom;
+			return this;
+		}
+
+		public int getStainLifeTo()
+		{
+			return stainLifeTo;
+		}
+
+		public Builder setStainLifeTo(final int stainLifeTo)
+		{
+			this.stainLifeTo = stainLifeTo;
+			return this;
+		}
+
+		public int getAmountFrom()
+		{
+			return amountFrom;
+		}
+
+		public Builder setAmountFrom(final int amountFrom)
+		{
+			this.amountFrom = amountFrom;
+			return this;
+		}
+
+		public int getAmountTo()
+		{
+			return amountTo;
+		}
+
+		public Builder setAmountTo(final int amountTo)
+		{
+			this.amountTo = amountTo;
+			return this;
+		}
+
+		public MaterialData getParticleMaterial()
+		{
+			return particleMaterial;
+		}
+
+		public Builder setParticleMaterial(final Material particleMaterial)
+		{
+			this.particleMaterial = new MaterialData(particleMaterial);
+			return this;
+		}
+
+		public Builder setParticleMaterial(final MaterialData particleMaterial)
+		{
+			this.particleMaterial = particleMaterial;
+			return this;
+		}
+
+		public EnumSet<Material> getSaturatedMats()
+		{
+			return saturatedMats;
+		}
+
+		public Builder setSaturatedMats(final EnumSet<Material> saturatedMats)
+		{
+			this.saturatedMats = saturatedMats;
+			return this;
+		}
+
+		@Override
+		public String toString()
+		{
+			return entityName;
+		}
+
+		public ParticleType build()
+		{
+			return new ParticleType(this);
+		}
 	}
 }

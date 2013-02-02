@@ -9,40 +9,80 @@ import org.bukkit.block.BlockFace;
 
 public class BloodStain
 {
-	private final transient IBleedingMobs plugin;
-	private final transient ParticleType type;
-	private transient boolean meltedSnow;
-	private transient byte snowData;
-	private transient Material savedBlockMat;
-	private transient Location savedBlockLoc;
-	private transient byte savedBlockData;
-	private final transient int duration;
+	private static final class StainedBlock
+	{
+		private final Location location;
+		private final Material material;
+		private final byte data;
+		private final boolean meltedSnow;
+		private final byte snowData;
 
-	public BloodStain(IBleedingMobs plugin, ParticleType type, Location loc)
+		private StainedBlock(final Block block, final byte color)
+		{
+			location = block.getLocation();
+			material = block.getType();
+			data = block.getData();
+			block.setTypeIdAndData(Material.WOOL.getId(), color, false);
+			Block snowBlock = block.getRelative(BlockFace.UP);
+			if (snowBlock.getType() == Material.SNOW)
+			{
+				meltedSnow = true;
+				snowData = snowBlock.getData();
+				snowBlock.setTypeIdAndData(0, (byte)0, false);
+			}
+			else
+			{
+				meltedSnow = false;
+				snowData = 0;
+			}
+		}
+
+		private Location getLocation()
+		{
+			return location;
+		}
+
+		private void restoreBlock()
+		{
+			Block block = location.getBlock();
+			block.setTypeIdAndData(material.getId(), data, false);
+			if (meltedSnow)
+			{
+				block.getRelative(BlockFace.UP).setTypeIdAndData(Material.SNOW.getId(), snowData, false);
+			}
+		}
+	}
+	private final IBleedingMobs plugin;
+	private final ParticleType type;
+	private final int duration;
+	private final StainedBlock stainedBlock;
+
+	public BloodStain(final IBleedingMobs plugin, final ParticleType type, final Location loc)
 	{
 		this.plugin = plugin;
 		this.type = type;
-		final Block block = getSolidBlock(loc);
+		Block block = getSolidBlock(loc);
 
 		if (canStainBlock(block))
 		{
 			if (type.isMagicMaterial())
 			{
-				stainFloor(block, Util.getRandomColor());
+				stainedBlock = new StainedBlock(block, Util.getRandomColor());
 			}
 			else
 			{
-				stainFloor(block, type.getWoolColor().getData());
+				stainedBlock = new StainedBlock(block, type.getWoolColor().getData());
 			}
 			duration = Util.getRandomBetween(type.getStainLifeFrom(), type.getStainLifeTo());
 		}
 		else
 		{
+			stainedBlock = null;
 			duration = -1;
 		}
 	}
 
-	private Block getSolidBlock(Location loc)
+	private Block getSolidBlock(final Location loc)
 	{
 		Block block = loc.getBlock();
 		if (block == null
@@ -56,48 +96,22 @@ public class BloodStain
 		return block;
 	}
 
-	private boolean canStainBlock(Block block)
+	private boolean canStainBlock(final Block block)
 	{
 		return block != null && type.isStainingFloor()
 			   && type.getSaturatedMaterials().contains(block.getType())
 			   && !plugin.getStorage().getUnbreakables().contains(block.getLocation());
 	}
 
-	private void stainFloor(final Block block, final byte color)
-	{
-		savedBlockMat = block.getType();
-		savedBlockLoc = block.getLocation();
-		savedBlockData = block.getData();
-		block.setTypeIdAndData(Material.WOOL.getId(), color, false);
-		final Block snowBlock = block.getRelative(BlockFace.UP);
-		if (snowBlock.getType() == Material.SNOW)
-		{
-			meltedSnow = true;
-			snowData = snowBlock.getData();
-			snowBlock.setTypeIdAndData(0, (byte)0, false);
-		}
-		else
-		{
-			meltedSnow = false;
-		}
-	}
-
 	public Location getStainedFloorLocation()
 	{
-		return savedBlockLoc;
+		return stainedBlock == null ? null : stainedBlock.getLocation();
 	}
 
 	public void restore()
 	{
-		restoreBlock();
-	}
-
-	private void restoreBlock()
-	{
-		savedBlockLoc.getBlock().setTypeIdAndData(savedBlockMat.getId(), savedBlockData, false);
-		if (meltedSnow)
-		{
-			savedBlockLoc.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(Material.SNOW.getId(), snowData, false);
+		if (stainedBlock != null) {
+			stainedBlock.restoreBlock();
 		}
 	}
 

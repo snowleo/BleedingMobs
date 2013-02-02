@@ -1,7 +1,9 @@
 package me.snowleo.bleedingmobs.update;
 
+import com.google.common.io.Closeables;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -39,11 +41,11 @@ class UpdateCheck
 						}
 					}
 				}
-				if (versionInfo.getVersion().compareTo(currentVersion) == 0) {
-					if (versionInfo.getGameVersions().first().compareTo(currentGame) > 0 ||
-						versionInfo.getGameVersions().last().compareTo(currentGame) < 0) {
-						LOGGER.log(Level.WARNING, "BleedingMobs running on an unsupported Bukkit version. Please update!");
-					}
+				if (versionInfo.getVersion().compareTo(currentVersion) == 0
+					&& (versionInfo.getGameVersions().first().compareTo(currentGame) > 0
+						|| versionInfo.getGameVersions().last().compareTo(currentGame) < 0))
+				{
+					LOGGER.log(Level.WARNING, "BleedingMobs running on an unsupported Bukkit version. Please update!");
 				}
 			}
 		}
@@ -63,21 +65,44 @@ class UpdateCheck
 		connection.setReadTimeout(10000);
 		connection.connect();
 
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		final List<String> lines = new ArrayList<String>();
-		while (true)
+		final InputStream inputStream = connection.getInputStream();
+		try
 		{
-			final String line = reader.readLine();
-			if (line == null)
+			final InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+			try
 			{
-				break;
+				final BufferedReader reader = new BufferedReader(inputStreamReader);
+				try
+				{
+					final List<String> lines = new ArrayList<String>();
+					while (true)
+					{
+						final String line = reader.readLine();
+						if (line == null)
+						{
+							break;
+						}
+						else if (shouldKeepLine(line))
+						{
+							lines.add(line);
+						}
+					}
+					return lines;
+				}
+				finally
+				{
+					Closeables.closeQuietly(reader);
+				}
 			}
-			else if (shouldKeepLine(line))
+			finally
 			{
-				lines.add(line);
+				Closeables.closeQuietly(inputStreamReader);
 			}
 		}
-		return lines;
+		finally
+		{
+			Closeables.closeQuietly(inputStream);
+		}
 	}
 
 	private boolean shouldKeepLine(final String line)

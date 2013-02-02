@@ -19,6 +19,7 @@ package me.snowleo.bleedingmobs.listener;
 
 import me.snowleo.bleedingmobs.IBleedingMobs;
 import me.snowleo.bleedingmobs.particles.BleedCause;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -34,7 +35,7 @@ public class ParticleEntityListener implements Listener
 {
 	private static final String BLEEDINGMOBS_BLOODSTRIKE = "bleedingmobs.bloodstrike";
 	private static final String BLEEDINGMOBS_NOBLOOD = "bleedingmobs.noblood";
-	private final transient IBleedingMobs plugin;
+	private final IBleedingMobs plugin;
 
 	public ParticleEntityListener(final IBleedingMobs plugin)
 	{
@@ -50,16 +51,12 @@ public class ParticleEntityListener implements Listener
 			return;
 		}
 		if (plugin.getSettings().isPermissionOnly()
-			&& !((event.getDamager() instanceof Player
-				  && ((Player)event.getDamager()).hasPermission(BLEEDINGMOBS_BLOODSTRIKE))
-				 || (event.getDamager() instanceof Projectile
-					 && ((Projectile)event.getDamager()).getShooter() instanceof Player
-					 && ((Player)((Projectile)event.getDamager()).getShooter()).hasPermission(BLEEDINGMOBS_BLOODSTRIKE))))
+			&& !(hasPlayerDamagePermission(event.getDamager())
+				 || hasShooterDamagePermission(event.getDamager())))
 		{
 			return;
 		}
-		if ((event.getEntity() instanceof Player)
-			&& ((Player)event.getEntity()).hasPermission(BLEEDINGMOBS_NOBLOOD))
+		if (hasPlayerNoBloodPermission(event.getEntity()))
 		{
 			return;
 		}
@@ -84,8 +81,7 @@ public class ParticleEntityListener implements Listener
 		if (!plugin.getSettings().isPermissionOnly()
 			&& event.getCause() == EntityDamageEvent.DamageCause.FALL
 			&& event.getEntity() instanceof LivingEntity
-			&& !((event.getEntity() instanceof Player)
-				 && ((Player)event.getEntity()).hasPermission(BLEEDINGMOBS_NOBLOOD)))
+			&& !(hasPlayerNoBloodPermission(event.getEntity())))
 		{
 			plugin.getStorage().createParticles((LivingEntity)event.getEntity(), BleedCause.FALL);
 		}
@@ -96,11 +92,29 @@ public class ParticleEntityListener implements Listener
 	{
 		plugin.getTimer().remove(event.getEntity());
 		if (plugin.getSettings().isPermissionOnly()
-			|| ((event.getEntity() instanceof Player)
-				&& ((Player)event.getEntity()).hasPermission(BLEEDINGMOBS_NOBLOOD)))
+			|| hasPlayerNoBloodPermission(event.getEntity()))
 		{
 			return;
 		}
 		plugin.getStorage().createParticles(event.getEntity(), BleedCause.DEATH);
+	}
+
+	private boolean hasPlayerDamagePermission(final Entity entity)
+	{
+		return entity instanceof Player
+			   && ((Player)entity).hasPermission(BLEEDINGMOBS_BLOODSTRIKE);
+	}
+
+	private boolean hasShooterDamagePermission(final Entity entity)
+	{
+		return entity instanceof Projectile
+			   && ((Projectile)entity).getShooter() instanceof Player
+			   && ((Player)((Projectile)entity).getShooter()).hasPermission(BLEEDINGMOBS_BLOODSTRIKE);
+	}
+
+	private boolean hasPlayerNoBloodPermission(final Entity entity)
+	{
+		return entity instanceof Player
+			   && ((Player)entity).hasPermission(BLEEDINGMOBS_NOBLOOD);
 	}
 }

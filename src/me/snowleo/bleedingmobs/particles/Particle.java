@@ -28,9 +28,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class Particle
 {
-	private final transient IBleedingMobs plugin;
-	private final transient ParticleType type;
-	private final transient ItemStack stack;
+	private final IBleedingMobs plugin;
+	private final ParticleType type;
+	private final ItemStack stack;
 	private final int lifetime;
 	private final Item item;
 

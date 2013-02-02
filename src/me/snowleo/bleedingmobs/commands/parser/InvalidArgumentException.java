@@ -20,7 +20,13 @@ package me.snowleo.bleedingmobs.commands.parser;
 
 public class InvalidArgumentException extends ParserException
 {
-	public InvalidArgumentException()
+	InvalidArgumentException()
 	{
+		super("Invalid argument.");
+	}
+
+	InvalidArgumentException(Throwable t)
+	{
+		super("Invalid argument.", t);
 	}
 }

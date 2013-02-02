@@ -24,6 +24,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.material.Colorable;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.TexturedMaterial;
@@ -31,22 +32,22 @@ import org.bukkit.material.TexturedMaterial;
 
 public class Settings
 {
-	private final static int MAX_PARTICLES = 2000;
-	private transient Set<String> worlds = Collections.emptySet();
-	private transient boolean bleedWhenCanceled = false;
-	private transient boolean bleedingEnabled = true;
-	private transient int maxParticles = 2000;
-	private transient final IBleedingMobs plugin;
-	private transient boolean showMetricsInfo = true;
-	private transient boolean permissionOnly = false;
-	private transient int attackPercentage = 100;
-	private transient int fallPercentage = 60;
-	private transient int deathPercentage = 150;
-	private transient int projectilePercentage = 60;
-	private transient int bloodstreamPercentage = 10;
-	private transient int bloodstreamTime = 200;
-	private transient int bloodstreamInterval = 10;
-	private transient EnumSet<Material> particleMaterials = EnumSet.allOf(Material.class);
+	private static final int MAX_PARTICLES = 2000;
+	private volatile Set<String> worlds = Collections.emptySet();
+	private volatile boolean bleedWhenCanceled = false;
+	private volatile boolean bleedingEnabled = true;
+	private volatile int maxParticles = MAX_PARTICLES;
+	private final IBleedingMobs plugin;
+	private volatile boolean showMetricsInfo = true;
+	private volatile boolean permissionOnly = false;
+	private volatile int attackPercentage = 100;
+	private volatile int fallPercentage = 60;
+	private volatile int deathPercentage = 150;
+	private volatile int projectilePercentage = 60;
+	private volatile int bloodstreamPercentage = 10;
+	private volatile int bloodstreamTime = 200;
+	private volatile int bloodstreamInterval = 10;
+	private volatile EnumSet<Material> particleMaterials = EnumSet.allOf(Material.class);
 
 	public Settings(final IBleedingMobs plugin)
 	{
@@ -81,14 +82,16 @@ public class Settings
 		partMaterials.add(Material.BONE);
 		partMaterials.add(Material.WOOL);
 		partMaterials.add(Material.REDSTONE);
-		for (ParticleType particleType : ParticleType.values())
+		for (EntityType entityType : ParticleType.keys())
 		{
-			final String name = particleType.toString().toLowerCase(Locale.ENGLISH);
-			particleType.setWoolChance(Math.min(100, Math.max(0, config.getInt(name + ".wool-chance", particleType.getWoolChance()))));
-			particleType.setBoneChance(Math.min(100, Math.max(0, config.getInt(name + ".bone-chance", particleType.getBoneChance()))));
-			particleType.setParticleLifeFrom(Math.max(0, Math.min(1200, config.getInt(name + ".particle-life.from", particleType.getParticleLifeFrom()))));
-			particleType.setParticleLifeTo(Math.max(particleType.getParticleLifeFrom(), Math.min(1200, config.getInt(name + ".particle-life.to", particleType.getParticleLifeTo()))));
-			final String colorName = config.getString(name + ".wool-color", particleType.getWoolColor().toString()).replaceAll("[_-]", "").toUpperCase(Locale.ENGLISH);
+			ParticleType.Builder builder = ParticleType.getBuilder(entityType);
+			final String name = builder.toString().toLowerCase(Locale.ENGLISH);
+
+			builder.setWoolChance(Math.min(100, Math.max(0, config.getInt(name + ".wool-chance", builder.getWoolChance()))));
+			builder.setBoneChance(Math.min(100, Math.max(0, config.getInt(name + ".bone-chance", builder.getBoneChance()))));
+			builder.setParticleLifeFrom(Math.max(0, Math.min(1200, config.getInt(name + ".particle-life.from", builder.getParticleLifeFrom()))));
+			builder.setParticleLifeTo(Math.max(builder.getParticleLifeFrom(), Math.min(1200, config.getInt(name + ".particle-life.to", builder.getParticleLifeTo()))));
+			final String colorName = config.getString(name + ".wool-color", builder.getWoolColor().toString()).replaceAll("[_-]", "").toUpperCase(Locale.ENGLISH);
 			byte woolcolor = -1;
 			for (DyeColor dyeColor : DyeColor.values())
 			{
@@ -99,15 +102,15 @@ public class Settings
 			}
 			if (woolcolor < 0)
 			{
-				woolcolor = ((Number)Math.min(15, Math.max(0, config.getInt(name + ".wool-color", particleType.getWoolColor().getData())))).byteValue();
+				woolcolor = ((Number)Math.min(15, Math.max(0, config.getInt(name + ".wool-color", builder.getWoolColor().getData())))).byteValue();
 			}
-			particleType.setWoolColor(DyeColor.getByData(woolcolor));
-			particleType.setStainsFloor(config.getBoolean(name + ".stains-floor", particleType.isStainingFloor()));
-			particleType.setBoneLife(Math.max(0, Math.min(1200, config.getInt(name + ".bone-life", particleType.getBoneLife()))));
-			particleType.setStainLifeFrom(Math.max(0, Math.min(12000, config.getInt(name + ".stain-life.from", particleType.getStainLifeFrom()))));
-			particleType.setStainLifeTo(Math.max(particleType.getStainLifeFrom(), Math.min(12000, config.getInt(name + ".stain-life.to", particleType.getStainLifeTo()))));
-			particleType.setAmountFrom(Math.max(0, Math.min(1000, config.getInt(name + ".amount.from", particleType.getAmountFrom()))));
-			particleType.setAmountTo(Math.max(particleType.getAmountFrom(), Math.min(1000, config.getInt(name + ".amount.to", particleType.getAmountTo()))));
+			builder.setWoolColor(DyeColor.getByData(woolcolor));
+			builder.setStainsFloor(config.getBoolean(name + ".stains-floor", builder.isStainsFloor()));
+			builder.setBoneLife(Math.max(0, Math.min(1200, config.getInt(name + ".bone-life", builder.getBoneLife()))));
+			builder.setStainLifeFrom(Math.max(0, Math.min(12000, config.getInt(name + ".stain-life.from", builder.getStainLifeFrom()))));
+			builder.setStainLifeTo(Math.max(builder.getStainLifeFrom(), Math.min(12000, config.getInt(name + ".stain-life.to", builder.getStainLifeTo()))));
+			builder.setAmountFrom(Math.max(0, Math.min(1000, config.getInt(name + ".amount.from", builder.getAmountFrom()))));
+			builder.setAmountTo(Math.max(builder.getAmountFrom(), Math.min(1000, config.getInt(name + ".amount.to", builder.getAmountTo()))));
 			final List<String> mats = config.getStringList(name + ".saturated-materials");
 			final EnumSet<Material> materials = EnumSet.noneOf(Material.class);
 			if (mats != null)
@@ -123,7 +126,7 @@ public class Settings
 			}
 			if (!materials.isEmpty())
 			{
-				particleType.setSaturatedMaterials(materials);
+				builder.setSaturatedMats(materials);
 			}
 			String particleMatName = config.getString(name + ".particle-material");
 			String particleMatData = null;
@@ -163,7 +166,7 @@ public class Settings
 							}
 						}
 					}
-					particleType.setParticleMaterial(matData);
+					builder.setParticleMaterial(matData);
 					partMaterials.add(material);
 				}
 			}
@@ -202,8 +205,9 @@ public class Settings
 		config.set("bloodstream.percentage", bloodstreamPercentage);
 		config.set("bloodstream.time", bloodstreamTime);
 		config.set("bloodstream.interval", bloodstreamInterval);
-		for (ParticleType particleType : ParticleType.values())
+		for (EntityType entityTypeType : ParticleType.keys())
 		{
+			ParticleType particleType = ParticleType.get(entityTypeType);
 			final String name = particleType.toString().toLowerCase(Locale.ENGLISH);
 			config.set(name + ".wool-chance", particleType.getWoolChance());
 			config.set(name + ".bone-chance", particleType.getBoneChance());
@@ -287,7 +291,7 @@ public class Settings
 		return permissionOnly;
 	}
 
-	public void setPermissionOnly(boolean permissionOnly)
+	public void setPermissionOnly(final boolean permissionOnly)
 	{
 		this.permissionOnly = permissionOnly;
 	}
@@ -297,7 +301,7 @@ public class Settings
 		return bloodstreamPercentage;
 	}
 
-	public void setBloodstreamPercentage(int bloodstreamPercentage)
+	public void setBloodstreamPercentage(final int bloodstreamPercentage)
 	{
 		this.bloodstreamPercentage = bloodstreamPercentage;
 	}
@@ -307,7 +311,7 @@ public class Settings
 		return bloodstreamTime;
 	}
 
-	public void setBloodstreamTime(int bloodstreamTime)
+	public void setBloodstreamTime(final int bloodstreamTime)
 	{
 		this.bloodstreamTime = bloodstreamTime;
 	}
@@ -317,7 +321,7 @@ public class Settings
 		return bloodstreamInterval;
 	}
 
-	public void setBloodstreamInterval(int bloodstreamInterval)
+	public void setBloodstreamInterval(final int bloodstreamInterval)
 	{
 		this.bloodstreamInterval = bloodstreamInterval;
 	}
@@ -327,7 +331,7 @@ public class Settings
 		return attackPercentage;
 	}
 
-	public void setAttackPercentage(int attackPercentage)
+	public void setAttackPercentage(final int attackPercentage)
 	{
 		this.attackPercentage = attackPercentage;
 	}
@@ -337,7 +341,7 @@ public class Settings
 		return fallPercentage;
 	}
 
-	public void setFallPercentage(int fallPercentage)
+	public void setFallPercentage(final int fallPercentage)
 	{
 		this.fallPercentage = fallPercentage;
 	}
@@ -347,7 +351,7 @@ public class Settings
 		return deathPercentage;
 	}
 
-	public void setDeathPercentage(int deathPercentage)
+	public void setDeathPercentage(final int deathPercentage)
 	{
 		this.deathPercentage = deathPercentage;
 	}
@@ -357,7 +361,7 @@ public class Settings
 		return projectilePercentage;
 	}
 
-	public void setProjectilePercentage(int projectilePercentage)
+	public void setProjectilePercentage(final int projectilePercentage)
 	{
 		this.projectilePercentage = projectilePercentage;
 	}

@@ -25,14 +25,14 @@ import org.bukkit.command.CommandSender;
 
 class Reload extends AbstractConfigCommand<Void>
 {
-	public Reload(IBleedingMobs plugin)
+	Reload(final IBleedingMobs plugin)
 	{
 		super(plugin, new VoidParser());
 	}
 
 	@Override
-	public void run(final CommandSender sender, final Void arg, final Settings settings)
+	protected void run(final CommandSender sender, final Void arg, final Settings settings)
 	{
-		sender.sendMessage("BleedingMobs " + plugin.getDescription().getVersion() + " reloaded.");
+		sender.sendMessage("BleedingMobs " + getPlugin().getDescription().getVersion() + " reloaded.");
 	}
 }

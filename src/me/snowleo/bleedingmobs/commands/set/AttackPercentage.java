@@ -24,15 +24,15 @@ import me.snowleo.bleedingmobs.commands.parser.PercentageParser;
 import org.bukkit.command.CommandSender;
 
 
-public class AttackPercentage extends AbstractConfigCommand<Integer>
+class AttackPercentage extends AbstractConfigCommand<Integer>
 {
-	public AttackPercentage(IBleedingMobs plugin)
+	AttackPercentage(final IBleedingMobs plugin)
 	{
 		super(plugin, new PercentageParser());
 	}
 
 	@Override
-	public void run(final CommandSender sender, final Integer value, final Settings settings)
+	protected void run(final CommandSender sender, final Integer value, final Settings settings)
 	{
 		settings.setAttackPercentage(value);
 		sender.sendMessage("Attack percentage set to " + value + "%.");

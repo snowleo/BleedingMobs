@@ -24,11 +24,11 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class EnumParser<E extends Enum> extends SingleValueParser<E>
+public class EnumParser<E extends Enum<E>> extends SingleValueParser<E>
 {
 	private final Map<String, E> enumMap = new HashMap<String, E>();
 
-	public EnumParser(Class<E> enumValue)
+	public EnumParser(final Class<E> enumValue)
 	{
 		for (E t : enumValue.getEnumConstants())
 		{
@@ -37,7 +37,7 @@ public class EnumParser<E extends Enum> extends SingleValueParser<E>
 	}
 
 	@Override
-	public E parse(String arg) throws InvalidArgumentException
+	protected E parse(final String arg) throws InvalidArgumentException
 	{
 		E e = enumMap.get(arg.replaceAll("[_-]", "").toLowerCase(Locale.ENGLISH));
 		if (e == null)
@@ -48,7 +48,7 @@ public class EnumParser<E extends Enum> extends SingleValueParser<E>
 	}
 
 	@Override
-	public List<String> getValidValues()
+	protected List<String> getValidValues()
 	{
 		return new ArrayList<String>(enumMap.keySet());
 	}

@@ -28,26 +28,26 @@ import org.bukkit.command.CommandSender;
 
 class ToggleWorld extends AbstractConfigCommand<World>
 {
-	public ToggleWorld(IBleedingMobs plugin)
+	ToggleWorld(final IBleedingMobs plugin)
 	{
 		super(plugin, new WorldParser());
 	}
 
 	@Override
-	public void run(final CommandSender sender, final World value, final Settings settings)
+	protected void run(final CommandSender sender, final World value, final Settings settings)
 	{
 		final Set<String> worlds = settings.getWorlds();
 		for (final Iterator<String> it = worlds.iterator(); it.hasNext();)
 		{
 			final String worldName = it.next();
-			if (plugin.getServer().getWorld(worldName) == null)
+			if (getPlugin().getServer().getWorld(worldName) == null)
 			{
 				it.remove();
 			}
 		}
 		if (worlds.isEmpty())
 		{
-			for (World world : plugin.getServer().getWorlds())
+			for (World world : getPlugin().getServer().getWorlds())
 			{
 				worlds.add(world.getName());
 			}
@@ -64,14 +64,14 @@ class ToggleWorld extends AbstractConfigCommand<World>
 			sender.sendMessage("BleedingMobs is now enabled in world " + world.getName() + ".");
 		}
 		int activeWorlds = 0;
-		for (World w : plugin.getServer().getWorlds())
+		for (World w : getPlugin().getServer().getWorlds())
 		{
 			if (worlds.contains(w.getName()))
 			{
 				activeWorlds += 1;
 			}
 		}
-		if (activeWorlds == plugin.getServer().getWorlds().size())
+		if (activeWorlds == getPlugin().getServer().getWorlds().size())
 		{
 			worlds.clear();
 		}

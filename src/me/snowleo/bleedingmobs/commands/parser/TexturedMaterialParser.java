@@ -29,10 +29,10 @@ import org.bukkit.material.TexturedMaterial;
 
 public class TexturedMaterialParser extends DoubleValueParser<MaterialData>
 {
-	private final MaterialParser materialParser = new MaterialParser();
-	private final ListMultimap<String, String> validValues = LinkedListMultimap.create();
+	private static final MaterialParser MATERIAL_PARSER = new MaterialParser();
+	private static final ListMultimap<String, String> VALID_VALUES = LinkedListMultimap.create();
 
-	public TexturedMaterialParser()
+	static
 	{
 		for (Material material : Material.values())
 		{
@@ -44,17 +44,17 @@ public class TexturedMaterialParser extends DoubleValueParser<MaterialData>
 				{
 					String texName = texMat.name().replaceAll("_", "").toLowerCase(Locale.ENGLISH);
 					String matName = material.name().replaceAll("_", "").toLowerCase(Locale.ENGLISH);
-					validValues.put(texName, matName);
+					VALID_VALUES.put(texName, matName);
 				}
 			}
 		}
 	}
 
 	@Override
-	public MaterialData parse(String texture, String material) throws InvalidArgumentException
+	protected MaterialData parse(final String texture, final String material) throws InvalidArgumentException
 	{
-		Material texMat = materialParser.parse(texture);
-		Material coloredMaterial = materialParser.parse(material);
+		Material texMat = MATERIAL_PARSER.parse(texture);
+		Material coloredMaterial = MATERIAL_PARSER.parse(material);
 		MaterialData data = coloredMaterial.getNewData((byte)0);
 		if (data instanceof TexturedMaterial && ((TexturedMaterial)data).getTextures().contains(texMat))
 		{
@@ -68,25 +68,25 @@ public class TexturedMaterialParser extends DoubleValueParser<MaterialData>
 	}
 
 	@Override
-	public List<String> getValidFirstValues()
+	protected List<String> getValidFirstValues()
 	{
-		return new ArrayList<String>(validValues.keySet());
+		return new ArrayList<String>(VALID_VALUES.keySet());
 	}
 
 	@Override
-	public List<String> getValidSecondValues(String arg1)
+	protected List<String> getValidSecondValues(final String arg1)
 	{
-		return validValues.get(arg1);
+		return VALID_VALUES.get(arg1);
 	}
 
 	@Override
-	public String prepareFirstTabValue(String arg1)
+	protected String prepareFirstTabValue(final String arg1)
 	{
 		return arg1.replaceAll("[_-]", "").toLowerCase(Locale.ENGLISH);
 	}
 
 	@Override
-	public String prepareSecondTabValue(String arg1, String arg2)
+	protected String prepareSecondTabValue(String arg1, String arg2)
 	{
 		return arg2.replaceAll("[_-]", "").toLowerCase(Locale.ENGLISH);
 	}

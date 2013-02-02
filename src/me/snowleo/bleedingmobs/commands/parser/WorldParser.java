@@ -29,7 +29,7 @@ import org.bukkit.entity.Player;
 public class WorldParser extends SingleTabParser<World>
 {
 	@Override
-	public World parse(CommandSender sender, String[] args) throws ParserException
+	public World parse(final CommandSender sender, final String[] args) throws ParserException
 	{
 		if (args.length > 0)
 		{
@@ -51,7 +51,7 @@ public class WorldParser extends SingleTabParser<World>
 	}
 
 	@Override
-	public List<String> getValidValues()
+	protected List<String> getValidValues()
 	{
 		List<String> validValues = new ArrayList<String>();
 		for (World world : Bukkit.getWorlds())
@@ -62,7 +62,7 @@ public class WorldParser extends SingleTabParser<World>
 	}
 
 	@Override
-	public String prepareTabValue(String arg)
+	protected String prepareTabValue(final String arg)
 	{
 		return arg.toLowerCase(Locale.ENGLISH);
 	}

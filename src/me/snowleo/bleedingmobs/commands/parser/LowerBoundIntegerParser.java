@@ -22,14 +22,14 @@ public class LowerBoundIntegerParser extends IntegerParser
 {
 	private final int bottom;
 
-	public LowerBoundIntegerParser(int bottom)
+	public LowerBoundIntegerParser(final int bottom)
 	{
 		super();
 		this.bottom = bottom;
 	}
 
 	@Override
-	public Integer parse(String arg) throws InvalidArgumentException
+	protected Integer parse(final String arg) throws InvalidArgumentException
 	{
 		Integer value = super.parse(arg);
 		if (value < bottom)

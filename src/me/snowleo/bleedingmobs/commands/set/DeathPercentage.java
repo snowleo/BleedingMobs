@@ -24,15 +24,15 @@ import me.snowleo.bleedingmobs.commands.parser.LowerBoundIntegerParser;
 import org.bukkit.command.CommandSender;
 
 
-public class DeathPercentage extends AbstractConfigCommand<Integer>
+class DeathPercentage extends AbstractConfigCommand<Integer>
 {
-	public DeathPercentage(IBleedingMobs plugin)
+	DeathPercentage(final IBleedingMobs plugin)
 	{
 		super(plugin, new LowerBoundIntegerParser(0));
 	}
 
 	@Override
-	public void run(final CommandSender sender, final Integer value, final Settings settings)
+	protected void run(final CommandSender sender, final Integer value, final Settings settings)
 	{
 		settings.setDeathPercentage(value);
 		sender.sendMessage("Death percentage set to " + value + "%.");

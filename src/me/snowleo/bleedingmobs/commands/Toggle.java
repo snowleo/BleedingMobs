@@ -25,13 +25,13 @@ import org.bukkit.command.CommandSender;
 
 class Toggle extends AbstractConfigCommand<Void>
 {
-	public Toggle(IBleedingMobs plugin)
+	Toggle(final IBleedingMobs plugin)
 	{
 		super(plugin, new VoidParser());
 	}
 
 	@Override
-	public void run(final CommandSender sender, final Void args, final Settings settings)
+	protected void run(final CommandSender sender, final Void args, final Settings settings)
 	{
 		settings.setBleedingEnabled(!settings.isBleedingEnabled());
 		sender.sendMessage("BleedingMobs is now " + (settings.isBleedingEnabled() ? "enabled." : "disabled."));

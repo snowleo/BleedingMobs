@@ -20,7 +20,14 @@ package me.snowleo.bleedingmobs.commands.parser;
 
 public class ParserException extends Exception
 {
-	public ParserException()
+
+	ParserException(String string)
 	{
+		super(string);
+	}
+
+	ParserException(String string, Throwable thrwbl)
+	{
+		super(string, thrwbl);
 	}
 }

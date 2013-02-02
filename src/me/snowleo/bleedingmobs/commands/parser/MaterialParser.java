@@ -23,7 +23,7 @@ import org.bukkit.Material;
 
 public class MaterialParser extends EnumParser<Material>
 {
-	private final IntegerParser integerParser = new LowerBoundIntegerParser(0);
+	private static final IntegerParser INTEGER_PARSER = new LowerBoundIntegerParser(0);
 
 	public MaterialParser()
 	{
@@ -31,12 +31,12 @@ public class MaterialParser extends EnumParser<Material>
 	}
 
 	@Override
-	public Material parse(String arg) throws InvalidArgumentException
+	protected Material parse(final String arg) throws InvalidArgumentException
 	{
 		Material mat;
 		try
 		{
-			Integer value = integerParser.parse(arg);
+			Integer value = INTEGER_PARSER.parse(arg);
 			mat = Material.getMaterial(value);
 			if (mat == null)
 			{
@@ -51,7 +51,7 @@ public class MaterialParser extends EnumParser<Material>
 	}
 
 	@Override
-	public String prepareTabValue(String arg)
+	protected String prepareTabValue(final String arg)
 	{
 		return arg.replaceAll("[_-]", "").toLowerCase(Locale.ENGLISH);
 	}

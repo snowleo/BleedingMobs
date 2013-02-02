@@ -17,17 +17,17 @@ public class ParticleStateTask implements Runnable
 	{
 		INIT, SPAWNED, STAIN, INVALID
 	}
-	private final transient ParticleType type;
-	private final transient IBleedingMobs plugin;
-	private final transient BukkitScheduler scheduler;
-	private transient Location loc;
-	private transient BleedCause cause;
-	private transient BukkitTask task;
-	private transient State state;
-	private transient Particle particle;
-	private transient BloodStain bloodStain;
+	private final ParticleType type;
+	private final IBleedingMobs plugin;
+	private final BukkitScheduler scheduler;
+	private final Location loc;
+	private final BleedCause cause;
+	private volatile BukkitTask task;
+	private volatile State state;
+	private volatile Particle particle;
+	private volatile BloodStain bloodStain;
 
-	public ParticleStateTask(IBleedingMobs plugin, ParticleType type, Location loc, BleedCause cause)
+	public ParticleStateTask(final IBleedingMobs plugin, final ParticleType type, final Location loc, final BleedCause cause)
 	{
 		this.type = type;
 		this.plugin = plugin;
@@ -36,12 +36,12 @@ public class ParticleStateTask implements Runnable
 		this.scheduler = plugin.getServer().getScheduler();
 	}
 
-	public void start()
+	public synchronized void start()
 	{
 		changeState(State.INIT, Util.getRandomBetween(0, 3));
 	}
 
-	private void changeState(State state, int ticks)
+	private synchronized void changeState(final State state, final int ticks)
 	{
 		this.state = state;
 		this.task = scheduler.runTaskLater(plugin, this, ticks);
@@ -77,6 +77,8 @@ public class ParticleStateTask implements Runnable
 			bloodStain.restore();
 			plugin.getStorage().getUnbreakables().remove(bloodStain.getStainedFloorLocation());
 			break;
+		default:
+			throw new AssertionError();
 		}
 	}
 
@@ -93,6 +95,8 @@ public class ParticleStateTask implements Runnable
 		case STAIN:
 			bloodStain.restore();
 			break;
+		default:
+			throw new AssertionError();
 		}
 		task.cancel();
 		state = State.INVALID;

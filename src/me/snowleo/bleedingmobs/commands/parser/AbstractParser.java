@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public abstract class AbstractParser<T> implements Parser<T>
+abstract class AbstractParser<T> implements Parser<T>
 {
-	public void assertLength(String[] args, int length) throws NotEnoughArgumentsException
+	protected void assertLength(final String[] args, final int length) throws NotEnoughArgumentsException
 	{
 		if (args.length < length)
 		{
@@ -31,7 +31,7 @@ public abstract class AbstractParser<T> implements Parser<T>
 		}
 	}
 
-	public List<String> searchList(List<String> input, String search)
+	protected List<String> searchList(final List<String> input, final String search)
 	{
 		List<String> output = new ArrayList<String>();
 		for (String string : input)

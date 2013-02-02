@@ -28,43 +28,43 @@ import org.bukkit.DyeColor;
 
 public class DyeColorParser extends SingleValueParser<DyeColor>
 {
-	private static final Map<String, DyeColor> colorMap = new HashMap<String, DyeColor>();
-	private static final BoundedIntegerParser integerParser = new BoundedIntegerParser(0, 15);
-	private static final List<String> validValues = new ArrayList<String>();
+	private static final Map<String, DyeColor> COLOR_MAP = new HashMap<String, DyeColor>();
+	private static final BoundedIntegerParser INTEGER_PARSER = new BoundedIntegerParser(0, 15);
+	private static final List<String> VALID_VALUES = new ArrayList<String>();
 
 	static
 	{
 		for (DyeColor dyeColor : DyeColor.values())
 		{
 			String colorName = dyeColor.toString().replace("_", "").toLowerCase(Locale.ENGLISH);
-			colorMap.put(colorName, dyeColor);
-			validValues.add(colorName);
+			COLOR_MAP.put(colorName, dyeColor);
+			VALID_VALUES.add(colorName);
 		}
-		Collections.sort(validValues);
+		Collections.sort(VALID_VALUES);
 	}
 
 	@Override
-	public DyeColor parse(String arg) throws InvalidArgumentException
+	protected DyeColor parse(final String arg) throws InvalidArgumentException
 	{
 
 		final String colorName = arg.replaceAll("[_-]", "").toLowerCase(Locale.ENGLISH);
-		DyeColor dyecolor = colorMap.get(colorName);
+		DyeColor dyecolor = COLOR_MAP.get(colorName);
 		if (dyecolor == null)
 		{
-			Integer parse = integerParser.parse(arg);
+			Integer parse = INTEGER_PARSER.parse(arg);
 			dyecolor = DyeColor.getByData(parse.byteValue());
 		}
 		return dyecolor;
 	}
 
 	@Override
-	public List<String> getValidValues()
+	protected List<String> getValidValues()
 	{
-		return validValues;
+		return VALID_VALUES;
 	}
 
 	@Override
-	public String prepareTabValue(String arg)
+	protected String prepareTabValue(final String arg)
 	{
 		return arg.replaceAll("[_-]", "").toLowerCase(Locale.ENGLISH);
 	}

@@ -22,19 +22,20 @@ import me.snowleo.bleedingmobs.commands.AbstractTypeCommand;
 import me.snowleo.bleedingmobs.commands.parser.BooleanParser;
 import me.snowleo.bleedingmobs.particles.ParticleType;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 
 
-public class StainsFloor extends AbstractTypeCommand<Boolean>
+class StainsFloor extends AbstractTypeCommand<Boolean>
 {
-	public StainsFloor(ParticleType type, IBleedingMobs plugin)
+	StainsFloor(final EntityType type, final IBleedingMobs plugin)
 	{
 		super(type, plugin, new BooleanParser());
 	}
 
 	@Override
-	public void run(CommandSender sender, Boolean arg, ParticleType type)
+	protected void run(final CommandSender sender, final Boolean arg, final ParticleType.Builder type)
 	{
 		type.setStainsFloor(arg);
-		sender.sendMessage("Stains floor set to " + (type.isStainingFloor() ? "true" : "false") + ".");
+		sender.sendMessage("Stains floor set to " + (type.isStainsFloor() ? "true" : "false") + ".");
 	}
 }

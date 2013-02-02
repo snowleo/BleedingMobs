@@ -24,15 +24,15 @@ import me.snowleo.bleedingmobs.commands.parser.LowerBoundIntegerParser;
 import org.bukkit.command.CommandSender;
 
 
-public class BloodstreamTime extends AbstractConfigCommand<Integer>
+class BloodstreamTime extends AbstractConfigCommand<Integer>
 {
-	public BloodstreamTime(IBleedingMobs plugin)
+	BloodstreamTime(final IBleedingMobs plugin)
 	{
 		super(plugin, new LowerBoundIntegerParser(0));
 	}
 
 	@Override
-	public void run(final CommandSender sender, final Integer value, final Settings settings)
+	protected void run(final CommandSender sender, final Integer value, final Settings settings)
 	{
 		settings.setBloodstreamTime(value);
 		sender.sendMessage("Bloodstream duration set to " + value + ".");

@@ -1,6 +1,5 @@
 package me.snowleo.bleedingmobs.update;
 
-import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
