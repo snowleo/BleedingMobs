@@ -170,6 +170,7 @@ public class Settings
 					partMaterials.add(material);
 				}
 			}
+			ParticleType.save(builder.build());
 		}
 		particleMaterials = partMaterials;
 		final List<String> coll = config.getStringList("worlds");
