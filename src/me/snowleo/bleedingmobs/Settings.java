@@ -39,6 +39,7 @@ public class Settings
 	private volatile int maxParticles = MAX_PARTICLES;
 	private final IBleedingMobs plugin;
 	private volatile boolean showMetricsInfo = true;
+	private volatile boolean checkForUpdates = true;
 	private volatile boolean permissionOnly = false;
 	private volatile int attackPercentage = 100;
 	private volatile int fallPercentage = 60;
@@ -69,6 +70,7 @@ public class Settings
 		maxParticles = newMaxParticles;
 		bleedWhenCanceled = config.getBoolean("bleed-when-canceled", false);
 		showMetricsInfo = config.getBoolean("show-metrics-info", true);
+		checkForUpdates = config.getBoolean("check-for-updates", true);
 		permissionOnly = config.getBoolean("permission-only", false);
 		attackPercentage = Math.max(0, Math.min(2000, config.getInt("attack-percentage", 100)));
 		fallPercentage = Math.max(0, Math.min(2000, config.getInt("fall-percentage", 60)));
@@ -198,6 +200,7 @@ public class Settings
 		config.set("max-particles", maxParticles);
 		config.set("bleed-when-canceled", bleedWhenCanceled);
 		config.set("show-metrics-info", false);
+		config.set("check-for-updates", true);
 		config.set("permission-only", permissionOnly);
 		config.set("attack-percentage", attackPercentage);
 		config.set("fall-percentage", fallPercentage);
@@ -285,6 +288,11 @@ public class Settings
 	public boolean isShowMetricsInfo()
 	{
 		return this.showMetricsInfo;
+	}
+	
+	public boolean isCheckForUpdates()
+	{
+		return this.checkForUpdates;
 	}
 
 	public boolean isPermissionOnly()

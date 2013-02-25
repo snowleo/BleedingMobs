@@ -1,7 +1,7 @@
 name: BleedingMobs
 main: me.snowleo.bleedingmobs.BleedingMobs
-version: 4.2
-authors: [snowleo]
+version: 4.3
+authors: [snowleo, Iaccidentally]
 commands:
   bleedingmobs:
     description: Change bleedingmobs settings

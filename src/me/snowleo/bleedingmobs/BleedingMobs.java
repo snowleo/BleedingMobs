@@ -53,12 +53,14 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 
 	@Override
 	public void onEnable()
-	{
-		UpdateNotifier notifier = new UpdateNotifier(this);
-		notifier.check();
-		final PluginManager pluginManager = getServer().getPluginManager();
-
+	{		
+		final PluginManager pluginManager = getServer().getPluginManager();		
 		settings = new Settings(this);
+		UpdateNotifier notifier = new UpdateNotifier(this);
+		if (settings.isCheckForUpdates() == true)
+		{
+			notifier.check();
+		}
 		storage = new Storage(this, settings.getMaxParticles());
 		PluginCommand command = (PluginCommand)this.getCommand("bleedingmobs");
 		RootCommand rootCommand = new RootCommand(this);
