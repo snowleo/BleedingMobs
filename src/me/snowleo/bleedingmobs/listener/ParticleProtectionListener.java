@@ -37,9 +37,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 
@@ -216,6 +219,17 @@ public class ParticleProtectionListener implements Listener
 	public void onEntityDeathEvent(final EntityDeathEvent event)
 	{
 		removeParticleFromEntityEquipment(event.getEntity().getEquipment());
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+	public void onHopperPickup(final InventoryPickupItemEvent event)
+	{
+		final Item item = event.getItem();
+		final Inventory inv = event.getInventory();
+		if (isParticleItemStack(item.getItemStack()) && inv.getType() == InventoryType.HOPPER)
+		{
+			event.setCancelled(true);
+		}
 	}
 	
 	private void removeParticleFromEntityEquipment(final EntityEquipment equipment)

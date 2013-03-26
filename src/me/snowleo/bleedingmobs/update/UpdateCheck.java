@@ -26,7 +26,7 @@ class UpdateCheck
 	{
 		VersionInfo info = null;
 		try
-		{
+		{		
 			final List<String> page = getUpdatePage();
 			final Set<VersionInfo> versions = parseVersions(page);
 			for (final VersionInfo versionInfo : versions)
