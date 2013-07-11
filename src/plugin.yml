@@ -1,6 +1,6 @@
 name: BleedingMobs
 main: me.snowleo.bleedingmobs.BleedingMobs
-version: 4.4
+version: 4.6
 authors: [snowleo, Iaccidentally]
 commands:
   bleedingmobs:
@@ -8,7 +8,7 @@ commands:
     usage: /<command> (toggle|reload|toggle-world [worldname]|info|set ...)
     aliases: [bm]
     permission: bleedingmobs.admin
-    
+
 permissions:
   bleedingmobs.admin:
     description: Allow access to admin command
