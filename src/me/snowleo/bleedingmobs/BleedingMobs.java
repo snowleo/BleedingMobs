@@ -21,8 +21,6 @@ import java.util.UUID;
 import me.snowleo.bleedingmobs.commands.RootCommand;
 import me.snowleo.bleedingmobs.listener.ParticleEntityListener;
 import me.snowleo.bleedingmobs.listener.ParticleProtectionListener;
-import me.snowleo.bleedingmobs.metrics.Metrics;
-import me.snowleo.bleedingmobs.metrics.MetricsStarter;
 import me.snowleo.bleedingmobs.particles.Storage;
 import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
 import me.snowleo.bleedingmobs.update.UpdateNotifier;
@@ -37,7 +35,6 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 {
 	private volatile Storage storage;
 	private volatile Settings settings;
-	private volatile Metrics metrics = null;
 	private volatile boolean spawning = false;
 	private volatile BloodStreamTask bloodStreamTimer;
 	private volatile BukkitTask timer = null;
@@ -53,8 +50,8 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 
 	@Override
 	public void onEnable()
-	{		
-		final PluginManager pluginManager = getServer().getPluginManager();		
+	{
+		final PluginManager pluginManager = getServer().getPluginManager();
 		settings = new Settings(this);
 		UpdateNotifier notifier = new UpdateNotifier(this);
 		if (settings.isCheckForUpdates() == true)
@@ -71,12 +68,6 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 		pluginManager.registerEvents(new ParticleEntityListener(this), this);
 		pluginManager.registerEvents(new ParticleProtectionListener(this), this);
 		pluginManager.registerEvents(notifier, this);
-
-		final MetricsStarter metricsStarter = new MetricsStarter(this);
-		if (metricsStarter.getDelay() > 0)
-		{
-			getServer().getScheduler().runTaskLaterAsynchronously(this, metricsStarter, metricsStarter.getDelay());
-		}
 
 		restartTimer();
 	}
@@ -109,18 +100,6 @@ public class BleedingMobs extends JavaPlugin implements IBleedingMobs
 	public Settings getSettings()
 	{
 		return settings;
-	}
-
-	@Override
-	public Metrics getMetrics()
-	{
-		return metrics;
-	}
-
-	@Override
-	public void setMetrics(final Metrics metrics)
-	{
-		this.metrics = metrics;
 	}
 
 	@Override

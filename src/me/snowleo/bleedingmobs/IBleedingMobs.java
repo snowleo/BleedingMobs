@@ -18,7 +18,6 @@
 package me.snowleo.bleedingmobs;
 
 import java.util.UUID;
-import me.snowleo.bleedingmobs.metrics.Metrics;
 import me.snowleo.bleedingmobs.particles.Storage;
 import me.snowleo.bleedingmobs.tasks.BloodStreamTask;
 import org.bukkit.World;
@@ -36,10 +35,6 @@ public interface IBleedingMobs extends Plugin
 	void setSpawning(boolean set);
 
 	Settings getSettings();
-
-	Metrics getMetrics();
-
-	void setMetrics(Metrics metrics);
 
 	void restartTimer();
 

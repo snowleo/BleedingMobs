@@ -36,7 +36,6 @@ public class RootCommand extends AbstractSubCommand implements TabCompleter, Com
 		register("toggle", new Toggle(plugin));
 		register("reload", new Reload(plugin));
 		register("info", new Info(plugin));
-		register("disable-metrics", new DisableMetrics(plugin));
 		register("toggle-world", new ToggleWorld(plugin));
 		register("set", new SetCommand(plugin));
 	}
@@ -47,7 +46,7 @@ public class RootCommand extends AbstractSubCommand implements TabCompleter, Com
 		String[] info = new String[]
 		{
 			"Available Subcommands:",
-			"toggle, reload, info, disable-metrics, toggle-world [name], set ...",
+			"toggle, reload, info, toggle-world [name], set ...",
 		};
 		return info;
 	}
