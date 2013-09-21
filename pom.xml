@@ -4,7 +4,7 @@
 
   <groupId>me.snowleo</groupId>
   <artifactId>BleedingMobs</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>4.7</version>
   <packaging>jar</packaging>
 
   <name>BleedingMobs</name>
