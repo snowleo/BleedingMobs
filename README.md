@@ -1,4 +1,4 @@
-BleedingMobs 4.2 for Bukkit 1.4.7-R1.0 (Minecraft 1.4.7)
+BleedingMobs Plugin for Bukkit 
 ================================================
 
 **Not recommended for minors ;)**
